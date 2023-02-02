@@ -36,6 +36,7 @@ class rth_stripe extends StdModule
 
         if (!$currentVersion) {
             $this->setVersion('0.1.0');
+
             return self::UPDATE_SUCCESS;
         }
 
