@@ -1,0 +1,40 @@
+{
+    "name": "Stripe",
+    "archiveName": "robinthehood/stripe",
+    "sourceDir": "src",
+    "version": "auto",
+    
+    "shortDescription": "Ein modified-shop Modul das Zahlungen via Stripe ermöglicht.",
+    "description": "Ein modified-shop Modul das Zahlungen via Stripe ermöglicht.",
+
+    "installation": "",
+    
+    "developer": "RobinTheHood, grandeljay",
+    "developerWebsite": "https://github.com/RobinTheHood/modified-stripe/graphs/contributors",
+    "website": "https://github.com/RobinTheHood/modified-stripe",
+    
+    "category": "payment",
+    "price": "free",
+
+    "require": {
+        "composer/autoload": "^1.3.0",
+        "robinthehood/modified-std-module": "^0.8.0"
+    },
+
+    "modifiedCompatibility": [
+        "2.0.7.1",
+        "2.0.7.2"
+    ],
+
+    "autoload": {
+        "psr-4": {
+            "RobinTheHood\\": "/vendor-no-composer/robinthehood"
+        }
+    },
+
+
+
+    "php": {
+        "version": "^8.0" 
+    }
+}
