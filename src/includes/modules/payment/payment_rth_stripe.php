@@ -3,23 +3,16 @@
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
 
 /**
- * You can find informations about system classes and development at:
+ * You can find informations about payment classes and development at:
  * https://docs.module-loader.de
  */
-class rth_stripe extends StdModule
+class payment_rth_stripe extends StdModule
 {
-    public const VERSION = '0.1.0';
-
     public function __construct()
     {
-        $this->init('MODULE_RTH_STRIPE');
+        parent::__construct('MODULE_PAYMENT_RTH_STRIPE');
 
         $this->checkForUpdate(true);
-    }
-
-    public function display()
-    {
-        return $this->displaySaveButton();
     }
 
     public function install()
