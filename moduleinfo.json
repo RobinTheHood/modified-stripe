@@ -28,11 +28,10 @@
 
     "autoload": {
         "psr-4": {
-            "RobinTheHood\\": "/vendor-no-composer/robinthehood"
+            "RobinTheHood\\": "/vendor-no-composer/robinthehood",
+            "Stripe\\": "/vendor-no-composer/robinthehood/Stripe/vendor/stripe/stripe-php/lib"
         }
     },
-
-
 
     "php": {
         "version": "^8.0" 

@@ -1,0 +1,15 @@
+{
+    "name": "robinthehood/stripe",
+    "authors": [
+        {
+            "name": "Robin Wieschendorf",
+            "email": "mail@robinwieschendorf.de"
+        }
+    ],
+    "config": {
+        "vendor-dir": "src/vendor-no-composer/robinthehood/Stripe/vendor"
+    },
+    "require": {
+        "stripe/stripe-php": "^10.7"
+    }
+}
