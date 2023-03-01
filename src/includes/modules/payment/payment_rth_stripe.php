@@ -20,11 +20,31 @@ class payment_rth_stripe extends StdModule
     public const VERSION = '0.1.0';
     public const NAME    = 'MODULE_PAYMENT_RTH_STRIPE';
 
+    /**
+     * Configuration keys which are automatically added/removed on
+     * install/remove
+     *
+     * $keys is already used by the StdModule, so we need to use a different
+     * variable.
+     *
+     * @var array
+     */
+    public static array $configurationKeys = [
+        'API_SANDBOX_KEY',
+        'API_SANDBOX_SECRET',
+        'API_LIVE_KEY',
+        'API_LIVE_SECRET',
+    ];
+
     public function __construct()
     {
         parent::__construct(self::NAME);
 
         $this->checkForUpdate(true);
+
+        foreach (self::$configurationKeys as $key) {
+            $this->addKey($key);
+        }
     }
 
     public function install()
@@ -35,6 +55,10 @@ class payment_rth_stripe extends StdModule
     public function remove()
     {
         parent::remove();
+
+        foreach (self::$configurationKeys as $key) {
+            $this->deleteConfiguration($key);
+        }
     }
 
     protected function updateSteps()
