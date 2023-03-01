@@ -47,12 +47,12 @@ class payment_rth_stripe extends StdModule
         }
     }
 
-    public function install()
+    public function install(): void
     {
         parent::install();
     }
 
-    public function remove()
+    public function remove(): void
     {
         parent::remove();
 
@@ -61,7 +61,7 @@ class payment_rth_stripe extends StdModule
         }
     }
 
-    protected function updateSteps()
+    protected function updateSteps(): int
     {
         $currentVersion = $this->getVersion();
 
