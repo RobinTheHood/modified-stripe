@@ -17,9 +17,12 @@ use RobinTheHood\ModifiedStdModule\Classes\StdModule;
  */
 class payment_rth_stripe extends StdModule
 {
+    public const VERSION = '0.1.0';
+    public const NAME    = 'MODULE_PAYMENT_RTH_STRIPE';
+
     public function __construct()
     {
-        parent::__construct('MODULE_PAYMENT_RTH_STRIPE');
+        parent::__construct(self::NAME);
 
         $this->checkForUpdate(true);
     }
@@ -39,7 +42,7 @@ class payment_rth_stripe extends StdModule
         $currentVersion = $this->getVersion();
 
         if (!$currentVersion) {
-            $this->setVersion('0.1.0');
+            $this->setVersion(self::VERSION);
 
             return self::UPDATE_SUCCESS;
         }
