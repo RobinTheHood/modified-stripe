@@ -36,6 +36,11 @@ class payment_rth_stripe extends StdModule
         'API_LIVE_SECRET',
     ];
 
+    public static function setFunction($function, $value, $option): string
+    {
+        return call_user_func(base64_decode($function), $value, $option);
+    }
+
     public function __construct()
     {
         parent::__construct(self::NAME);
@@ -50,6 +55,24 @@ class payment_rth_stripe extends StdModule
     public function install(): void
     {
         parent::install();
+
+        /**
+         * Namespaces are encoded in base64 since the backward slashes will
+         * otherwise be removed before saving. The `setFunction` method
+         * will decode the namespaces and forward all data.
+         *
+         * @see payment_rth_stripe::setFunction
+         */
+        $setFunctionField                 = self::class . '::setFunction(\'%s\',';
+        $setFunctionFieldapiSandboxKey    = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxKey'));
+        $setFunctionFieldapiSandboxSecret = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxSecret'));
+        $setFunctionFieldapiLiveKey       = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveKey'));
+        $setFunctionFieldapiLiveSecret    = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveSecret'));
+
+        $this->addConfiguration('API_SANDBOX_KEY', 'sk_test_Y17KokhC3SRYCQTLYiU5ZCD2', 6, 1, $setFunctionFieldapiSandboxKey);
+        $this->addConfiguration('API_SANDBOX_SECRET', 'pk_test_f3duw0VsAEM2TJFMtWQ90QAT', 6, 1, $setFunctionFieldapiSandboxSecret);
+        $this->addConfiguration('API_LIVE_KEY', 'sk_Y17KokhC3SRYCQTLYiU5ZCD2', 6, 1, $setFunctionFieldapiLiveKey);
+        $this->addConfiguration('API_LIVE_SECRET', 'pk_f3duw0VsAEM2TJFMtWQ90QAT', 6, 1, $setFunctionFieldapiLiveSecret);
     }
 
     public function remove(): void
