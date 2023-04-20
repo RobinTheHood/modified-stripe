@@ -14,4 +14,5 @@ $customer = $stripe->customers->create([
     'email' => 'email@example.com',
     'payment_method' => 'pm_card_visa',
 ]);
+
 echo $customer;
