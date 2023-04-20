@@ -7,7 +7,7 @@
         }
     ],
     "config": {
-        "vendor-dir": "src/vendor-no-composer/robinthehood/Stripe/vendor"
+        "vendor-dir": "src-mmlc/vendor"
     },
     "require": {
         "stripe/stripe-php": "^10.7"

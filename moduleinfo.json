@@ -29,11 +29,15 @@
     "autoload": {
         "psr-4": {
             "RobinTheHood\\": "/vendor-no-composer/robinthehood",
-            "Stripe\\": "/vendor-no-composer/robinthehood/Stripe/vendor/stripe/stripe-php/lib"
+            "Stripe\\": "src-mmlc/vendor/stripe/stripe-php/lib"
         }
     },
 
     "php": {
-        "version": "^8.0" 
+        "version": "^7.4 || ^8.0" 
+    },
+
+    "mmlc": {
+        "version": "^1.20.0" 
     }
 }
