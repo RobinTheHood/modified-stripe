@@ -1,9 +1,20 @@
 <?php
 
-defined('_VALID_XTC') or die('Direct Access to this location is not allowed.');
-
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
 
+/**
+ * Stripe integration for modified
+ *
+ * You can find informations about system classes and development at:
+ * https://docs.module-loader.de
+ *
+ * @author  Robin Wieschendorf <mail@robinwieschendorf.de>
+ * @author  Jay Trees <stripe@grandels.email>
+ * @link    https://github.com/RobinTheHood/modified-stripe/
+ *
+ * @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
+ * @phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
+ */
 class rth_stripe extends StdModule
 {
     public const VERSION = '0.1.0';
