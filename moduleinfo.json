@@ -22,13 +22,15 @@
     },
 
     "modifiedCompatibility": [
+        "2.0.6.0",
+        "2.0.7.0",
         "2.0.7.1",
         "2.0.7.2"
     ],
 
     "autoload": {
         "psr-4": {
-            "RobinTheHood\\": "/vendor-no-composer/robinthehood",
+            "RobinTheHood\\Stripe\\": "src-mmlc",
             "Stripe\\": "src-mmlc/vendor/stripe/stripe-php/lib"
         }
     },
