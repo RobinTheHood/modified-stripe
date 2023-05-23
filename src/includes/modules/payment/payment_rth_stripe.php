@@ -18,7 +18,7 @@ use RobinTheHood\ModifiedStdModule\Classes\StdModule;
 class payment_rth_stripe extends StdModule
 {
     public const VERSION = '0.1.0';
-    public const NAME    = 'MODULE_PAYMENT_RTH_STRIPE';
+    public const NAME    = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
 
     /**
      * Configuration keys which are automatically added/removed on
@@ -95,5 +95,22 @@ class payment_rth_stripe extends StdModule
         }
 
         return self::UPDATE_NOTHING;
+    }
+
+    public function selection(): array
+    {
+        $selectionFieldArray = [
+            'title' => '// TODO: ...',
+            'field' => '<input type="text" name="iban">'
+        ];
+
+        $selectionArray = [
+            'code' => 'mc_my_first_payment_module',
+            'module' => 'Stripe (RobinTheHood)',
+            'description' => 'Zahle mit Stripe',
+            'fields' => []
+        ];
+
+        return $selectionArray;
     }
 }
