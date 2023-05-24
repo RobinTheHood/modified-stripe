@@ -1,7 +1,5 @@
 <?php
 
-use RobinTheHood\ModifiedStdModule\Classes\StdModule;
-
 /**
  * Stripe integration for modified
  *
@@ -15,6 +13,9 @@ use RobinTheHood\ModifiedStdModule\Classes\StdModule;
  * @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
  * @phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
  */
+
+use RobinTheHood\ModifiedStdModule\Classes\StdModule;
+
 class rth_stripe extends StdModule
 {
     public const VERSION = '0.1.0';
