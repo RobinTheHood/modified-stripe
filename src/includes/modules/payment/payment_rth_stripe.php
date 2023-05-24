@@ -22,7 +22,7 @@ class payment_rth_stripe extends StdModule
     public const NAME    = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
 
     /**
-     * Redirect URL after klick on the "Buy Button" on step 3 (checkout_confirmation.php)
+     * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)
      *
      * @var string $form_action_url
      */
