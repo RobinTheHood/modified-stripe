@@ -87,10 +87,10 @@ class payment_rth_stripe extends StdModule
         $setFunctionFieldapiLiveKey       = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveKey'));
         $setFunctionFieldapiLiveSecret    = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveSecret'));
 
-        $this->addConfiguration('API_SANDBOX_KEY', 'sk_test_Y17KokhC3SRYCQTLYiU5ZCD2', 6, 1, $setFunctionFieldapiSandboxKey);
-        $this->addConfiguration('API_SANDBOX_SECRET', 'pk_test_f3duw0VsAEM2TJFMtWQ90QAT', 6, 1, $setFunctionFieldapiSandboxSecret);
-        $this->addConfiguration('API_LIVE_KEY', 'sk_Y17KokhC3SRYCQTLYiU5ZCD2', 6, 1, $setFunctionFieldapiLiveKey);
-        $this->addConfiguration('API_LIVE_SECRET', 'pk_f3duw0VsAEM2TJFMtWQ90QAT', 6, 1, $setFunctionFieldapiLiveSecret);
+        $this->addConfiguration('API_SANDBOX_KEY', 'pk_test_f3duw0VsAEM2TJFMtWQ90QAT', 6, 1, $setFunctionFieldapiSandboxKey);
+        $this->addConfiguration('API_SANDBOX_SECRET', 'sk_test_Y17KokhC3SRYCQTLYiU5ZCD2', 6, 1, $setFunctionFieldapiSandboxSecret);
+        $this->addConfiguration('API_LIVE_KEY', 'pk_f3duw0VsAEM2TJFMtWQ90QAT', 6, 1, $setFunctionFieldapiLiveKey);
+        $this->addConfiguration('API_LIVE_SECRET', 'sk_Y17KokhC3SRYCQTLYiU5ZCD2', 6, 1, $setFunctionFieldapiLiveSecret);
     }
 
     public function remove(): void
