@@ -22,6 +22,7 @@ use order as Order; // modified class order. We do this, because Order with a ca
 /**
  * The StdController can automatically forward requests to methods beginning with the invoke prefix via the ?action=
  * parameter in the URL. If action is empty or not set, invokeIndex() is called by default.
+ * The entry point of this class is in file shop-root/rth_stripe.php
  * 
  * @link //TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
@@ -47,6 +48,9 @@ class Controller extends StdController
     }
 
     /**
+     * This method is called after the customer clicks on the "Buy Button" on step 3 (checkout_confirmation.php)
+     *
+     * @see /includes/modules/payment/payment_rth_stripe.php $form_action_url
      * @link https://stripe.com/docs/checkout/quickstart
      */
     protected function invokeCheckout(): void
@@ -65,6 +69,11 @@ class Controller extends StdController
         $sessionId = $this->createHashFromOrder($order);
         $this->savePhpSession($sessionId);
 
+        /**
+         * Create is a Stripe checkout session object. Don't confuse it with a PHP session. Both use the same name.
+         * 
+         * @link https://stripe.com/docs/api/checkout/sessions/object
+         */
         $checkoutSession = Session::create([
             'line_items' => [[
                 # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
@@ -92,6 +101,10 @@ class Controller extends StdController
         // TODO ...
     }
 
+    /**
+     * Returns the current Order object. It looks nicer if we do it in our own method. We do not like global statements
+     * and side effects.
+     */
     private function getOrder(): Order
     {
         global $order;
