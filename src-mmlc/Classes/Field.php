@@ -17,11 +17,11 @@ class Field
 {
     public static function apiSandboxKey($value, $option): string
     {
-        $pattern = '^sk_test_[a-zA-Z0-9]{24}$';
+        $pattern = '^pk_test_[a-zA-Z0-9]+$';
 
         ob_start()
         ?>
-        <input type="text" name="<?= $option ?>" pattern="<?= $pattern ?>" value="<?= $value ?>" />
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" />
         <?php
         $field = ob_get_clean();
 
@@ -30,11 +30,11 @@ class Field
 
     public static function apiSandboxSecret($value, $option): string
     {
-        $pattern = '^pk_test_[a-zA-Z0-9]{24}$';
+        $pattern = '^sk_test_[a-zA-Z0-9]+$';
 
         ob_start()
         ?>
-        <input type="text" name="<?= $option ?>" pattern="<?= $pattern ?>" value="<?= $value ?>" />
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" />
         <?php
         $field = ob_get_clean();
 
@@ -51,7 +51,7 @@ class Field
 
         ob_start()
         ?>
-        <input type="text" name="<?= $option ?>" pattern="<?= $pattern ?>" value="<?= $value ?>" />
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" />
         <?php
         $field = ob_get_clean();
 
@@ -68,7 +68,7 @@ class Field
 
         ob_start()
         ?>
-        <input type="text" name="<?= $option ?>" pattern="<?= $pattern ?>" value="<?= $value ?>" />
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" />
         <?php
         $field = ob_get_clean();
 
