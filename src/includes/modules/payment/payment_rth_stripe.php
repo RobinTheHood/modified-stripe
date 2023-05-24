@@ -123,16 +123,10 @@ class payment_rth_stripe extends StdModule
      */
     public function selection(): array
     {
-        $selectionFieldArray = [
-            'title' => '// TODO: ...',
-            'field' => '<input type="text" name="iban">'
-        ];
-
         $selectionArray = [
-            'code' => 'mc_my_first_payment_module',
+            'id' => $this->code,
             'module' => 'Stripe (RobinTheHood)',
-            'description' => 'Zahle mit Stripe',
-            'fields' => []
+            'description' => 'Zahle mit Stripe'
         ];
 
         return $selectionArray;
