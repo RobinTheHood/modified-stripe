@@ -9,6 +9,9 @@ define($prefix . 'LONG_DESCRIPTION', 'Ein modified-shop Modul das Zahlungen via 
 define($prefix . 'STATUS_TITLE', 'robinthehood/stripe Modul aktivieren?');
 define($prefix . 'STATUS_DESC', '');
 
+// TEXT_TITLE (required) to display the payment name on checkout_confirmation.php, admin/customers_status.php, etc.
+define($prefix . 'TEXT_TITLE', 'Stripe (RobinTheHood)');
+
 /**
  * API
  */

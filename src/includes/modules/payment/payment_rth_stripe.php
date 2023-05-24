@@ -1,7 +1,5 @@
 <?php
 
-use RobinTheHood\ModifiedStdModule\Classes\StdModule;
-
 /**
  * Stripe integration for modified
  *
@@ -15,10 +13,20 @@ use RobinTheHood\ModifiedStdModule\Classes\StdModule;
  * @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
  * @phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
  */
+
+use RobinTheHood\ModifiedStdModule\Classes\StdModule;
+
 class payment_rth_stripe extends StdModule
 {
     public const VERSION = '0.1.0';
     public const NAME    = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
+
+    /**
+     * Redirect URL after klick on the "Buy Button" on step 3 (checkout_confirmation.php)
+     *
+     * @var string $form_action_url
+     */
+    public $form_action_url = '/rth_stripe.php?action=checkout';
 
     /**
      * Configuration keys which are automatically added/removed on
@@ -36,6 +44,16 @@ class payment_rth_stripe extends StdModule
         'API_LIVE_SECRET',
     ];
 
+    /**
+     * Internal helper function used in install(). This simplifies using modifieds setFunction to configure settings.
+     * //NOTE: Can eventually be replaced with a new StdModule.
+     *
+     * @param string $function A base64 encodes string of a calllable function
+     * 
+     * @return string
+     * 
+     * @see payment_rth_stripe::install
+     */
     public static function setFunction($function, $value, $option): string
     {
         return call_user_func(base64_decode($function), $value, $option);
@@ -97,6 +115,12 @@ class payment_rth_stripe extends StdModule
         return self::UPDATE_NOTHING;
     }
 
+    /**
+     * Displays the Stripe payment option at checkout step 2 (checkout_payment.php)
+     * @link https://docs.module-loader.de/references/module-classes/concrete/payment/#selection
+     * 
+     * @return array (SelectionArray)
+     */
     public function selection(): array
     {
         $selectionFieldArray = [
