@@ -57,11 +57,6 @@ class Controller extends StdController
      */
     protected function invokeCheckout(): void
     {
-        Stripe::setApiKey($this->config->apiSandboxSecret);
-        header('Content-Type: application/json');
-
-        $domain = HTTPS_SERVER;
-
         /**
          * We need to save the current PHP session, as it may have already expired if the customer takes a long time
          * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
@@ -69,6 +64,29 @@ class Controller extends StdController
          */
         $phpSession = new PhpSession();
         $sessionId = $phpSession->save();
+
+        $order = $phpSession->getOrder();
+        if (!$order) {
+            die('Can not create a Stripe session because we have no order Obj');
+        }
+    
+        // var_dump($order);
+        // die();
+
+        Stripe::setApiKey($this->config->apiSandboxSecret);
+        header('Content-Type: application/json');
+
+        $domain = HTTPS_SERVER;
+
+
+        $priceData = array(
+            'currency' => 'eur',
+            'unit_amount' => $order->getTotal() * 100, // Betrag in Cent (20,00 €)
+            'product_data' => array(
+                'name' => 'Einkauf bei demo-shop.de',
+                'description' => 'Bestellung von Max Mustermann am 01.01.2034'
+            )
+        );
 
         /**
          * Create is a Stripe checkout session object. Don't confuse it with a PHP session. Both use the same name.
@@ -78,7 +96,8 @@ class Controller extends StdController
         $checkoutSession = StripeSession::create([
             'line_items' => [[
                 # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
-                'price' => 'price_1NBDB1JIsfvAtVBddfc2gRn6',
+                //'price' => 'price_1NBDB1JIsfvAtVBddfc2gRn6',
+                'price_data' => $priceData,
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
