@@ -145,7 +145,7 @@ class payment_rth_stripe extends StdModule
     {
         $session = new Session();
 
-        $order = Order::createOrder();
+        $order = new Order();
         $session->setOrder($order);
         
         // NOTE: Maybe the following code could be useful, that remains to be seen.

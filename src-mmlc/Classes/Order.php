@@ -20,17 +20,26 @@ use order as ModifiedOrder; // modified class order. We do this, because Order w
 /**
  * We wrap the modified Order in our own Order object so we can write Order with a capital O, it just looks nicer.
  * In addition, we can store additional information in our order object if required.
+ * And we can access the required data OOP like.
  */
 class Order
 {
     /** @var ModifiedOrder $modifiedOrder */
-    public $modifiedOrder = null;
+    private $modifiedOrder;
 
-    public static function createOrder(): Order
+    public function __construct()
     {
-        $order = new Order();
-        $order->modifiedOrder = self::getModifiedOrder();
-        return $order;
+        $modifiedOrder = $this->loadModifiedOrder();
+        if (!$modifiedOrder) {
+            throw new OrderException('Can not create Order. No modifed order object found.');
+        }
+    
+        $this->modifiedOrder = $modifiedOrder;
+    }
+
+    public function getTotal(): float
+    {
+        return $this->modifiedOrder->info['total'];
     }
 
     /**
@@ -39,9 +48,14 @@ class Order
      * 
      * It's not nice that we work with global code, maybe that can be improved. First of all, it cannot be avoided.
      */
-    public static function getModifiedOrder(): ?ModifiedOrder
+    public function loadModifiedOrder(): ?ModifiedOrder
     {
         global $order;
+
+        if (!($order instanceof ModifiedOrder)) {
+            return null;
+        }
+
         return $order;
     }
 }
