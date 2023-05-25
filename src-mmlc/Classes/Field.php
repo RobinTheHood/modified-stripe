@@ -11,6 +11,8 @@
  * @link    https://github.com/RobinTheHood/modified-stripe/
  */
 
+declare(strict_types=1);
+
 namespace RobinTheHood\Stripe\Classes;
 
 class Field
