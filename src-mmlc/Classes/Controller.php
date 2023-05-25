@@ -11,13 +11,15 @@
  * @link    https://github.com/RobinTheHood/modified-stripe/
  */
 
+declare(strict_types=1);
+
 namespace RobinTheHood\Stripe\Classes;
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\ModifiedStdModule\Classes\StdController;
+use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use Stripe\Stripe;
-use Stripe\Checkout\Session;
-use order as Order; // modified class order. We do this, because Order with a capital O looks nicer than order with small o
+use Stripe\Checkout\Session as StripeSession;
 
 /**
  * The StdController can automatically forward requests to methods beginning with the invoke prefix via the ?action=
@@ -65,16 +67,15 @@ class Controller extends StdController
          * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
          * placed in the shop.
          */
-        $order = $this->getOrder();
-        $sessionId = $this->createHashFromOrder($order);
-        $this->savePhpSession($sessionId);
+        $phpSession = new PhpSession();
+        $sessionId = $phpSession->save();
 
         /**
          * Create is a Stripe checkout session object. Don't confuse it with a PHP session. Both use the same name.
          * 
          * @link https://stripe.com/docs/api/checkout/sessions/object
          */
-        $checkoutSession = Session::create([
+        $checkoutSession = StripeSession::create([
             'line_items' => [[
                 # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
                 'price' => 'price_1NBDB1JIsfvAtVBddfc2gRn6',
@@ -87,28 +88,6 @@ class Controller extends StdController
 
         header("HTTP/1.1 303 See Other");
         header("Location: " . $checkoutSession->url);
-    }
-
-    private function savePhpSession(string $sessionId): void
-    {
-        $sessionData = serialize($_SESSION);
-        // TODO ...
-    }
-
-    private function loadPhpSession(string $sessionId)
-    {
-        $_SESSION = unserialize($sessionData);
-        // TODO ...
-    }
-
-    /**
-     * Returns the current Order object. It looks nicer if we do it in our own method. We do not like global statements
-     * and side effects.
-     */
-    private function getOrder(): Order
-    {
-        global $order;
-        return $order;
     }
 
     private function createHashFromOrder(Order $order): string
