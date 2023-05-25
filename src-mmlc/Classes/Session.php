@@ -25,13 +25,29 @@ namespace RobinTheHood\Stripe\Classes;
 class Session
 {
     private const SESSION_PREFIX = 'rth_stripe';
+    private const SESSION_INDEX_ORDER = 'order';
+
+    public function getOrder(): ?Order
+    {
+        // We need this, because modified classes are not loaded bei the composer autoload
+        // The classes that we want to unserialize must be loaded before we unserialize them
+        require_once DIR_WS_CLASSES . 'order_total.php';
+        require_once DIR_WS_CLASSES . 'order.php';
+
+        $orderData = $_SESSION[self::SESSION_PREFIX][self::SESSION_INDEX_ORDER] ?? '';
+        if (!$orderData) {
+            return null;
+        }
+
+        return unserialize($orderData);
+    }
 
     /**
      * @param Order $order Order is an object of our own Order class, not a modified order class
      */
     public function setOrder(Order $order)
     {
-        $_SESSION[self::SESSION_PREFIX]['order'] = $order;
+        $_SESSION[self::SESSION_PREFIX][self::SESSION_INDEX_ORDER] = serialize($order);
     }
 
     /**
