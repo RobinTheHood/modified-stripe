@@ -14,7 +14,11 @@
  * @phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
  */
 
+declare(strict_types=1);
+
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
+use RobinTheHood\Stripe\Classes\Order;
+use RobinTheHood\Stripe\Classes\Session;
 
 class payment_rth_stripe extends StdModule
 {
@@ -130,5 +134,25 @@ class payment_rth_stripe extends StdModule
         ];
 
         return $selectionArray;
+    }
+
+    /**
+     * This method is called in checkout_confirmation.php to display a button next to the "Buy Now" button. At this
+     * point we save the order in the session, because in the next step rth_stripe.php we no longer have easy access
+     * to the order. We can make life easier for ourselves if we already save the order in the session right now.
+     */
+    public function process_button()
+    {
+        $session = new Session();
+
+        $order = Order::createOrder();
+        $session->setOrder($order);
+        
+        // NOTE: Maybe the following code could be useful, that remains to be seen.
+        // $sessionId = $session->createSessionId();
+        // $hiddenInputHtml = xtc_draw_hidden_field('rth_stripe_session_id', $sessionId);
+        // return $hiddenInputHtml;
+
+        return '';
     }
 }
