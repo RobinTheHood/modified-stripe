@@ -29,7 +29,7 @@ class Session
 
     public function getOrder(): ?Order
     {
-        // We need this, because modified classes are not loaded bei the composer autoload
+        // We need this, because modified classes are not loaded by the composer autoload
         // The classes that we want to unserialize must be loaded before we unserialize them
         require_once DIR_WS_CLASSES . 'order_total.php';
         require_once DIR_WS_CLASSES . 'order.php';
@@ -43,7 +43,7 @@ class Session
     }
 
     /**
-     * @param Order $order Order is an object of our own Order class, not a modified order class
+     * @param Order $order - Order is an object of our own Order class, not a modified order class
      */
     public function setOrder(Order $order)
     {
