@@ -42,7 +42,7 @@ class Controller extends StdController
     public function __construct()
     {
         parent::__construct();
-        $this->config = new Configuration(Constants::MODULE_SYSTEM_NAME);
+        $this->config = new Configuration(Constants::MODULE_PAYMENT_NAME);
     }
 
     protected function invokeIndex()
