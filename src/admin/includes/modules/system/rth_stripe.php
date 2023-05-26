@@ -15,6 +15,7 @@
  */
 
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
+use RobinTheHood\Stripe\Classes\Constants;
 
 class rth_stripe extends StdModule
 {
@@ -22,7 +23,7 @@ class rth_stripe extends StdModule
 
     public function __construct()
     {
-        $this->init('MODULE_RTH_STRIPE');
+        parent::__construct(Constants::MODULE_SYSTEM_NAME);
 
         $this->checkForUpdate(true);
     }

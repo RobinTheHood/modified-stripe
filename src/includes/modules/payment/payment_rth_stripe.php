@@ -17,13 +17,12 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
-use RobinTheHood\Stripe\Classes\Order;
-use RobinTheHood\Stripe\Classes\Session;
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants};
 
 class payment_rth_stripe extends StdModule
 {
     public const VERSION = '0.1.0';
-    public const NAME    = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
+    public const NAME    = Constants::MODULE_PAYMENT_NAME;
 
     /**
      * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)
@@ -53,9 +52,9 @@ class payment_rth_stripe extends StdModule
      * //NOTE: Can eventually be replaced with a new StdModule.
      *
      * @param string $function A base64 encodes string of a calllable function
-     * 
+     *
      * @return string
-     * 
+     *
      * @see payment_rth_stripe::install
      */
     public static function setFunction($function, $value, $option): string
@@ -122,7 +121,7 @@ class payment_rth_stripe extends StdModule
     /**
      * Displays the Stripe payment option at checkout step 2 (checkout_payment.php)
      * @link https://docs.module-loader.de/references/module-classes/concrete/payment/#selection
-     * 
+     *
      * @return array (SelectionArray)
      */
     public function selection(): array
@@ -147,7 +146,7 @@ class payment_rth_stripe extends StdModule
 
         $order = new Order();
         $session->setOrder($order);
-        
+
         // NOTE: Maybe the following code could be useful, that remains to be seen.
         // $sessionId = $session->createSessionId();
         // $hiddenInputHtml = xtc_draw_hidden_field('rth_stripe_session_id', $sessionId);
