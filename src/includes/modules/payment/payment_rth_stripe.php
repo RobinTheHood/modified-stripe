@@ -16,10 +16,9 @@
 
 declare(strict_types=1);
 
-use RobinTheHood\ModifiedStdModule\Classes\StdModule;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants};
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule};
 
-class payment_rth_stripe extends StdModule
+class payment_rth_stripe extends PaymentModule
 {
     public const VERSION = '0.1.0';
     public const NAME    = Constants::MODULE_PAYMENT_NAME;
@@ -47,30 +46,11 @@ class payment_rth_stripe extends StdModule
         'API_LIVE_SECRET',
     ];
 
-    /**
-     * Internal helper function used in install(). This simplifies using modifieds setFunction to configure settings.
-     * //NOTE: Can eventually be replaced with a new StdModule.
-     *
-     * @param string $function A base64 encodes string of a calllable function
-     *
-     * @return string
-     *
-     * @see payment_rth_stripe::install
-     */
-    public static function setFunction($function, $value, $option): string
-    {
-        return call_user_func(base64_decode($function), $value, $option);
-    }
-
     public function __construct()
     {
         parent::__construct(self::NAME);
-
         $this->checkForUpdate(true);
-
-        foreach (self::$configurationKeys as $key) {
-            $this->addKey($key);
-        }
+        $this->addKeys(self::$configurationKeys);
     }
 
     public function install(): void
@@ -82,7 +62,7 @@ class payment_rth_stripe extends StdModule
          * otherwise be removed before saving. The `setFunction` method
          * will decode the namespaces and forward all data.
          *
-         * @see payment_rth_stripe::setFunction
+         * @see PaymentModule::setFunction()
          */
         $setFunctionField                 = self::class . '::setFunction(\'%s\',';
         $setFunctionFieldapiSandboxKey    = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxKey'));
@@ -119,6 +99,10 @@ class payment_rth_stripe extends StdModule
     }
 
     /**
+     * {@inheritdoc}
+     * 
+     * Overwrites StdPaymentModule::selection()
+     *
      * Displays the Stripe payment option at checkout step 2 (checkout_payment.php)
      * @link https://docs.module-loader.de/references/module-classes/concrete/payment/#selection
      *
@@ -136,11 +120,17 @@ class payment_rth_stripe extends StdModule
     }
 
     /**
+     * {@inheritdoc}
+     * 
+     * Overwrites StdPaymentModule::process_button()
+     *
      * This method is called in checkout_confirmation.php to display a button next to the "Buy Now" button. At this
      * point we save the order in the session, because in the next step rth_stripe.php we no longer have easy access
      * to the order. We can make life easier for ourselves if we already save the order in the session right now.
+     * 
+     * @link https://docs.module-loader.de/module-payment/#process_button
      */
-    public function process_button()
+    public function process_button(): string
     {
         $session = new Session();
 
