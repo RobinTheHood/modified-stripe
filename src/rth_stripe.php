@@ -12,7 +12,7 @@
  *
  */
 
-use RobinTheHood\Stripe\Classes\Controller;
+use RobinTheHood\Stripe\Classes\{Controller, Constants};
 
 include 'includes/application_top.php';
 
@@ -29,11 +29,11 @@ if ($rthDevMode === true) {
 /**
  * The function rth_is_module_disabled() is part of the StdModule. It is a helper to wrtie shorter code to check, if a
  * module is installed or not.
- * 
+ *
  * @link //TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
  */
-if (rth_is_module_disabled('MODULE_RTH_STRIPE')) {
+if (rth_is_module_disabled(Constants::MODULE_NAME)) {
     return;
 }
 

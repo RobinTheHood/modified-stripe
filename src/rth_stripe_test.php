@@ -1,10 +1,11 @@
 <?php
 
 use Stripe\StripeClient;
+use RobinTheHood\Stripe\Classes\Constants;
 
 include 'includes/application_top.php';
 
-if (rth_is_module_disabled('MODULE_RTH_STRIPE')) {
+if (rth_is_module_disabled(Constants::MODULE_NAME)) {
     return;
 }
 

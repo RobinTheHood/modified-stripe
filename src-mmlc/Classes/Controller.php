@@ -17,15 +17,16 @@ namespace RobinTheHood\Stripe\Classes;
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\ModifiedStdModule\Classes\StdController;
+use RobinTheHood\Stripe\Classes\Constants;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
-use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
+use Stripe\Stripe;
 
 /**
  * The StdController can automatically forward requests to methods beginning with the invoke prefix via the ?action=
  * parameter in the URL. If action is empty or not set, invokeIndex() is called by default.
  * The entry point of this class is in file shop-root/rth_stripe.php
- * 
+ *
  * @link //TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
  */
@@ -33,7 +34,7 @@ class Controller extends StdController
 {
     /**
      * @var Configuration $config
-     * 
+     *
      * @link https://github.com/RobinTheHood/modified-std-module#easy-access-with-class-configuration
      */
     private Configuration $config;
@@ -41,7 +42,7 @@ class Controller extends StdController
     public function __construct()
     {
         parent::__construct();
-        $this->config = new Configuration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+        $this->config = new Configuration(Constants::MODULE_NAME);
     }
 
     protected function invokeIndex()
@@ -69,7 +70,7 @@ class Controller extends StdController
         if (!$order) {
             die('Can not create a Stripe session because we have no order Obj');
         }
-    
+
         // var_dump($order);
         // die();
 
@@ -90,7 +91,7 @@ class Controller extends StdController
 
         /**
          * Create is a Stripe checkout session object. Don't confuse it with a PHP session. Both use the same name.
-         * 
+         *
          * @link https://stripe.com/docs/api/checkout/sessions/object
          */
         $checkoutSession = StripeSession::create([
