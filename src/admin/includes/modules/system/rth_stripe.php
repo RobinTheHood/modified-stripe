@@ -23,7 +23,7 @@ class rth_stripe extends StdModule
 
     public function __construct()
     {
-        parent::__construct(Constants::MODULE_NAME);
+        parent::__construct(Constants::MODULE_SYSTEM_NAME);
 
         $this->checkForUpdate(true);
     }

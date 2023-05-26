@@ -12,5 +12,6 @@ namespace RobinTheHood\Stripe\Classes;
 
 class Constants
 {
-    public const MODULE_NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
+    public const MODULE_SYSTEM_NAME  = 'MODULE_SYSTEM_PAYMENT_RTH_STRIPE';
+    public const MODULE_PAYMENT_NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
 }

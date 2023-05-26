@@ -33,7 +33,7 @@ if ($rthDevMode === true) {
  * @link //TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
  */
-if (rth_is_module_disabled(Constants::MODULE_NAME)) {
+if (rth_is_module_disabled(Constants::MODULE_SYSTEM_NAME)) {
     return;
 }
 

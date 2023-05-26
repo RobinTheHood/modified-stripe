@@ -5,7 +5,7 @@ use RobinTheHood\Stripe\Classes\Constants;
 
 include 'includes/application_top.php';
 
-if (rth_is_module_disabled(Constants::MODULE_NAME)) {
+if (rth_is_module_disabled(Constants::MODULE_SYSTEM_NAME)) {
     return;
 }
 

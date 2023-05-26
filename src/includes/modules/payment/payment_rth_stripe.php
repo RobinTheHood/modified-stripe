@@ -22,7 +22,7 @@ use RobinTheHood\Stripe\Classes\{Order, Session, Constants};
 class payment_rth_stripe extends StdModule
 {
     public const VERSION = '0.1.0';
-    public const NAME    = Constants::MODULE_NAME;
+    public const NAME    = Constants::MODULE_PAYMENT_NAME;
 
     /**
      * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)
