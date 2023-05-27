@@ -17,7 +17,9 @@
 
 declare(strict_types=1);
 
+use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule};
+use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
 {
@@ -52,6 +54,38 @@ class payment_rth_stripe extends PaymentModule
         parent::__construct(self::NAME);
         $this->checkForUpdate(true);
         $this->addKeys(self::$configurationKeys);
+
+        if ($this->hasWebhookEndpoint()) {
+            $buttonText = 'Stripe Webhook entfernen';
+            $this->addAction('disconnect', $buttonText);
+        } else {
+            $buttonText = 'Stripe Webhook hinzufügen';
+            $this->addAction('connect', $buttonText);
+        }
+    }
+
+    public function invokeConnect()
+    {
+        // TODO: Register Webhook Endpoint
+        // https://stripe.com/docs/webhooks/go-live
+
+        $config = new Configuration(self::NAME);
+
+        \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
+
+        $domain = HTTPS_SERVER;
+
+        if ($this->hasWebhookEndpoint()) {
+            return;
+        }
+
+        $endpoint = WebhookEndpoint::create([
+            'url'            => $domain . '/rth_stripe?action=receiveHook',
+            'enabled_events' => [
+                'charge.failed',
+                'charge.succeeded',
+            ],
+        ]);
     }
 
     public function install(): void
@@ -144,5 +178,20 @@ class payment_rth_stripe extends PaymentModule
         // return $hiddenInputHtml;
 
         return '';
+    }
+
+    private function hasWebhookEndpoint(): bool
+    {
+        $config = new Configuration(self::NAME);
+
+        \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
+
+        $endpoints = WebhookEndpoint::all();
+
+        if (!$endpoints['data']) {
+            return false;
+        }
+
+        return true;
     }
 }
