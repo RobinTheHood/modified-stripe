@@ -20,6 +20,13 @@ PHP 8.0 or above
 ## Contributing
 We would be happy if you would like to take part in the development of this module. If you wish more features or you want to make improvements or to fix errors feel free to contribute. In order to contribute, you just have to fork this repository and make pull requests. If you don't know how to start, we are happy to help you on our [discord server](https://discord.gg/9NqwJqP).
 
+### How to start
+- We always try to document in the code why we do something. We hope this helps you to find your way around the code better.
+- If you don't know exactly how to code something for modified, we've also written documentation for developers. Have a look: https://docs.module-loader.de
+- You can discuss your idea with us on Discord. There is almost always someone online. Don't be afraid to write to us there.
+- Opening an issue on GitHub.
+- If you already have finished code, submit it as a PullRequest.
+
 ### Coding Style
 We are using:
 - [PSR-1: Basic Coding Standard](https://www.php-fig.org/psr/psr-1/)
