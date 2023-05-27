@@ -19,5 +19,4 @@ use Exception;
 
 class OrderException extends Exception
 {
-
 }

@@ -64,7 +64,7 @@ class Controller extends StdController
          * placed in the shop.
          */
         $phpSession = new PhpSession();
-        $sessionId = $phpSession->save();
+        $sessionId  = $phpSession->save();
 
         $order = $phpSession->getOrder();
         if (!$order) {
@@ -80,30 +80,30 @@ class Controller extends StdController
         $domain = HTTPS_SERVER;
 
 
-        $priceData = array(
-            'currency' => 'eur',
-            'unit_amount' => $order->getTotal() * 100, // Betrag in Cent (20,00 €)
-            'product_data' => array(
-                'name' => 'Einkauf bei demo-shop.de',
-                'description' => 'Bestellung von Max Mustermann am 01.01.2034'
-            )
-        );
+        $priceData = [
+            'currency'     => 'eur',
+            'unit_amount'  => $order->getTotal() * 100, // Betrag in Cent (20,00 €)
+            'product_data' => [
+                'name'        => 'Einkauf bei demo-shop.de',
+                'description' => 'Bestellung von Max Mustermann am 01.01.2034',
+            ]
+        ];
 
         /**
-         * Create is a Stripe checkout session object. Don't confuse it with a PHP session. Both use the same name.
+         * Creates a Stripe checkout session object. Don't confuse it with a PHP session. Both use the same name.
          *
          * @link https://stripe.com/docs/api/checkout/sessions/object
          */
         $checkoutSession = StripeSession::create([
-            'line_items' => [[
+            'line_items'  => [[
                 # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
                 //'price' => 'price_1NBDB1JIsfvAtVBddfc2gRn6',
                 'price_data' => $priceData,
-                'quantity' => 1,
+                'quantity'   => 1,
             ]],
-            'mode' => 'payment',
+            'mode'        => 'payment',
             'success_url' => $domain . '/success.html',
-            'cancel_url' => $domain . '/cancel.html',
+            'cancel_url'  => $domain . '/cancel.html',
         ]);
 
         header("HTTP/1.1 303 See Other");

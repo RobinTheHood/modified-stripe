@@ -18,7 +18,7 @@ include 'includes/application_top.php';
 
 $rthDevMode = true;
 
-if ($rthDevMode === true) {
+if (true === $rthDevMode) {
     restore_error_handler();
     restore_exception_handler();
     ini_set('display_errors', 1);

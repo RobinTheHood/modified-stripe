@@ -9,6 +9,8 @@
  * @author  Robin Wieschendorf <mail@robinwieschendorf.de>
  * @author  Jay Trees <stripe@grandels.email>
  * @link    https://github.com/RobinTheHood/modified-stripe/
+ *
+ * @phpcs:disable PSR1.Methods.CamelCapsMethodName
  */
 
 declare(strict_types=1);
@@ -20,11 +22,11 @@ use RobinTheHood\ModifiedStdModule\Classes\StdModule;
 /**
  * In this class we have outsourced everything that is not for a specific modified PaymentModule. The methods in
  * this class can be useful for all kinds of PaymentModule classes.
- * 
+ *
  * In addition, this class implements all methods that a payment module requires. This has the advantage that we
  * don't have to implement all the methods when we inherit from this PaymentModule class. We can only implement what
  * we need in a specific modified PaymentModule.
- * 
+ *
  * The class also implements the PaymentModuleInterface interface. This isn't technically necessary, but is good OOP
  * style.
  */
@@ -59,7 +61,7 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
     {
         return;
     }
-    
+
     /**
      * {@inheritdoc}
      */

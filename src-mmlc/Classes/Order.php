@@ -15,7 +15,8 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes;
 
-use order as ModifiedOrder; // modified class order. We do this, because Order with a capital O looks nicer than order with small o
+// modified class order. We do this, because Order with a capital O looks nicer than order with small o
+use order as ModifiedOrder;
 
 /**
  * We wrap the modified Order in our own Order object so we can write Order with a capital O, it just looks nicer.
@@ -33,7 +34,7 @@ class Order
         if (!$modifiedOrder) {
             throw new OrderException('Can not create Order. No modifed order object found.');
         }
-    
+
         $this->modifiedOrder = $modifiedOrder;
     }
 
@@ -45,7 +46,7 @@ class Order
     /**
      * This method returns a modified Order object only if the surrounding global code just created an $order. For
      * example in checkout_confirmation.php
-     * 
+     *
      * It's not nice that we work with global code, maybe that can be improved. First of all, it cannot be avoided.
      */
     public function loadModifiedOrder(): ?ModifiedOrder

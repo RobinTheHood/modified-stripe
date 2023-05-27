@@ -19,12 +19,12 @@ namespace RobinTheHood\Stripe\Classes;
  * We need to save the current PHP session, as it may have already expired if the customer takes a long time
  * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
  * placed in the shop.
- * 
+ *
  * The class should take over the task of saving and loading PHP session.
  */
 class Session
 {
-    private const SESSION_PREFIX = 'rth_stripe';
+    private const SESSION_PREFIX      = 'rth_stripe';
     private const SESSION_INDEX_ORDER = 'order';
 
     public function getOrder(): ?Order
@@ -71,6 +71,7 @@ class Session
     private function load(string $sessionId)
     {
         $sessionData = '';
+
         $_SESSION = unserialize($sessionData);
         // TODO ...
     }

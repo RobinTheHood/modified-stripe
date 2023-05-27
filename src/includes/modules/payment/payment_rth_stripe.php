@@ -12,6 +12,7 @@
  *
  * @phpcs:disable PSR1.Classes.ClassDeclaration.MissingNamespace
  * @phpcs:disable Squiz.Classes.ValidClassName.NotCamelCaps
+ * @phpcs:disable PSR1.Methods.CamelCapsMethodName
  */
 
 declare(strict_types=1);
@@ -100,7 +101,7 @@ class payment_rth_stripe extends PaymentModule
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * Overwrites StdPaymentModule::selection()
      *
      * Displays the Stripe payment option at checkout step 2 (checkout_payment.php)
@@ -111,8 +112,8 @@ class payment_rth_stripe extends PaymentModule
     public function selection(): array
     {
         $selectionArray = [
-            'id' => $this->code,
-            'module' => 'Stripe (RobinTheHood)',
+            'id'          => $this->code,
+            'module'      => 'Stripe (RobinTheHood)',
             'description' => 'Zahle mit Stripe'
         ];
 
@@ -121,13 +122,13 @@ class payment_rth_stripe extends PaymentModule
 
     /**
      * {@inheritdoc}
-     * 
+     *
      * Overwrites StdPaymentModule::process_button()
      *
      * This method is called in checkout_confirmation.php to display a button next to the "Buy Now" button. At this
      * point we save the order in the session, because in the next step rth_stripe.php we no longer have easy access
      * to the order. We can make life easier for ourselves if we already save the order in the session right now.
-     * 
+     *
      * @link https://docs.module-loader.de/module-payment/#process_button
      */
     public function process_button(): string

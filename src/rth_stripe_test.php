@@ -10,9 +10,10 @@ if (rth_is_module_disabled(Constants::MODULE_SYSTEM_NAME)) {
 }
 
 $stripe = new StripeClient('sk_test_BQokikJOvBiI2HlWgH4olfQ2');
+
 $customer = $stripe->customers->create([
-    'description' => 'example customer',
-    'email' => 'email@example.com',
+    'description'    => 'example customer',
+    'email'          => 'email@example.com',
     'payment_method' => 'pm_card_visa',
 ]);
 
