@@ -110,6 +110,16 @@ class Controller extends StdController
         header("Location: " . $checkoutSession->url);
     }
 
+    /**
+     * // TODO: move this to its own Webhook Controller
+     */
+    protected function invokeReceiveHook(): void
+    {
+        $payload = @file_get_contents('php://input');
+        file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
+        http_response_code(200);
+    }
+
     private function createHashFromOrder(Order $order): string
     {
         return '';
