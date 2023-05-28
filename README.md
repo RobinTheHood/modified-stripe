@@ -35,6 +35,24 @@ We are using:
 - [PSR-1: Basic Coding Standard](https://www.php-fig.org/psr/psr-1/)
 - [PSR-12: Extended Coding Style](https://www.php-fig.org/psr/psr-12/) with little changes. You can use only PSR-12 or see our ruleset.xml.
 
+### How the module works
+
+The module is a payment module that you as a shop owner can find under *Admin > Modules > Payment Modules*. This module is provided by class `payment_rth_stripe` in `src/includes/modules/payment/payment_rth_stripe.php`.
+
+During the checkout process, this class uses the `selection()` method to ensure that the buyer sees Stripe when selecting the payment options.
+
+In the order process step `checkout_confirmation.php`, the attribute `public $form_action_url = '/rth_stripe.php?action=checkout';` of the class `payment_rth_stripe` ensures that we go to our entry point file `rth_stripe.php` and not to `checkout_process.php > checkout_success.php` as it normally would.
+
+In `rth_stripe.php` we first create a controller `/src-mmlc/Classes/Controller.php`. The `invokeCheckout()` method is then automatically called in the controller, since the URL contains `.../rth_stripe.php?action=checkout`. Our controller automatically calls the right method for us via the action query parameter.
+
+In `invokeCheckout()` we create a strip checkout session using the strip lib (which we added to the project via composer) and redirect the buyer to stripe. When creating the stripe session, we can transmit the value of the shopping cart to Stripe and specify which pages Stripe should forward to if the payment was successful or unsuccessful.
+
+The buyer can now make their payment on the Stripe checkout page. After that, Stripe will redirect us back to `.../rth_stripe.php?action=success` or to `.../rth_stripe.php?action=cancel`.
+
+In the `invokeSuccess()` method of the controller we can now forward to `checkout_process.php > chekcout_success.php` so that the shop creates the order for us.
+
+In `invokeCancel()` we can inform the buyer that the payment didn't work.
+
 ### Version and Commit-Messages
 We are using:
 - [Semantic Versioning 2.0.0](https://semver.org)
