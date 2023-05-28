@@ -26,6 +26,22 @@ if (true === $rthDevMode) {
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL ^ E_NOTICE);
+
+    /** Two global helper functions dd and dump that make development a little easier for us in dev mode */
+    function dump(...$vars)
+    {
+        echo "<pre>\n";
+        foreach ($vars as $var) {
+            var_dump($var) . "\n";
+        }
+        echo "</pre>\n";
+    }
+
+    function dd(...$vars)
+    {
+        dump(...$vars);
+        die();
+    }
 }
 
 /**
