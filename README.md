@@ -37,7 +37,7 @@ We are using:
 
 ### Development Setup
 
-The Stripe module is a module that is installed via the MMLC.
+The Stripe module is a module that is installed via the MMLC (>= 1.21.0).
 
 1. Install the MMLC in your shop (https://module-loader.de)
 1. (optional) Put the MMLC in link mode (https://module-loader.de/docs/config_config.php#installMode)
