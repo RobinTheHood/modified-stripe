@@ -14,6 +14,13 @@
 
 use RobinTheHood\Stripe\Classes\{Controller, Constants};
 
+/**
+ * When Stripe tries to send a webhook to our script and the URL query parameter "action" is set, the
+ * application_top.php (in cart_actions.php) redirects to a "cookie-must-be-enabled" page. The Stripe Webhook cannot do
+ * anything with this. For this reason we use application_top_callback.php. This file doesn't do that. However, the
+ * files from includes/extra/functions/ that we need for autoloading are then not loaded either. Now we have to do that
+ * ourselves.
+ */
 include 'includes/application_top_callback.php';
 require_once DIR_FS_CATALOG . 'includes/extra/functions/composer_autoload.php';
 require_once DIR_FS_CATALOG . 'includes/extra/functions/rth_modified_std_module.php';
@@ -21,6 +28,7 @@ require_once DIR_FS_CATALOG . 'includes/extra/functions/rth_modified_std_module.
 $rthDevMode = true;
 
 if (true === $rthDevMode) {
+    /** Show all error messages in the browser.  */
     restore_error_handler();
     restore_exception_handler();
     ini_set('display_errors', 1);
@@ -45,10 +53,10 @@ if (true === $rthDevMode) {
 }
 
 /**
- * The function rth_is_module_disabled() is part of the StdModule. It is a helper to wrtie shorter code to check, if a
+ * The function rth_is_module_disabled() is part of the StdModule. It is a helper to write shorter code to check, if a
  * module is installed or not.
  *
- * @link //TODO Documentation link to StdModule
+ * @link // TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
  */
 if (rth_is_module_disabled(Constants::MODULE_PAYMENT_NAME)) {
