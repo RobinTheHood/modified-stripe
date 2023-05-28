@@ -25,7 +25,10 @@ We would be happy if you would like to take part in the development of this modu
 - If you don't know exactly how to code something for modified, we've also written documentation for developers. Have a look: https://docs.module-loader.de
 - You can discuss your idea with us on Discord. There is almost always someone online. Don't be afraid to write to us there.
 - Opening an issue on GitHub.
+- Or choose an issue you'd like to try. Let us know on the issue or on Discord that you're trying. This way we can help you and tasks are not processed twice.
 - If you already have finished code, submit it as a PullRequest.
+- Stripe has very good documentation. The module uses Stripe Checkout. The following website explains it clearly: https://stripe.com/docs/checkout/quickstart
+- To test the Stripe module, you can create a (normal) free account with Stripe. This account is in sandbox (developer) mode. You will receive a public and private key from Stripe to test Stripe in sandbox mode.
 
 ### Coding Style
 We are using:
