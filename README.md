@@ -53,20 +53,41 @@ We are using:
 - [Semantic Versioning 2.0.0](https://semver.org)
 - [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
-### Development Setup
+### Development Setup for Stripe and Modified Module Loader Client (MMLC)
 
-The Stripe module is a module that is installed via the MMLC (>= 1.21.0).
+To set up your development environment for Stripe and Modified Module Loader Client (MMLC), follow these steps:
 
-1. Install the MMLC in your shop (https://module-loader.de)
-1. (optional) Put the MMLC in link mode (https://module-loader.de/docs/config_config.php#installMode)
-1. Create the folder `SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/`
-1. Load the module into the MMLC folder `SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/stripe` using git or by hand
-1. Open your shop's MMLC in your browser search and install the `Stripe` module
-1. The MMLC reloads additional MMLC modules that the stripe module requires
-1. The MMLC links the files from `.../Modules/robinthehood/stripe/src/...` to `SHOP-ROOT/...`
-1. The MMLC links the files from `.../Modules/robinthehood/stripe/src-mmlc/...` to `SHOP-ROOT/vendor-mmlc/robinthehood/stripe/...`
+1. Install MMLC in your shop. You can download it from [module-loader.de](https://module-loader.de).
 
-If you create or delete a new file in the module, you must accept the changes in the MMLC so that the file is also linked to your shop.
+1. *(Optional)* Configure MMLC in link mode. Refer to the [MMLC documentation](https://module-loader.de/docs/config_config.php#installMode) for instructions on enabling link mode.
+
+1. Create the following folder structure within your shop's root directory:
+
+```
+SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/
+```
+
+1. Load the Stripe module into the MMLC folder:
+
+```
+SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/stripe
+```
+
+You can either clone the module using git or manually copy it into the specified location.
+
+1. Open your shop's MMLC in your browser and search for the Stripe module. Install it through the MMLC browser interface.
+
+1. The MMLC automatically loads any additional MMLC modules required by the Stripe module.
+
+1. The MMLC links or copies the files from `.../Modules/robinthehood/stripe/src/...` to `SHOP-ROOT/...`.
+
+1. The MMLC also links or copies the files from `.../Modules/robinthehood/stripe/src-mmlc/...` to `SHOP-ROOT/vendor-mmlc/robinthehood/stripe/...`.
+
+1. Whenever you create or delete a new file within the module, you must accept the changes in the MMLC browser interface. This ensures that the file is correctly linked or copied to your shop.
+
+By following these steps, you will have a fully set up development environment for working with the Stripe module and the Modified Module Loader Client (MMLC).
+
+If you have any further questions or need additional assistance, feel free to ask. Happy coding!
 
 
 ### How the Stripe Module Works
@@ -77,7 +98,7 @@ During the checkout process, the `selection()` method of the `payment_rth_stripe
 
 In the order process step `checkout_confirmation.php`, the `public $form_action_url = '/rth_stripe.php?action=checkout';` attribute of the `payment_rth_stripe` class directs the flow to our entry point file `rth_stripe.php`, instead of the default `checkout_process.php > checkout_success.php`.
 
-Within `rth_stripe.php`, we first instantiate a controller, `/src-mmlc/Classes/Controller.php`. The controller's `invokeCheckout()` method is automatically called since the URL contains `.../rth_stripe.php?action=checkout`. The controller determines the appropriate method to execute based on the provided action query parameter.
+Within `rth_stripe.php`, we first instantiate a controller, `src-mmlc/Classes/Controller.php`. The controller's `invokeCheckout()` method is automatically called since the URL contains `.../rth_stripe.php?action=checkout`. The controller determines the appropriate method to execute based on the provided action query parameter.
 
 In the `invokeCheckout()` method, we create a Stripe checkout session using the Stripe library (added to the project via Composer) and redirect the buyer to the Stripe platform. When setting up the Stripe session, we can transmit the shopping cart's value to Stripe and specify the success and failure pages to which Stripe should redirect.
 
