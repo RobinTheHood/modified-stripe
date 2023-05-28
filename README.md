@@ -35,6 +35,21 @@ We are using:
 - [PSR-1: Basic Coding Standard](https://www.php-fig.org/psr/psr-1/)
 - [PSR-12: Extended Coding Style](https://www.php-fig.org/psr/psr-12/) with little changes. You can use only PSR-12 or see our ruleset.xml.
 
+### Development Setup
+
+The Stripe module is a module that is installed via the MMLC.
+
+1. Install the MMLC in your shop (https://module-loader.de)
+1. (optional) Put the MMLC in link mode (https://module-loader.de/docs/config_config.php#installMode)
+1. Create the folder ``SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/`
+1. Load the module into the MMLC folder `SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/stripe` using git or by hand
+1. Open your shop's MMLC in your browser search and install the `Stripe` module
+1. The MMLC reloads additional MMLC modules that the stripe module requires
+1. The MMLC links the files from `.../Modules/robinthehood/stripe/src/...` to `SHOP-ROOT/...`
+1. The MMLC links the files from `.../Modules/robinthehood/stripe/src-mmlc/...` to `SHOP-ROOT/vendor-mmlc/robinthehood/stripe/...`
+
+If you create or delete a new file in the module, you must accept the changes in the MMLC so that the file is also linked to your shop.
+
 ### How the module works
 
 The module is a payment module that you as a shop owner can find under *Admin > Modules > Payment Modules*. This module is provided by class `payment_rth_stripe` in `src/includes/modules/payment/payment_rth_stripe.php`.
