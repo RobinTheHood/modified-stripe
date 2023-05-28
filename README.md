@@ -35,6 +35,11 @@ We are using:
 - [PSR-1: Basic Coding Standard](https://www.php-fig.org/psr/psr-1/)
 - [PSR-12: Extended Coding Style](https://www.php-fig.org/psr/psr-12/) with little changes. You can use only PSR-12 or see our ruleset.xml.
 
+### Version and Commit-Messages
+We are using:
+- [Semantic Versioning 2.0.0](https://semver.org)
+- [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+
 ### Development Setup
 
 The Stripe module is a module that is installed via the MMLC (>= 1.21.0).
@@ -67,11 +72,6 @@ The buyer can now make their payment on the Stripe checkout page. After that, St
 In the `invokeSuccess()` method of the controller we can now forward to `checkout_process.php > chekcout_success.php` so that the shop creates the order for us.
 
 In `invokeCancel()` we can inform the buyer that the payment didn't work.
-
-### Version and Commit-Messages
-We are using:
-- [Semantic Versioning 2.0.0](https://semver.org)
-- [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ## Support and Questions
 You can ask your questions on our [discord server](https://discord.gg/9NqwJqP).
