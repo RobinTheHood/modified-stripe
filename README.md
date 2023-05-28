@@ -41,7 +41,7 @@ The Stripe module is a module that is installed via the MMLC.
 
 1. Install the MMLC in your shop (https://module-loader.de)
 1. (optional) Put the MMLC in link mode (https://module-loader.de/docs/config_config.php#installMode)
-1. Create the folder ``SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/`
+1. Create the folder `SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/`
 1. Load the module into the MMLC folder `SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/stripe` using git or by hand
 1. Open your shop's MMLC in your browser search and install the `Stripe` module
 1. The MMLC reloads additional MMLC modules that the stripe module requires
