@@ -61,19 +61,9 @@ To set up your development environment for Stripe and Modified Module Loader Cli
 
 1. *(Optional)* Configure MMLC in link mode. Refer to the [MMLC documentation](https://module-loader.de/docs/config_config.php#installMode) for instructions on enabling link mode.
 
-1. Create the following folder structure within your shop's root directory:
+1. Create the following folder structure within your shop's root directory: `SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/`
 
-```
-SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/
-```
-
-1. Load the Stripe module into the MMLC folder:
-
-```
-SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/stripe
-```
-
-You can either clone the module using git or manually copy it into the specified location.
+1. Load the Stripe module into the MMLC folder: `SHOP-ROOT/ModifiedModuleLoaderClient/Modules/robinthehood/stripe`. You can either clone the module using git or manually copy it into the specified location.
 
 1. Open your shop's MMLC in your browser and search for the Stripe module. Install it through the MMLC browser interface.
 
@@ -83,7 +73,7 @@ You can either clone the module using git or manually copy it into the specified
 
 1. The MMLC also links or copies the files from `.../Modules/robinthehood/stripe/src-mmlc/...` to `SHOP-ROOT/vendor-mmlc/robinthehood/stripe/...`.
 
-1. Whenever you create or delete a new file within the module, you must accept the changes in the MMLC browser interface. This ensures that the file is correctly linked or copied to your shop.
+**NOTE:** Whenever you create or delete a new file within the module, you must accept the changes in the MMLC browser interface. This ensures that the file is correctly linked or copied to your shop.
 
 By following these steps, you will have a fully set up development environment for working with the Stripe module and the Modified Module Loader Client (MMLC).
 
@@ -94,19 +84,17 @@ If you have any further questions or need additional assistance, feel free to as
 
 The Stripe module is a payment module designed for modified shops, accessible through *Admin > Modules > Payment Modules*. It is implemented as the `payment_rth_stripe` class, located in `src/includes/modules/payment/payment_rth_stripe.php`.
 
-During the checkout process, the `selection()` method of the `payment_rth_stripe` class ensures that Stripe is displayed as a payment option for the buyer.
+1. During the checkout process, the `selection()` method of the `payment_rth_stripe` class ensures that Stripe is displayed as a payment option for the buyer.
 
-In the order process step `checkout_confirmation.php`, the `public $form_action_url = '/rth_stripe.php?action=checkout';` attribute of the `payment_rth_stripe` class directs the flow to our entry point file `rth_stripe.php`, instead of the default `checkout_process.php > checkout_success.php`.
+1. In the order process step `checkout_confirmation.php`, the `public $form_action_url = '/rth_stripe.php?action=checkout'` attribute of the `payment_rth_stripe` class directs the flow to our entry point file `rth_stripe.php`, instead of the default `checkout_process.php > checkout_success.php`.
 
-Within `rth_stripe.php`, we first instantiate a controller, `src-mmlc/Classes/Controller.php`. The controller's `invokeCheckout()` method is automatically called since the URL contains `.../rth_stripe.php?action=checkout`. The controller determines the appropriate method to execute based on the provided action query parameter.
+1. Within `rth_stripe.php`, we first instantiate a controller, `src-mmlc/Classes/Controller.php`. The controller's `invokeCheckout()` method is automatically called since the URL contains `.../rth_stripe.php?action=checkout`. The controller determines the appropriate method to execute based on the provided action query parameter.
 
-In the `invokeCheckout()` method, we create a Stripe checkout session using the Stripe library (added to the project via Composer) and redirect the buyer to the Stripe platform. When setting up the Stripe session, we can transmit the shopping cart's value to Stripe and specify the success and failure pages to which Stripe should redirect.
+1. In the `invokeCheckout()` method, we create a Stripe checkout session using the Stripe library (added to the project via Composer) and redirect the buyer to the Stripe platform. When setting up the Stripe session, we can transmit the shopping cart's value to Stripe and specify the success and failure pages to which Stripe should redirect.
 
-The buyer proceeds to make their payment on the Stripe checkout page. Subsequently, Stripe redirects us back to either `.../rth_stripe.php?action=success` or `.../rth_stripe.php?action=cancel`.
+1. The buyer proceeds to make their payment on the Stripe checkout page. Subsequently, Stripe redirects us back to either `.../rth_stripe.php?action=success` or `.../rth_stripe.php?action=cancel`.
 
-In the controller's `invokeSuccess()` method, we can forward to `checkout_process.php > checkout_success.php`, allowing the shop to create the order accordingly.
-
-The `invokeCancel()` method handles cases where the payment was unsuccessful, enabling us to inform the buyer about the issue.
+1. In the controller's `invokeSuccess()` method, we can forward to `checkout_process.php > checkout_success.php`, allowing the shop to create the order accordingly. The `invokeCancel()` method handles cases where the payment was unsuccessful, enabling us to inform the buyer about the issue.
 
 
 ## Support and Questions
