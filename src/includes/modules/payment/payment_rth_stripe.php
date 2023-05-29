@@ -69,23 +69,27 @@ class payment_rth_stripe extends PaymentModule
         // TODO: Register Webhook Endpoint
         // https://stripe.com/docs/webhooks/go-live
 
+        if ($this->hasWebhookEndpoint()) {
+            return;
+        }
+
         $config = new Configuration(self::NAME);
 
         \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
 
         $domain = HTTPS_SERVER;
 
-        if ($this->hasWebhookEndpoint()) {
-            return;
+        try {
+            $endpoint = WebhookEndpoint::create([
+                'url'            => $domain . '/rth_stripe?action=receiveHook',
+                'enabled_events' => [
+                    'charge.failed',
+                    'charge.succeeded',
+                ],
+            ]);
+        } catch (Exception $e) {
+            $this->addMessage($e->getMessage(), self::MESSAGE_ERROR);
         }
-
-        $endpoint = WebhookEndpoint::create([
-            'url'            => $domain . '/rth_stripe?action=receiveHook',
-            'enabled_events' => [
-                'charge.failed',
-                'charge.succeeded',
-            ],
-        ]);
     }
 
     public function install(): void
@@ -184,9 +188,12 @@ class payment_rth_stripe extends PaymentModule
     {
         $config = new Configuration(self::NAME);
 
-        \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
-
-        $endpoints = WebhookEndpoint::all();
+        try {
+            \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
+            $endpoints = WebhookEndpoint::all();
+        } catch (Exception $e) {
+            return false;
+        }
 
         if (!$endpoints['data']) {
             return false;
