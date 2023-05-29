@@ -24,7 +24,7 @@ use Stripe\Stripe;
 
 /**
  * The StdController can automatically forward requests to methods beginning with the invoke prefix via the ?action=
- * parameter in the URL. If action is empty or not set, invokeIndex() is called by default.
+ * query parameter in the URL. If action is empty or not set, invokeIndex() is called by default.
  * The entry point of this class is in file shop-root/rth_stripe.php
  *
  * @link //TODO Documentation link to StdModule
@@ -133,6 +133,11 @@ class Controller extends StdController
     {
         $payload = @file_get_contents('php://input');
         file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
+
+        // TODO: Check if the webhook comes from stripe.
+
+        // TODO: Change the status of the order (e.g. to paid)
+
         http_response_code(200);
     }
 
