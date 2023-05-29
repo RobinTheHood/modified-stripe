@@ -102,12 +102,28 @@ class Controller extends StdController
                 'quantity'   => 1,
             ]],
             'mode'        => 'payment',
-            'success_url' => $domain . '/success.html',
-            'cancel_url'  => $domain . '/cancel.html',
+            'success_url' => $domain . '/rth_stripe.php?action=success',
+            'cancel_url'  => $domain . '/rth_stripe.php?action=cancel',
         ]);
 
         header("HTTP/1.1 303 See Other");
         header("Location: " . $checkoutSession->url);
+    }
+
+    protected function invokeSuccess(): void
+    {
+        dd('The order was successfully paid.');
+
+        // TODO: Check if the order was realy paid, if possible
+        // TODO: Load the php session if the payment process took too long
+        // TODO: create the order
+    }
+
+    public function invokeCancel(): void
+    {
+        dd('The order could not be paid.');
+
+        // TODO: handle cancel
     }
 
     /**
