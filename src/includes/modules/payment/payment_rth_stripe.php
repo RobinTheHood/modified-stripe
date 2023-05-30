@@ -171,9 +171,9 @@ class payment_rth_stripe extends PaymentModule
      */
     public function process_button(): string
     {
-        $session = new Session();
-
         $order = new Order();
+
+        $session = new Session();
         $session->setOrder($order);
 
         // NOTE: Maybe the following code could be useful, that remains to be seen.
