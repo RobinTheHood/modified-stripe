@@ -140,7 +140,7 @@ class payment_rth_stripe extends PaymentModule
     /**
      * {@inheritdoc}
      *
-     * Overwrites StdPaymentModule::selection()
+     * Overwrites PaymentModule::selection()
      *
      * Displays the Stripe payment option at checkout step 2 (checkout_payment.php)
      * @link https://docs.module-loader.de/references/module-classes/concrete/payment/#selection
@@ -161,7 +161,7 @@ class payment_rth_stripe extends PaymentModule
     /**
      * {@inheritdoc}
      *
-     * Overwrites StdPaymentModule::process_button()
+     * Overwrites PaymentModule::process_button()
      *
      * This method is called in checkout_confirmation.php to display a button next to the "Buy Now" button. At this
      * point we save the order in the session, because in the next step rth_stripe.php we no longer have easy access
