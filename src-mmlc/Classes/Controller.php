@@ -154,7 +154,7 @@ class Controller extends StdController
         \Stripe\Stripe::setApiKey($this->config->apiSandboxSecret);
 
         // You can find your endpoint's secret in your webhook settings
-        $endpointSecret = 'whsec_7d66a166a5ac61787f238ebfdc60fa76d425277bde4f6db9159befbbdefd9e42';
+        $endpointSecret = 'whsec_';
 
         $payload   = @file_get_contents('php://input');
         $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'];
