@@ -63,7 +63,10 @@ class Session
         }
 
         $sessionData = serialize($_SESSION);
-        // TODO ...
+        $sessionData = base64_encode($sessionData);
+
+        $repo = new Repository();
+        $repo->insertRthStripePhpSession($sessionId, $sessionData);
 
         return $sessionId;
     }
@@ -71,16 +74,19 @@ class Session
     /**
      * The method should later load a PHP session from a database table.
      */
-    private function load(string $sessionId)
+    public function load(string $sessionId)
     {
-        $sessionData = '';
+        $repo = new Repository();
 
-        $_SESSION = unserialize($sessionData);
-        // TODO ...
+        $phpSession  = $repo->getRthStripePhpSessionById($sessionId);
+        $sessionData = base64_decode($phpSession['data']);
+        $session     = unserialize($sessionData);
+
+        $_SESSION = $session;
     }
 
     private function createSessionId(): string
     {
-        return uniqid();
+        return 'sid_' . uniqid();
     }
 }
