@@ -38,3 +38,12 @@ define($prefix . 'API_LIVE_SECRET_DESC', 'Verwenden Sie diesen Schlüssel, um An
 define($prefix . 'API_LIVE_KEY_TITLE', 'Veröffentlichbarer Schlüssel im Live-Modus');
 define($prefix . 'API_LIVE_KEY_DESC', 'Verwenden Sie diesen Schlüssel im clientseitigen Code Ihrer Web- oder Mobil-App, wenn Sie bereit sind, Ihre App zu starten.');
 /** */
+
+/**
+ * Checkout
+ */
+define($prefix . 'CHECKOUT_TITLE_TITLE', 'Checkout Titel');
+define($prefix . 'CHECKOUT_TITLE_DESC', 'Text der im Stripe checkout oben erscheint (wie z. B. <i>Einkauf bei demo-shop.de</i>).');
+define($prefix . 'CHECKOUT_DESC_TITLE', 'Checkout Beschreibung');
+define($prefix . 'CHECKOUT_DESC_DESC', 'Text der im Stripe checkout unten erscheint (wie z. B. <i>Bestellung von Max Mustermann am 01.01.2034</i>)');
+/** */

@@ -23,6 +23,36 @@ namespace RobinTheHood\Stripe\Classes;
  */
 class Field
 {
+    /**
+     * Returns the `setFunction` name for the specified `configurationKey`.
+     *
+     * Namespaces are encoded in base64 since the backward slashes will
+     * otherwise be removed before saving. The `setFunction` method will decode
+     * the namespaces and forward all data.
+     *
+     * @see PaymentModule::setFunction()
+     *
+     * @param string $class            The class name containing the
+     *                                 `setFunction`.
+     * @param string $configurationKey The key to get the `setFunction` value
+     *                                 for.
+     *
+     * @return string The `setFunction` name for the specified `configurationKey`.
+     */
+    public static function getSetFunction(string $configurationKey): string
+    {
+        $class            = substr(payment_rth_stripe::class, strlen(__NAMESPACE__) + 1);
+        $setFunction      = $class . '::setFunction(\'%s\',';
+        $setFunctionField = sprintf(
+            $setFunction,
+            base64_encode(
+                self::class . '::' .  $configurationKey
+            )
+        );
+
+        return $setFunctionField;
+    }
+
     public static function apiSandboxKey($value, $option): string
     {
         $pattern = '^(pk_test_[a-zA-Z0-9]+)?$';

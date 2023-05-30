@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule};
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Field};
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
@@ -47,6 +47,8 @@ class payment_rth_stripe extends PaymentModule
         'API_SANDBOX_SECRET',
         'API_LIVE_KEY',
         'API_LIVE_SECRET',
+        'CHECKOUT_TITLE',
+        'CHECKOUT_DESC',
     ];
 
     public function __construct()
@@ -96,23 +98,12 @@ class payment_rth_stripe extends PaymentModule
     {
         parent::install();
 
-        /**
-         * Namespaces are encoded in base64 since the backward slashes will
-         * otherwise be removed before saving. The `setFunction` method
-         * will decode the namespaces and forward all data.
-         *
-         * @see PaymentModule::setFunction()
-         */
-        $setFunctionField                 = self::class . '::setFunction(\'%s\',';
-        $setFunctionFieldapiSandboxKey    = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxKey'));
-        $setFunctionFieldapiSandboxSecret = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxSecret'));
-        $setFunctionFieldapiLiveKey       = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveKey'));
-        $setFunctionFieldapiLiveSecret    = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveSecret'));
-
-        $this->addConfiguration('API_SANDBOX_KEY', '', 6, 1, $setFunctionFieldapiSandboxKey);
-        $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, $setFunctionFieldapiSandboxSecret);
-        $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
-        $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
+        $this->addConfiguration('API_SANDBOX_KEY', '', 6, 1, Field::getSetFunction('apiSandboxKey'));
+        $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, Field::getSetFunction('apiSandboxSecret'));
+        $this->addConfiguration('API_LIVE_KEY', '', 6, 1, Field::getSetFunction('apiLiveKey'));
+        $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, Field::getSetFunction('apiLiveSecret'));
+        $this->addConfiguration('CHECKOUT_TITLE', 'Einkauf bei demo-shop.de', 6, 1);
+        $this->addConfiguration('CHECKOUT_DESC', 'Bestellung von Max Mustermann am 01.01.203', 6, 1);
     }
 
     public function remove(): void

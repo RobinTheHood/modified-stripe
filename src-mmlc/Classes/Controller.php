@@ -84,8 +84,8 @@ class Controller extends StdController
             'currency'     => 'eur',
             'unit_amount'  => $order->getTotal() * 100, // Betrag in Cent (20,00 €)
             'product_data' => [
-                'name'        => 'Einkauf bei demo-shop.de',
-                'description' => 'Bestellung von Max Mustermann am 01.01.2034',
+                'name'        => $this->config->checkoutTitle,
+                'description' => $this->config->checkoutDesc,
             ]
         ];
 
