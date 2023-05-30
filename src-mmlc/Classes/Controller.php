@@ -130,22 +130,23 @@ class Controller extends StdController
         //var_dump($_GET['session_id']);
 
         try {
-            $session  = $stripe->checkout->sessions->retrieve($_GET['session_id']);
+            $session = $stripe->checkout->sessions->retrieve($_GET['session_id']);
             //dd($session);
             //$customer = $stripe->customers->retrieve($session->customer);
             //echo "<h1>Thanks for your order, $customer->name!</h1>";
             //http_response_code(200);
             //dd('The order was successfully paid.');
+
+            // TODO: Check if the order was realy paid, if possible
+            // TODO: Load the php session if the payment process took too long
+
+            // create the order
             xtc_redirect('/checkout_process.php');
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
             dd('Invalid session.');
         }
-
-        // TODO: Check if the order was realy paid, if possible
-        // TODO: Load the php session if the payment process took too long
-        // TODO: create the order
     }
 
     public function invokeCancel(): void

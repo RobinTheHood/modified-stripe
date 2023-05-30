@@ -184,6 +184,18 @@ class payment_rth_stripe extends PaymentModule
         return '';
     }
 
+    public function after_process(): void
+    {
+        global $order;
+        global $xtPrice;
+        global $language;
+        global $insert_id; // This must be the id of the new order
+
+        // NOTE: After the order is created, we could double-check that the order was paid by getting Stripe's
+        // NOTE: CheckoutSession and looking at the payment_status field.
+        // NOTE: https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-payment_status
+    }
+
     private function hasWebhookEndpoint(): bool
     {
         $config = new Configuration(self::NAME);
