@@ -24,7 +24,7 @@ use Stripe\Stripe;
 
 /**
  * The StdController can automatically forward requests to methods beginning with the invoke prefix via the ?action=
- * parameter in the URL. If action is empty or not set, invokeIndex() is called by default.
+ * query parameter in the URL. If action is empty or not set, invokeIndex() is called by default.
  * The entry point of this class is in file shop-root/rth_stripe.php
  *
  * @link //TODO Documentation link to StdModule
@@ -102,12 +102,28 @@ class Controller extends StdController
                 'quantity'   => 1,
             ]],
             'mode'        => 'payment',
-            'success_url' => $domain . '/success.html',
-            'cancel_url'  => $domain . '/cancel.html',
+            'success_url' => $domain . '/rth_stripe.php?action=success',
+            'cancel_url'  => $domain . '/rth_stripe.php?action=cancel',
         ]);
 
         header("HTTP/1.1 303 See Other");
         header("Location: " . $checkoutSession->url);
+    }
+
+    protected function invokeSuccess(): void
+    {
+        dd('The order was successfully paid.');
+
+        // TODO: Check if the order was realy paid, if possible
+        // TODO: Load the php session if the payment process took too long
+        // TODO: create the order
+    }
+
+    public function invokeCancel(): void
+    {
+        dd('The order could not be paid.');
+
+        // TODO: handle cancel
     }
 
     /**
@@ -117,6 +133,11 @@ class Controller extends StdController
     {
         $payload = @file_get_contents('php://input');
         file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
+
+        // TODO: Check if the webhook comes from stripe.
+
+        // TODO: Change the status of the order (e.g. to paid)
+
         http_response_code(200);
     }
 

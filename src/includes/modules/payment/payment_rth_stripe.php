@@ -69,23 +69,27 @@ class payment_rth_stripe extends PaymentModule
         // TODO: Register Webhook Endpoint
         // https://stripe.com/docs/webhooks/go-live
 
+        if ($this->hasWebhookEndpoint()) {
+            return;
+        }
+
         $config = new Configuration(self::NAME);
 
         \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
 
         $domain = HTTPS_SERVER;
 
-        if ($this->hasWebhookEndpoint()) {
-            return;
+        try {
+            $endpoint = WebhookEndpoint::create([
+                'url'            => $domain . '/rth_stripe?action=receiveHook',
+                'enabled_events' => [
+                    'charge.failed',
+                    'charge.succeeded',
+                ],
+            ]);
+        } catch (Exception $e) {
+            $this->addMessage($e->getMessage(), self::MESSAGE_ERROR);
         }
-
-        $endpoint = WebhookEndpoint::create([
-            'url'            => $domain . '/rth_stripe?action=receiveHook',
-            'enabled_events' => [
-                'charge.failed',
-                'charge.succeeded',
-            ],
-        ]);
     }
 
     public function install(): void
@@ -105,10 +109,10 @@ class payment_rth_stripe extends PaymentModule
         $setFunctionFieldapiLiveKey       = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveKey'));
         $setFunctionFieldapiLiveSecret    = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveSecret'));
 
-        $this->addConfiguration('API_SANDBOX_KEY', 'pk_test_f3duw0VsAEM2TJFMtWQ90QAT', 6, 1, $setFunctionFieldapiSandboxKey);
-        $this->addConfiguration('API_SANDBOX_SECRET', 'sk_test_Y17KokhC3SRYCQTLYiU5ZCD2', 6, 1, $setFunctionFieldapiSandboxSecret);
-        $this->addConfiguration('API_LIVE_KEY', 'pk_f3duw0VsAEM2TJFMtWQ90QAT', 6, 1, $setFunctionFieldapiLiveKey);
-        $this->addConfiguration('API_LIVE_SECRET', 'sk_Y17KokhC3SRYCQTLYiU5ZCD2', 6, 1, $setFunctionFieldapiLiveSecret);
+        $this->addConfiguration('API_SANDBOX_KEY', '', 6, 1, $setFunctionFieldapiSandboxKey);
+        $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, $setFunctionFieldapiSandboxSecret);
+        $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
+        $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
     }
 
     public function remove(): void
@@ -184,9 +188,12 @@ class payment_rth_stripe extends PaymentModule
     {
         $config = new Configuration(self::NAME);
 
-        \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
-
-        $endpoints = WebhookEndpoint::all();
+        try {
+            \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
+            $endpoints = WebhookEndpoint::all();
+        } catch (Exception $e) {
+            return false;
+        }
 
         if (!$endpoints['data']) {
             return false;

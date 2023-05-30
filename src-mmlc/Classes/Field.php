@@ -25,11 +25,11 @@ class Field
 {
     public static function apiSandboxKey($value, $option): string
     {
-        $pattern = '^pk_test_[a-zA-Z0-9]+$';
+        $pattern = '^(pk_test_[a-zA-Z0-9]+)?$';
 
         ob_start()
         ?>
-        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" />
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="pk_test_..."/>
         <?php
         $field = ob_get_clean();
 
@@ -38,11 +38,11 @@ class Field
 
     public static function apiSandboxSecret($value, $option): string
     {
-        $pattern = '^sk_test_[a-zA-Z0-9]+$';
+        $pattern = '^(sk_test_[a-zA-Z0-9]+)?$';
 
         ob_start()
         ?>
-        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" />
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="sk_test_..."/>
         <?php
         $field = ob_get_clean();
 
@@ -55,11 +55,11 @@ class Field
          * Once we know how the live api key looks, we can make this regex
          * more precise.
          */
-        $pattern = '[a-zA-Z_0-9]+';
+        $pattern = '^(pk_live_[a-zA-Z_0-9]+)?$';
 
         ob_start()
         ?>
-        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" />
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="pk_live_..."/>
         <?php
         $field = ob_get_clean();
 
@@ -72,11 +72,11 @@ class Field
          * Once we know how the live api secret looks, we can make this regex
          * more precise.
          */
-        $pattern = '[a-zA-Z_0-9]+';
+        $pattern = '^(sk_live_[a-zA-Z_0-9]+)?$';
 
         ob_start()
         ?>
-        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" />
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="sk_live_..."/>
         <?php
         $field = ob_get_clean();
 
