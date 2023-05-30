@@ -72,6 +72,10 @@
 				"label": "module"
 			},
 			{
+				"value": "settings",
+				"label": "settings"
+			},
+			{
 				"value": "",
 				"label": "none"
 			}
