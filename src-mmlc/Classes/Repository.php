@@ -20,6 +20,17 @@ namespace RobinTheHood\Stripe\Classes;
  */
 class Repository
 {
+    public function createRthStripePhpSession()
+    {
+        xtc_db_query("CREATE TABLE `rth_stripe_php_session` (
+            `id` varchar(32) NOT NULL,
+            `created` datetime DEFAULT NULL,
+            `data` longtext DEFAULT NULL,
+            PRIMARY KEY (`id`)
+          );
+        ");
+    }
+
     public function getRthStripePhpSessionById(string $id)
     {
         $sql = "SELECT * FROM rth_stripe_php_session WHERE id='$id'";

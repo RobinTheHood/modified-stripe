@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule};
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository};
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
@@ -114,13 +114,8 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
         $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
 
-        xtc_db_query("CREATE TABLE `rth_stripe_php_session` (
-            `id` varchar(32) NOT NULL,
-            `created` datetime DEFAULT NULL,
-            `data` longtext DEFAULT NULL,
-            PRIMARY KEY (`id`)
-          );
-        ");
+        $repo = new Repository();
+        $repo->createRthStripePhpSession();
     }
 
     public function remove(): void
