@@ -83,7 +83,7 @@ class Controller extends StdController
         header('Content-Type: application/json');
 
         $domain       = HTTPS_SERVER;
-        $languageCode = strtoupper($_SESSION['language_code']) ?? 'EN';
+        $languageCode = strtoupper($_SESSION['language_code'] ?? 'en');
 
         $configurationCheckoutTitle = constant(Constants::MODULE_PAYMENT_NAME . '_CHECKOUT_TITLE_' . $languageCode);
         $configurationCheckoutDesc  = constant(Constants::MODULE_PAYMENT_NAME . '_CHECKOUT_DESC_' . $languageCode);
