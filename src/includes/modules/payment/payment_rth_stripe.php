@@ -19,6 +19,7 @@ declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Field};
+use RobinTheHood\Stripe\Classes\Configuration\Checkout;
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
@@ -47,15 +48,12 @@ class payment_rth_stripe extends PaymentModule
         'API_SANDBOX_SECRET',
         'API_LIVE_KEY',
         'API_LIVE_SECRET',
-        'CHECKOUT_TITLE',
-        'CHECKOUT_DESC',
     ];
 
     public function __construct()
     {
         parent::__construct(self::NAME);
         $this->checkForUpdate(true);
-        $this->addKeys(self::$configurationKeys);
 
         if ($this->hasWebhookEndpoint()) {
             $buttonText = 'Stripe Webhook entfernen';
@@ -64,6 +62,15 @@ class payment_rth_stripe extends PaymentModule
             $buttonText = 'Stripe Webhook hinzufügen';
             $this->addAction('connect', $buttonText);
         }
+
+        Checkout::setLanguageConstants();
+
+        self::$configurationKeys = array_merge(
+            self::$configurationKeys,
+            Checkout::getConfigurationKeys()
+        );
+
+        $this->addKeys(self::$configurationKeys);
     }
 
     public function invokeConnect()
@@ -102,8 +109,12 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, Field::getSetFunction('apiSandboxSecret'));
         $this->addConfiguration('API_LIVE_KEY', '', 6, 1, Field::getSetFunction('apiLiveKey'));
         $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, Field::getSetFunction('apiLiveSecret'));
-        $this->addConfiguration('CHECKOUT_TITLE', 'Einkauf bei demo-shop.de', 6, 1);
-        $this->addConfiguration('CHECKOUT_DESC', 'Bestellung von Max Mustermann am 01.01.203', 6, 1);
+
+        foreach (Checkout::getConfigurationKeys() as $configurationKey) {
+            $configurationValue = Checkout::getConfigurationValue($configurationKey);
+
+            $this->addConfiguration($configurationKey, $configurationValue, 6, 1);
+        }
     }
 
     public function remove(): void

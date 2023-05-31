@@ -82,15 +82,18 @@ class Controller extends StdController
         Stripe::setApiKey($this->config->apiSandboxSecret);
         header('Content-Type: application/json');
 
-        $domain = HTTPS_SERVER;
+        $domain       = HTTPS_SERVER;
+        $languageCode = strtoupper($_SESSION['language_code']) ?? 'EN';
 
+        $configurationCheckoutTitle = constant(Constants::MODULE_PAYMENT_NAME . '_CHECKOUT_TITLE_' . $languageCode);
+        $configurationCheckoutDesc  = constant(Constants::MODULE_PAYMENT_NAME . '_CHECKOUT_DESC_' . $languageCode);
 
         $priceData = [
             'currency'     => 'eur',
             'unit_amount'  => $order->getTotal() * 100, // Betrag in Cent (20,00 €)
             'product_data' => [
-                'name'        => $this->config->checkoutTitle,
-                'description' => $this->config->checkoutDesc,
+                'name'        => $configurationCheckoutTitle,
+                'description' => $configurationCheckoutDesc,
             ]
         ];
 
