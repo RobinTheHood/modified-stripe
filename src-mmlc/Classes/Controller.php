@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes;
 
+use Exception;
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\ModifiedStdModule\Classes\StdController;
 use RobinTheHood\Stripe\Classes\Constants;
@@ -55,9 +56,13 @@ class Controller extends StdController
      *
      * @see /includes/modules/payment/payment_rth_stripe.php $form_action_url
      * @link https://stripe.com/docs/checkout/quickstart
+     * @link https://stripe.com/docs/payments/checkout/custom-success-page
      */
     protected function invokeCheckout(): void
     {
+        require_once DIR_WS_FUNCTIONS . 'sessions.php';
+        include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
+
         /**
          * We need to save the current PHP session, as it may have already expired if the customer takes a long time
          * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
@@ -102,7 +107,7 @@ class Controller extends StdController
                 'quantity'   => 1,
             ]],
             'mode'        => 'payment',
-            'success_url' => $domain . '/rth_stripe.php?action=success',
+            'success_url' => $domain . '/rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'  => $domain . '/rth_stripe.php?action=cancel',
         ]);
 
@@ -112,11 +117,36 @@ class Controller extends StdController
 
     protected function invokeSuccess(): void
     {
-        dd('The order was successfully paid.');
+        require_once DIR_WS_FUNCTIONS . 'sessions.php';
+        include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
 
-        // TODO: Check if the order was realy paid, if possible
-        // TODO: Load the php session if the payment process took too long
-        // TODO: create the order
+        $stripe = new \Stripe\StripeClient($this->config->apiSandboxSecret);
+
+        //$phpSession = new PhpSession();
+        //$order = $phpSession->getOrder();
+        //dd($order);
+
+        //client_reference_id
+        //var_dump($_GET['session_id']);
+
+        try {
+            $session = $stripe->checkout->sessions->retrieve($_GET['session_id']);
+            //dd($session);
+            //$customer = $stripe->customers->retrieve($session->customer);
+            //echo "<h1>Thanks for your order, $customer->name!</h1>";
+            //http_response_code(200);
+            //dd('The order was successfully paid.');
+
+            // TODO: Check if the order was realy paid, if possible
+            // TODO: Load the php session if the payment process took too long
+
+            // create the order
+            xtc_redirect('/checkout_process.php');
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+            dd('Invalid session.');
+        }
     }
 
     public function invokeCancel(): void

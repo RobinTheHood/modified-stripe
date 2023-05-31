@@ -131,7 +131,7 @@ class payment_rth_stripe extends PaymentModule
     /**
      * {@inheritdoc}
      *
-     * Overwrites StdPaymentModule::selection()
+     * Overwrites PaymentModule::selection()
      *
      * Displays the Stripe payment option at checkout step 2 (checkout_payment.php)
      * @link https://docs.module-loader.de/references/module-classes/concrete/payment/#selection
@@ -152,7 +152,7 @@ class payment_rth_stripe extends PaymentModule
     /**
      * {@inheritdoc}
      *
-     * Overwrites StdPaymentModule::process_button()
+     * Overwrites PaymentModule::process_button()
      *
      * This method is called in checkout_confirmation.php to display a button next to the "Buy Now" button. At this
      * point we save the order in the session, because in the next step rth_stripe.php we no longer have easy access
@@ -162,9 +162,9 @@ class payment_rth_stripe extends PaymentModule
      */
     public function process_button(): string
     {
-        $session = new Session();
-
         $order = new Order();
+
+        $session = new Session();
         $session->setOrder($order);
 
         // NOTE: Maybe the following code could be useful, that remains to be seen.
@@ -173,6 +173,18 @@ class payment_rth_stripe extends PaymentModule
         // return $hiddenInputHtml;
 
         return '';
+    }
+
+    public function after_process(): void
+    {
+        global $order;
+        global $xtPrice;
+        global $language;
+        global $insert_id; // This must be the id of the new order
+
+        // NOTE: After the order is created, we could double-check that the order was paid by getting Stripe's
+        // NOTE: CheckoutSession and looking at the payment_status field.
+        // NOTE: https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-payment_status
     }
 
     private function hasWebhookEndpoint(): bool
