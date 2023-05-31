@@ -63,6 +63,8 @@ class Controller extends StdController
         require_once DIR_WS_FUNCTIONS . 'sessions.php';
         include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
 
+        $domain = HTTPS_SERVER;
+
         /**
          * We need to save the current PHP session, as it may have already expired if the customer takes a long time
          * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
@@ -75,9 +77,6 @@ class Controller extends StdController
         if (!$order) {
             die('Can not create a Stripe session because we have no order Obj');
         }
-
-        // var_dump($order);
-        // die();
 
         Stripe::setApiKey($this->config->apiSandboxSecret);
         header('Content-Type: application/json');
@@ -103,15 +102,14 @@ class Controller extends StdController
          * @link https://stripe.com/docs/api/checkout/sessions/object
          */
         $checkoutSession = StripeSession::create([
-            'line_items'  => [[
-                # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
-                //'price' => 'price_1NBDB1JIsfvAtVBddfc2gRn6',
+            'line_items'          => [[
                 'price_data' => $priceData,
                 'quantity'   => 1,
             ]],
-            'mode'        => 'payment',
-            'success_url' => $domain . '/rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url'  => $domain . '/rth_stripe.php?action=cancel',
+            'client_reference_id' => $sessionId,
+            'mode'                => 'payment',
+            'success_url'         => $domain . '/rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url'          => $domain . '/rth_stripe.php?action=cancel',
         ]);
 
         header("HTTP/1.1 303 See Other");
@@ -125,20 +123,12 @@ class Controller extends StdController
 
         $stripe = new \Stripe\StripeClient($this->config->apiSandboxSecret);
 
-        //$phpSession = new PhpSession();
-        //$order = $phpSession->getOrder();
-        //dd($order);
-
-        //client_reference_id
-        //var_dump($_GET['session_id']);
-
         try {
-            $session = $stripe->checkout->sessions->retrieve($_GET['session_id']);
-            //dd($session);
-            //$customer = $stripe->customers->retrieve($session->customer);
-            //echo "<h1>Thanks for your order, $customer->name!</h1>";
-            //http_response_code(200);
-            //dd('The order was successfully paid.');
+            $session      = $stripe->checkout->sessions->retrieve($_GET['session_id']);
+            $phpSessionId = $session->client_reference_id;
+
+            $phpSession = new PhpSession();
+            $phpSession->load($phpSessionId);
 
             // TODO: Check if the order was realy paid, if possible
             // TODO: Load the php session if the payment process took too long
@@ -164,12 +154,33 @@ class Controller extends StdController
      */
     protected function invokeReceiveHook(): void
     {
-        $payload = @file_get_contents('php://input');
-        file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
+        //$payload = @file_get_contents('php://input');
+        //file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
 
-        // TODO: Check if the webhook comes from stripe.
+        \Stripe\Stripe::setApiKey($this->config->apiSandboxSecret);
+
+        // You can find your endpoint's secret in your webhook settings
+        $endpointSecret = 'whsec_';
+
+        $payload   = @file_get_contents('php://input');
+        $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+        $event     = null;
+
+        try {
+            $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
+        } catch (\UnexpectedValueException $e) {
+            // Invalid payload
+            http_response_code(400);
+            exit();
+        } catch (\Stripe\Exception\SignatureVerificationException $e) {
+            // Invalid signature
+            http_response_code(400);
+            exit();
+        }
 
         // TODO: Change the status of the order (e.g. to paid)
+        file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
+        file_put_contents('stripe_webhook_log.txt', print_r($event, true), FILE_APPEND);
 
         http_response_code(200);
     }

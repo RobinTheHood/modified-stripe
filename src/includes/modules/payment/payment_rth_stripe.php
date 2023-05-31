@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Field};
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository, Field};
 use RobinTheHood\Stripe\Classes\Configuration\Checkout;
 use Stripe\WebhookEndpoint;
 
@@ -115,6 +115,9 @@ class payment_rth_stripe extends PaymentModule
 
             $this->addConfiguration($configurationKey, $configurationValue, 6, 1);
         }
+
+        $repo = new Repository();
+        $repo->createRthStripePhpSession();
     }
 
     public function remove(): void
