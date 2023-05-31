@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes;
 
+use Exception;
+
 /**
  * We need to save the current PHP session, as it may have already expired if the customer takes a long time
  * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
@@ -54,7 +56,7 @@ class Session
     }
 
     /**
-     * The method should later save the current PHP session in a database table
+     * The method saves the current PHP session to the database
      */
     public function save(string $sessionId = ''): string
     {
@@ -63,24 +65,42 @@ class Session
         }
 
         $sessionData = serialize($_SESSION);
-        // TODO ...
+        $sessionData = base64_encode($sessionData);
+
+        $repo = new Repository();
+        $repo->insertRthStripePhpSession($sessionId, $sessionData);
 
         return $sessionId;
     }
 
     /**
-     * The method should later load a PHP session from a database table.
+     * The method loads a PHP session from the database.
      */
-    private function load(string $sessionId)
+    public function load(string $sessionId)
     {
-        $sessionData = '';
+        $repo = new Repository();
 
-        $_SESSION = unserialize($sessionData);
-        // TODO ...
+        $phpSession = $repo->getRthStripePhpSessionById($sessionId);
+        if (!$phpSession) {
+            throw new Exception("Can not find PhpSession with id: $sessionId");
+        }
+
+        if (!$phpSession['data']) {
+            throw new Exception("PhpSession $sessionId is empty");
+        }
+
+        $sessionData = base64_decode($phpSession['data']);
+        $session     = unserialize($sessionData);
+
+        if ($session) {
+            throw new Exception("Can not unserialize PhpSession with id: $sessionId");
+        }
+
+        $_SESSION = $session;
     }
 
     private function createSessionId(): string
     {
-        return uniqid();
+        return 'sid_' . uniqid();
     }
 }

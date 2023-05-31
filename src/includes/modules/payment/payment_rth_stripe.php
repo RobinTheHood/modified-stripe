@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule};
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository};
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
@@ -113,6 +113,9 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, $setFunctionFieldapiSandboxSecret);
         $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
         $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
+
+        $repo = new Repository();
+        $repo->createRthStripePhpSession();
     }
 
     public function remove(): void
