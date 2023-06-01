@@ -55,4 +55,20 @@ class Repository
 
         xtc_db_query($sql);
     }
+
+    public function updateOrderStatus(int $orderId, int $statusId): void
+    {
+        $sql = "UPDATE `orders` SET `orders_status` = '$statusId', `last_modified` = NOW() WHERE orders_id = '$orderId'";
+        xtc_db_query($sql);
+    }
+
+    public function insertOrderStatusHistory(int $orderId, int $statusId, string $comment = '')
+    {
+        $sql = "INSERT INTO orders_status_history (
+            `orders_id`, `orders_status_id`, `date_added`, `customer_notified`, `comments`, `comments_sent`
+        ) VALUES (
+            '$orderId', '$statusId', NOW(), '0', '$comment', '0'
+        )";
+        xtc_db_query($sql);
+    }
 }
