@@ -21,6 +21,7 @@ use RobinTheHood\ModifiedStdModule\Classes\StdController;
 use RobinTheHood\Stripe\Classes\Constants;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use Stripe\Checkout\Session as StripeSession;
+use Stripe\Event;
 use Stripe\Stripe;
 
 /**
@@ -179,8 +180,35 @@ class Controller extends StdController
         http_response_code(200);
     }
 
-    private function createHashFromOrder(Order $order): string
+    private function handleEventCheckoutSessionCompleted(Event $event)
     {
-        return '';
+        $newOrderStatusId = 1; // TODO: Make this configurable via the module settings
+
+        $session           = $event->data->object;
+        $clientReferenceId = $session->client_reference_id;
+        $phpSessionId      = $clientReferenceId;
+
+        if ('paid' !== $session->payment_status) {
+            return;
+        }
+
+        try {
+            $phpSession = new PhpSession();
+            $phpSession->load($phpSessionId);
+        } catch (Exception $e) {
+            error_log('Can not handle stripe event checkout.session.completed - ' . $e->getMessage());
+            die();
+        }
+
+        $orderId = $phpSession->getOrderId();
+
+        if (!$orderId) {
+            error_log('Can not handle stripe event checkout.session.completed - orderId is 0');
+            die();
+        }
+
+        $repo = new Repository();
+        $repo->updateOrderStatus($orderId, $newOrderStatusId);
+        $repo->insertOrderStatusHistory($orderId, $newOrderStatusId);
     }
 }
