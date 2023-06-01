@@ -84,7 +84,7 @@ class Controller extends StdController
 
         $priceData = [
             'currency'     => 'eur',
-            'unit_amount'  => $order->getTotal() * 100, // Betrag in Cent (20,00 €)
+            'unit_amount'  => $order->getTotal() * 100, // Value in Cent
             'product_data' => [
                 'name'        => 'Einkauf bei demo-shop.de',
                 'description' => 'Bestellung von Max Mustermann am 01.01.2034',
@@ -150,9 +150,6 @@ class Controller extends StdController
      */
     protected function invokeReceiveHook(): void
     {
-        //$payload = @file_get_contents('php://input');
-        //file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
-
         \Stripe\Stripe::setApiKey($this->config->apiSandboxSecret);
 
         // You can find your endpoint's secret in your webhook settings
@@ -174,9 +171,7 @@ class Controller extends StdController
             exit();
         }
 
-        // TODO: Change the status of the order (e.g. to paid)
         file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
-        //file_put_contents('stripe_webhook_log.txt', print_r($event, true), FILE_APPEND);
 
         if ('checkout.session.completed' === $event->type) {
             $this->handleEventCheckoutSessionCompleted($event);
@@ -185,7 +180,12 @@ class Controller extends StdController
         http_response_code(200);
     }
 
-    private function handleEventCheckoutSessionCompleted(Event $event)
+    /**
+     * Handles the Strip WebHook Even checkout.session.completed
+     *
+     * @param Event $event A Strip Event
+     */
+    private function handleEventCheckoutSessionCompleted(Event $event): void
     {
         $newOrderStatusId = 1; // TODO: Make this configurable via the module settings
 
