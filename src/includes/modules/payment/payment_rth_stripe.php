@@ -28,10 +28,18 @@ class payment_rth_stripe extends PaymentModule
 
     /**
      * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)
+     * Because we set $tmpOrders true, checkout_process.php fist creates a temp Order
      *
      * @var string $form_action_url
      */
     public $form_action_url = '/rth_stripe.php?action=checkout';
+
+    /**
+     * If $tmpOrders is true, checkout_process.php creates a temp Order.
+     *
+     * @var bool $tmpOrders
+     */
+    public $tmpOrders = true;
 
     /**
      * Configuration keys which are automatically added/removed on
@@ -162,6 +170,9 @@ class payment_rth_stripe extends PaymentModule
     }
 
     /**
+     * // TODO: Because we are switching to temporary orders, this method is no longer necessary in this form and
+     * // TODO: can be revised.
+     *
      * {@inheritdoc}
      *
      * Overwrites PaymentModule::process_button()
