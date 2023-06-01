@@ -28,7 +28,7 @@ class payment_rth_stripe extends PaymentModule
 
     /**
      * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)
-     * Because we set $tmpOrders true, checkout_process.php fist creates a temp Order
+     * Because we set $tmpOrders true, checkout_process.php first creates a temp Order
      *
      * @var string $form_action_url
      */
