@@ -105,6 +105,7 @@ class Controller extends StdController
             'mode'                => 'payment',
             'success_url'         => $domain . '/rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'          => $domain . '/rth_stripe.php?action=cancel',
+            'expires_at'          => time() + (3600 * 0.5) // Configured to expire after 30 minutes
         ]);
 
         header("HTTP/1.1 303 See Other");
