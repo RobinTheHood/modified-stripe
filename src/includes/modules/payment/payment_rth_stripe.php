@@ -203,8 +203,16 @@ class payment_rth_stripe extends PaymentModule
         return '';
     }
 
+    /**
+     * This method is only called when checkout_process.php creates a temporary order. The method
+     * is used by checkout_process.php after creating the order and before notifying the customer
+     * If we make a redirect in the method, the customer will not be notified for the time being.
+     * However, the Order Status History noted that the customer was notified. We need to correct the entry in Order
+     * Status History here
+     */
     public function payment_action(): void
     {
+        // TODO: Correct the entry in Order Status History, see also method description.
         xtc_redirect($this->form_action_url);
     }
 
