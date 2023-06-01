@@ -175,7 +175,11 @@ class Controller extends StdController
 
         // TODO: Change the status of the order (e.g. to paid)
         file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
-        file_put_contents('stripe_webhook_log.txt', print_r($event, true), FILE_APPEND);
+        //file_put_contents('stripe_webhook_log.txt', print_r($event, true), FILE_APPEND);
+
+        if ('checkout.session.completed' === $event->type) {
+            $this->handleEventCheckoutSessionCompleted($event);
+        }
 
         http_response_code(200);
     }
