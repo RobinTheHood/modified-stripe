@@ -92,7 +92,7 @@ class Session
         $sessionData = base64_decode($phpSession['data']);
         $session     = unserialize($sessionData);
 
-        if ($session) {
+        if (!$session) {
             throw new Exception("Can not unserialize PhpSession with id: $sessionId");
         }
 
