@@ -205,15 +205,15 @@ class Controller extends StdController
             die();
         }
 
-        $orderId = $phpSession->getOrderId();
+        $order = $phpSession->getOrder();
 
-        if (!$orderId) {
-            error_log('Can not handle stripe event checkout.session.completed - orderId is 0');
+        if (!$order) {
+            error_log('Can not handle stripe event checkout.session.completed - order is null');
             die();
         }
 
         $repo = new Repository();
-        $repo->updateOrderStatus($orderId, $newOrderStatusId);
-        $repo->insertOrderStatusHistory($orderId, $newOrderStatusId);
+        $repo->updateOrderStatus($order->getId(), $newOrderStatusId);
+        $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
     }
 }

@@ -25,11 +25,16 @@ use order as ModifiedOrder;
  */
 class Order
 {
+    /** @var int $modifiedOrderId */
+    private $modifiedOrderId;
+
     /** @var ModifiedOrder $modifiedOrder */
     private $modifiedOrder;
 
-    public function __construct(ModifiedOrder $modifiedOrder)
+    public function __construct(int $modifiedOrderId, ModifiedOrder $modifiedOrder)
     {
+        $this->modifiedOrderId = $modifiedOrderId;
+
         if (!$modifiedOrder) {
             throw new OrderException('Can not create Order. No $modifiedOrder is empty');
         }
@@ -39,6 +44,11 @@ class Order
         }
 
         $this->modifiedOrder = $modifiedOrder;
+    }
+
+    public function getId(): int
+    {
+        return $this->modifiedOrderId;
     }
 
     public function getTotal(): float

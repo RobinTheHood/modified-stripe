@@ -37,10 +37,10 @@ class Session
         require_once DIR_WS_CLASSES . 'order.php';
     }
 
-    public function getOrderId(): int
-    {
-        return $_SESSION['tmp_oID'] ?? 0;
-    }
+    // public function getOrderId(): int
+    // {
+    //     return $_SESSION['tmp_oID'] ?? 0;
+    // }
 
     public function getOrder(): ?Order
     {

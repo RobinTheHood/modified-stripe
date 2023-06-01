@@ -193,26 +193,50 @@ class payment_rth_stripe extends PaymentModule
      */
     public function process_button(): string
     {
-        global $order;
+        // global $order;
 
-        $rthOrder = new Order($order);
+        // $rthOrder = new Order($order);
 
-        $session = new Session();
-        $session->setOrder($rthOrder);
+        // $session = new Session();
+        // $session->setOrder($rthOrder);
 
         return '';
     }
 
     /**
-     * This method is only called when checkout_process.php creates a temporary order. The method
-     * is used by checkout_process.php after creating the order and before notifying the customer
-     * If we make a redirect in the method, the customer will not be notified for the time being.
-     * However, the Order Status History noted that the customer was notified. We need to correct the entry in Order
-     * Status History here
+     * {@inheritdoc}
+     *
+     * Overwrites PaymentModule::payment_action()
+     *
+     * This method is only called when checkout_process.php creates a temporary order. The method is used by
+     * checkout_process.php after creating the order and before notifying the customer If we make a redirect in the
+     * method, the customer will not be notified for the time being. However, the Order Status History noted that the
+     * customer was notified. We need to correct the entry in Order Status History here.
+     *
+     * At this point we save the order in the session, because in the next step rth_stripe.php we no longer have easy
+     * access to the order. We can make life easier for ourselves if we already save the order in the session right now.
+     *
+     * @link https://docs.module-loader.de/module-payment/#payment_action
      */
     public function payment_action(): void
     {
+        // Hopefully a temporary modified order obj that modified creates for us and stores in the database.
+        global $order;
+
+        $orderId = $_SESSION['tmp_oID'] ?? 0;
+        if (!$orderId) {
+            trigger_error('No temporary Order created');
+        }
+
+        // We use our Order class, because so we can wrap the $orderId and a modified Order in one object. A temp
+        // modified Order Object has no orderId.
+        $rthOrder = new Order($orderId, $order);
+
+        $session = new Session();
+        $session->setOrder($rthOrder);
+
         // TODO: Correct the entry in Order Status History, see also method description.
+
         xtc_redirect($this->form_action_url);
     }
 
