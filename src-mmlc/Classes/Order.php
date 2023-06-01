@@ -28,11 +28,14 @@ class Order
     /** @var ModifiedOrder $modifiedOrder */
     private $modifiedOrder;
 
-    public function __construct()
+    public function __construct(ModifiedOrder $modifiedOrder)
     {
-        $modifiedOrder = $this->loadModifiedOrder();
         if (!$modifiedOrder) {
-            throw new OrderException('Can not create Order. No modifed order object found.');
+            throw new OrderException('Can not create Order. No $modifiedOrder is empty');
+        }
+
+        if (!($modifiedOrder instanceof ModifiedOrder)) {
+            throw new OrderException('Can not create Order. $modifiedOrder is not instance of ModifiedOrder');
         }
 
         $this->modifiedOrder = $modifiedOrder;
@@ -41,22 +44,5 @@ class Order
     public function getTotal(): float
     {
         return $this->modifiedOrder->info['total'];
-    }
-
-    /**
-     * This method returns a modified Order object only if the surrounding global code just created an $order. For
-     * example in checkout_confirmation.php
-     *
-     * It's not nice that we work with global code, maybe that can be improved. First of all, it cannot be avoided.
-     */
-    public function loadModifiedOrder(): ?ModifiedOrder
-    {
-        global $order;
-
-        if (!($order instanceof ModifiedOrder)) {
-            return null;
-        }
-
-        return $order;
     }
 }

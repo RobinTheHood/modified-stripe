@@ -174,17 +174,19 @@ class payment_rth_stripe extends PaymentModule
      */
     public function process_button(): string
     {
-        $order = new Order();
+        global $order;
+
+        $rthOrder = new Order($order);
 
         $session = new Session();
-        $session->setOrder($order);
-
-        // NOTE: Maybe the following code could be useful, that remains to be seen.
-        // $sessionId = $session->createSessionId();
-        // $hiddenInputHtml = xtc_draw_hidden_field('rth_stripe_session_id', $sessionId);
-        // return $hiddenInputHtml;
+        $session->setOrder($rthOrder);
 
         return '';
+    }
+
+    public function payment_action(): void
+    {
+        xtc_redirect($this->form_action_url);
     }
 
     public function after_process(): void
