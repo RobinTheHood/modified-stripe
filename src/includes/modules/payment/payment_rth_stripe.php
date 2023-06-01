@@ -42,6 +42,14 @@ class payment_rth_stripe extends PaymentModule
     public $tmpOrders = true;
 
     /**
+     * // TODO: Make this configurable via the module settings
+     * If $tmpOrders is true, checkout_process.php creates a temp Order with statusId $tmpStatus
+     *
+     * @var int $tmpStatus
+     */
+    public $tmpStatus = 6; // StatusId 6 is a default modified status 'pending payment'
+
+    /**
      * Configuration keys which are automatically added/removed on
      * install/remove
      *
