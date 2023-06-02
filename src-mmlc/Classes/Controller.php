@@ -183,6 +183,11 @@ class Controller extends StdController
     /**
      * Handles the Strip WebHook Even checkout.session.completed
      *
+     * The main task of this method is to check whether the order has been paid and to set the status on the order to
+     * paid.
+     *
+     * @link https://stripe.com/docs/api/events/types#event_types-checkout.session.completed
+     *
      * @param Event $event A Strip Event
      */
     private function handleEventCheckoutSessionCompleted(Event $event): void
