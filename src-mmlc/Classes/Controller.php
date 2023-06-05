@@ -17,9 +17,8 @@ namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\ModifiedStdModule\Classes\StdController;
 use RobinTheHood\Stripe\Classes\Constants;
-use RobinTheHood\Stripe\Classes\Framework\AbstractConstroller;
+use RobinTheHood\Stripe\Classes\Framework\AbstractController;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
@@ -36,7 +35,7 @@ use Stripe\Stripe;
  * @link //TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
  */
-class Controller extends AbstractConstroller
+class Controller extends AbstractController
 {
     /**
      * @var Configuration $config

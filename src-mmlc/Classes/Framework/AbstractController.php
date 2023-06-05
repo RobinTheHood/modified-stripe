@@ -15,10 +15,10 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes\Framework;
 
-abstract class AbstractConstroller
+abstract class AbstractController
 {
     /**
-     * @var AbstractConstroller[] $controllers
+     * @var AbstractController[] $controllers
      */
     private array $controllers = [];
 
@@ -59,7 +59,7 @@ abstract class AbstractConstroller
         return $action;
     }
 
-    public function addController(AbstractConstroller $contoller): void
+    public function addController(AbstractController $contoller): void
     {
         $this->controllers[] = $contoller;
     }
