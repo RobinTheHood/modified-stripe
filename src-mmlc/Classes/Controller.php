@@ -28,12 +28,9 @@ use Stripe\Event;
 use Stripe\Stripe;
 
 /**
- * The StdController can automatically forward requests to methods beginning with the invoke prefix via the ?action=
+ * The AbstractController can automatically forward requests to methods beginning with the invoke prefix via the ?action=
  * query parameter in the URL. If action is empty or not set, invokeIndex() is called by default.
  * The entry point of this class is in file shop-root/rth_stripe.php
- *
- * @link //TODO Documentation link to StdModule
- * @link https://github.com/RobinTheHood/modified-std-module
  */
 class Controller extends AbstractController
 {
@@ -58,7 +55,6 @@ class Controller extends AbstractController
         $repo->test();
 
         return new Response('There is nothing to do');
-        //die('There is nothing to do');
     }
 
     /**
@@ -89,7 +85,6 @@ class Controller extends AbstractController
         }
 
         Stripe::setApiKey($this->getSecretKey());
-        //header('Content-Type: application/json');
 
         $priceData = [
             'currency'     => 'eur',
@@ -117,9 +112,6 @@ class Controller extends AbstractController
             'expires_at'          => time() + (3600 * 0.5) // Configured to expire after 30 minutes
         ]);
 
-        // header("HTTP/1.1 303 See Other");
-        // header("Location: " . $checkoutSession->url);
-
         return new RedirectResponse($checkoutSession->url);
     }
 
@@ -140,14 +132,8 @@ class Controller extends AbstractController
             // TODO: Check if the order was realy paid, if possible
             // TODO: Load the php session if the payment process took too long
 
-            // create the order in checkout_process.php
-            //xtc_redirect('/checkout_process.php');
-
             return new RedirectResponse('/checkout_process.php');
         } catch (Exception $e) {
-            //http_response_code(500);
-            //echo json_encode(['error' => $e->getMessage()]);
-            //dd('Invalid session.');
             return new Response(json_encode(['error' => $e->getMessage()]), 500);
         }
     }
@@ -177,14 +163,10 @@ class Controller extends AbstractController
             $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
         } catch (\UnexpectedValueException $e) {
             // Invalid payload
-            // http_response_code(400);
-            //exit();
-            return new Response('', 400);
+            return new Response(json_encode(['error' => $e->getMessage()]), 400);
         } catch (\Stripe\Exception\SignatureVerificationException $e) {
             // Invalid signature
-            //http_response_code(400);
-            //exit();
-            return new Response('', 400);
+            return new Response(json_encode(['error' => $e->getMessage()]), 400);
         }
 
         file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
@@ -193,7 +175,6 @@ class Controller extends AbstractController
             $this->handleEventCheckoutSessionCompleted($event);
         }
 
-        // http_response_code(200);
         return new Response('', 200);
     }
 
