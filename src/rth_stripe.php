@@ -13,6 +13,7 @@
  */
 
 use RobinTheHood\Stripe\Classes\{Controller, Constants};
+use RobinTheHood\Stripe\Classes\Framework\RequestFactory;
 
 /**
  * When Stripe tries to send a webhook to our script and the URL query parameter "action" is set, the
@@ -63,5 +64,7 @@ if (rth_is_module_disabled(Constants::MODULE_PAYMENT_NAME)) {
     die('Stripe payment modul is not active');
 }
 
+$request    = RequestFactory::createFromGlobals();
 $controller = new Controller();
-$controller->invoke();
+$response   = $controller->invoke($request);
+$response->send();

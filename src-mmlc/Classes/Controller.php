@@ -19,6 +19,10 @@ use Exception;
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\ModifiedStdModule\Classes\StdController;
 use RobinTheHood\Stripe\Classes\Constants;
+use RobinTheHood\Stripe\Classes\Framework\AbstractConstroller;
+use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
+use RobinTheHood\Stripe\Classes\Framework\Request;
+use RobinTheHood\Stripe\Classes\Framework\Response;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Event;
@@ -32,7 +36,7 @@ use Stripe\Stripe;
  * @link //TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
  */
-class Controller extends StdController
+class Controller extends AbstractConstroller
 {
     /**
      * @var Configuration $config
@@ -41,15 +45,21 @@ class Controller extends StdController
      */
     private Configuration $config;
 
+    private bool $liveMode = false;
+
     public function __construct()
     {
         parent::__construct();
         $this->config = new Configuration(Constants::MODULE_PAYMENT_NAME);
     }
 
-    protected function invokeIndex()
+    protected function invokeIndex(Request $request): Response
     {
-        die('There is nothing to do');
+        $repo = new Repository();
+        $repo->test();
+
+        return new Response('There is nothing to do');
+        //die('There is nothing to do');
     }
 
     /**
@@ -59,7 +69,7 @@ class Controller extends StdController
      * @link https://stripe.com/docs/checkout/quickstart
      * @link https://stripe.com/docs/payments/checkout/custom-success-page
      */
-    protected function invokeCheckout(): void
+    protected function invokeCheckout(): Response
     {
         require_once DIR_WS_FUNCTIONS . 'sessions.php';
         include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
@@ -79,8 +89,8 @@ class Controller extends StdController
             die('Can not create a Stripe session because we have no order Obj');
         }
 
-        Stripe::setApiKey($this->config->apiSandboxSecret);
-        header('Content-Type: application/json');
+        Stripe::setApiKey($this->getSecretKey());
+        //header('Content-Type: application/json');
 
         $priceData = [
             'currency'     => 'eur',
@@ -108,16 +118,18 @@ class Controller extends StdController
             'expires_at'          => time() + (3600 * 0.5) // Configured to expire after 30 minutes
         ]);
 
-        header("HTTP/1.1 303 See Other");
-        header("Location: " . $checkoutSession->url);
+        // header("HTTP/1.1 303 See Other");
+        // header("Location: " . $checkoutSession->url);
+
+        return new RedirectResponse($checkoutSession->url);
     }
 
-    protected function invokeSuccess(): void
+    protected function invokeSuccess(): Response
     {
         require_once DIR_WS_FUNCTIONS . 'sessions.php';
         include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
 
-        $stripe = new \Stripe\StripeClient($this->config->apiSandboxSecret);
+        $stripe = new \Stripe\StripeClient($this->getSecretKey());
 
         try {
             $session      = $stripe->checkout->sessions->retrieve($_GET['session_id']);
@@ -129,12 +141,15 @@ class Controller extends StdController
             // TODO: Check if the order was realy paid, if possible
             // TODO: Load the php session if the payment process took too long
 
-            // create the order
-            xtc_redirect('/checkout_process.php');
+            // create the order in checkout_process.php
+            //xtc_redirect('/checkout_process.php');
+
+            return new RedirectResponse('/checkout_process.php');
         } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode(['error' => $e->getMessage()]);
-            dd('Invalid session.');
+            //http_response_code(500);
+            //echo json_encode(['error' => $e->getMessage()]);
+            //dd('Invalid session.');
+            return new Response(json_encode(['error' => $e->getMessage()]), 500);
         }
     }
 
@@ -148,9 +163,9 @@ class Controller extends StdController
     /**
      * // TODO: move this to its own Webhook Controller
      */
-    protected function invokeReceiveHook(): void
+    protected function invokeReceiveHook(): Response
     {
-        \Stripe\Stripe::setApiKey($this->config->apiSandboxSecret);
+        \Stripe\Stripe::setApiKey($this->getSecretKey());
 
         // You can find your endpoint's secret in your webhook settings
         $endpointSecret = 'whsec_';
@@ -163,12 +178,14 @@ class Controller extends StdController
             $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
         } catch (\UnexpectedValueException $e) {
             // Invalid payload
-            http_response_code(400);
-            exit();
+            // http_response_code(400);
+            //exit();
+            return new Response('', 400);
         } catch (\Stripe\Exception\SignatureVerificationException $e) {
             // Invalid signature
-            http_response_code(400);
-            exit();
+            //http_response_code(400);
+            //exit();
+            return new Response('', 400);
         }
 
         file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
@@ -177,7 +194,8 @@ class Controller extends StdController
             $this->handleEventCheckoutSessionCompleted($event);
         }
 
-        http_response_code(200);
+        // http_response_code(200);
+        return new Response('', 200);
     }
 
     /**
@@ -215,5 +233,14 @@ class Controller extends StdController
         $repo = new Repository();
         $repo->updateOrderStatus($order->getId(), $newOrderStatusId);
         $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
+    }
+
+    private function getSecretKey()
+    {
+        if (true === $this->liveMode) {
+            return $this->config->apiLiveSecret;
+        } else {
+            return $this->config->apiSandboxSecret;
+        }
     }
 }
