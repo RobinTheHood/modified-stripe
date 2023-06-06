@@ -25,6 +25,9 @@ define($prefix . 'STATUS_DESC', '');
 // TEXT_TITLE (required) to display the payment name on checkout_confirmation.php, admin/customers_status.php, etc.
 define($prefix . 'TEXT_TITLE', 'Stripe (RobinTheHood)');
 
+define($prefix . 'LIVE_MODE_TITLE', 'Livemode aktiviert');
+define($prefix . 'LIVE_MODE_DESC', 'Soll Stripe im Live oder Sandbox Modus arbeiten.');
+
 /**
  * API
  */

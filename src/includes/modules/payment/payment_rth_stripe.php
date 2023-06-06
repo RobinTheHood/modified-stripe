@@ -59,6 +59,7 @@ class payment_rth_stripe extends PaymentModule
      * @var array
      */
     public static array $configurationKeys = [
+        'LIVE_MODE',
         'API_SANDBOX_KEY',
         'API_SANDBOX_SECRET',
         'API_LIVE_KEY',
@@ -133,6 +134,7 @@ class payment_rth_stripe extends PaymentModule
         $setFunctionFieldapiLiveSecret         = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveSecret'));
         $setFunctionFieldapiLiveEndpointSecret = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveEndPointSecret'));
 
+        $this->addConfigurationSelect('LIVE_MODE', 'false', 6, 1);
         $this->addConfiguration('API_SANDBOX_KEY', '', 6, 1, $setFunctionFieldapiSandboxKey);
         $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, $setFunctionFieldapiSandboxSecret);
         $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
