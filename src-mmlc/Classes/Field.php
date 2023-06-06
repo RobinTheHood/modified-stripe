@@ -82,4 +82,21 @@ class Field
 
         return $field;
     }
+
+    public static function apiLiveEndpointSecret($value, $option): string
+    {
+        /**
+         * Once we know how the live api secret looks, we can make this regex
+         * more precise.
+         */
+        $pattern = '^(whsec_[a-zA-Z_0-9]+)?$';
+
+        ob_start()
+        ?>
+        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="whsec_..."/>
+        <?php
+        $field = ob_get_clean();
+
+        return $field;
+    }
 }
