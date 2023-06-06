@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
-use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\Stripe\Classes\Constants;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
@@ -35,18 +34,14 @@ use Stripe\Stripe;
 class Controller extends AbstractController
 {
     /**
-     * @var Configuration $config
-     *
      * @link https://github.com/RobinTheHood/modified-std-module#easy-access-with-class-configuration
      */
-    private Configuration $config;
-
-    private bool $liveMode = false;
+    private StripeConfiguration $config;
 
     public function __construct()
     {
         parent::__construct();
-        $this->config = new Configuration(Constants::MODULE_PAYMENT_NAME);
+        $this->config = new StripeConfiguration(Constants::MODULE_PAYMENT_NAME);
     }
 
     protected function invokeIndex(Request $request): Response
@@ -148,22 +143,15 @@ class Controller extends AbstractController
     /**
      * // TODO: move this to its own Webhook Controller
      */
-    protected function invokeReceiveHook(): Response
+    protected function invokeReceiveHook(Request $request): Response
     {
-        // \Stripe\Stripe::setApiKey($this->getSecretKey());
-
-        // // You can find your endpoint's secret in your webhook settings
-        // $endpointSecret = 'whsec_';
-
-        // $payload   = @file_get_contents('php://input');
-        // $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'];
-        // $event     = null;
+        $payload   = $request->getContent();
+        $sigHeader = $request->getServer('HTTP_STRIPE_SIGNATURE');
 
         $stripeService = StripeService::createFromConfig($this->config);
 
         try {
-            $event = $stripeService->receiveEvent();
-            //$event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
+            $event = $stripeService->receiveEvent($payload, $sigHeader);
         } catch (\UnexpectedValueException $e) {
             // Invalid payload
             return new Response(json_encode(['error' => $e->getMessage()]), 400);
@@ -225,10 +213,10 @@ class Controller extends AbstractController
 
     private function getSecretKey(): string
     {
-        if (true === $this->liveMode) {
-            return $this->config->apiLiveSecret;
+        if ($this->config->getLiveMode()) {
+            return $this->config->getApiLiveSecret();
         } else {
-            return $this->config->apiSandboxSecret;
+            return $this->config->getApiSandboxSecret();
         }
     }
 }

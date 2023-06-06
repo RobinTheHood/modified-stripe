@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository, StripeService};
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository, StripeConfiguration, StripeService};
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
@@ -73,8 +73,8 @@ class payment_rth_stripe extends PaymentModule
         $this->checkForUpdate(true);
         $this->addKeys(self::$configurationKeys);
 
-        $config = new Configuration(self::NAME);
-
+        $config = new StripeConfiguration(self::NAME);
+        //return;
         $stripeService = StripeService::createFromConfig($config);
 
         if ($stripeService->hasWebhookEndpoint()) {

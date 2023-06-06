@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
-use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use Stripe\Event;
 use Stripe\WebhookEndpoint;
 
@@ -28,17 +27,17 @@ class StripeService
 
     private $endpointSecret;
 
-    public static function createFromConfig(Configuration $config): StripeService
+    public static function createFromConfig(StripeConfiguration $config): StripeService
     {
-        $liveMode = 'true' === $config->liveMode ? true : false;
+        $liveMode = $config->getLiveMode();
 
         if ($liveMode) {
-            $secret = $config->apiLiveSecret;
+            $secret = $config->getApiLiveSecret();
         } else {
-            $secret = $config->apiSandboxSecret;
+            $secret = $config->getApiSandboxSecret();
         }
 
-        $endpointSecret = $config->apiLiveEndpointSecret;
+        $endpointSecret = $config->getApiLiveEndpointSecret();
 
         return new StripeService(
             $liveMode,
@@ -54,16 +53,12 @@ class StripeService
         $this->endpointSecret = $endpointSecret;
     }
 
-    public function receiveEvent(): Event
+    public function receiveEvent(string $payload, string $sigHeader): Event
     {
         \Stripe\Stripe::setApiKey($this->secret);
 
         // You can find your endpoint's secret in your webhook settings
         $endpointSecret = $this->endpointSecret;
-
-        // TODO: do not use global variables
-        $payload   = @file_get_contents('php://input');
-        $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'];
 
         $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
         return $event;
