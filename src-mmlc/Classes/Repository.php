@@ -31,7 +31,7 @@ class Repository
 
     public function createRthStripePhpSession()
     {
-        $sql = "CREATE TABLE `rth_stripe_php_session` (
+        $sql = "CREATE TABLE IF NOT EXISTS `rth_stripe_php_session` (
             `id` varchar(32) NOT NULL,
             `created` datetime DEFAULT NULL,
             `data` longtext DEFAULT NULL,
