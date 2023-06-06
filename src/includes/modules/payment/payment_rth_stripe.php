@@ -18,7 +18,8 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository, StripeConfiguration, StripeService};
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, Repository, StripeConfiguration, StripeService};
+use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule

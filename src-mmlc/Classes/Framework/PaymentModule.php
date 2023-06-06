@@ -15,7 +15,7 @@
 
 declare(strict_types=1);
 
-namespace RobinTheHood\Stripe\Classes;
+namespace RobinTheHood\Stripe\Classes\Framework;
 
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
 
