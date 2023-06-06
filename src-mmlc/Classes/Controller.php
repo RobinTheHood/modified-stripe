@@ -150,17 +150,20 @@ class Controller extends AbstractController
      */
     protected function invokeReceiveHook(): Response
     {
-        \Stripe\Stripe::setApiKey($this->getSecretKey());
+        // \Stripe\Stripe::setApiKey($this->getSecretKey());
 
-        // You can find your endpoint's secret in your webhook settings
-        $endpointSecret = 'whsec_';
+        // // You can find your endpoint's secret in your webhook settings
+        // $endpointSecret = 'whsec_';
 
-        $payload   = @file_get_contents('php://input');
-        $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'];
-        $event     = null;
+        // $payload   = @file_get_contents('php://input');
+        // $sigHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+        // $event     = null;
+
+        $stripeService = StripeService::createFromConfig($this->config);
 
         try {
-            $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
+            $event = $stripeService->receiveEvent();
+            //$event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
         } catch (\UnexpectedValueException $e) {
             // Invalid payload
             return new Response(json_encode(['error' => $e->getMessage()]), 400);
@@ -169,7 +172,7 @@ class Controller extends AbstractController
             return new Response(json_encode(['error' => $e->getMessage()]), 400);
         }
 
-        file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
+        // file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
 
         if ('checkout.session.completed' === $event->type) {
             $this->handleEventCheckoutSessionCompleted($event);
@@ -220,7 +223,7 @@ class Controller extends AbstractController
         $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
     }
 
-    private function getSecretKey()
+    private function getSecretKey(): string
     {
         if (true === $this->liveMode) {
             return $this->config->apiLiveSecret;

@@ -18,7 +18,7 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository};
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository, StripeService};
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
@@ -72,7 +72,11 @@ class payment_rth_stripe extends PaymentModule
         $this->checkForUpdate(true);
         $this->addKeys(self::$configurationKeys);
 
-        if ($this->hasWebhookEndpoint()) {
+        $config = new Configuration(self::NAME);
+
+        $stripeService = StripeService::createFromConfig($config);
+
+        if ($stripeService->hasWebhookEndpoint()) {
             $buttonText = 'Stripe Webhook entfernen';
             $this->addAction('disconnect', $buttonText);
         } else {
@@ -86,11 +90,13 @@ class payment_rth_stripe extends PaymentModule
         // TODO: Register Webhook Endpoint
         // https://stripe.com/docs/webhooks/go-live
 
-        if ($this->hasWebhookEndpoint()) {
+        $config = new Configuration(self::NAME);
+
+        $stripeService = StripeService::createFromConfig($config);
+
+        if ($stripeService->hasWebhookEndpoint()) {
             return;
         }
-
-        $config = new Configuration(self::NAME);
 
         \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
 
@@ -255,21 +261,21 @@ class payment_rth_stripe extends PaymentModule
         // NOTE: https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-payment_status
     }
 
-    private function hasWebhookEndpoint(): bool
-    {
-        $config = new Configuration(self::NAME);
+    // private function hasWebhookEndpoint(): bool
+    // {
+    //     $config = new Configuration(self::NAME);
 
-        try {
-            \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
-            $endpoints = WebhookEndpoint::all();
-        } catch (Exception $e) {
-            return false;
-        }
+    //     try {
+    //         \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
+    //         $endpoints = WebhookEndpoint::all();
+    //     } catch (Exception $e) {
+    //         return false;
+    //     }
 
-        if (!$endpoints['data']) {
-            return false;
-        }
+    //     if (!$endpoints['data']) {
+    //         return false;
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 }
