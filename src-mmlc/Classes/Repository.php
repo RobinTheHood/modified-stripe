@@ -89,7 +89,7 @@ class Repository
         $query = xtc_db_query($sql);
 
         if (!$query) {
-            throw new Exception("Error in Repository SQL Query, you can find more infos in logs - $sql");
+            throw new Exception("Error in Repository SQL Query, you can find more infos in modified wraning logs - $sql");
         }
 
         return $query;
