@@ -19,6 +19,14 @@ class RequestFactory
 {
     public static function createFromGlobals(): Request
     {
-        return new Request($_GET, $_POST);
+        return new Request(
+            $_GET,
+            $_POST,
+            [],
+            [],
+            [],
+            $_SERVER,
+            @file_get_contents('php://input')
+        );
     }
 }

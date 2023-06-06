@@ -17,13 +17,47 @@ namespace RobinTheHood\Stripe\Classes\Framework;
 
 class Request
 {
+    /**
+     * $_GET
+     *
+     * @var array
+     */
     private $query;
+
+    /**
+     * $_POST
+     *
+     * @var array
+     */
     private $request;
 
-    public function __construct(array $query, array $request)
+    /**
+     * $_SERVER
+     *
+     * @var array
+     */
+    private $server;
+
+    /**
+     * @var string|resource|false|null
+     */
+    protected $content;
+
+    /**
+     * @param array                $query      The GET parameters
+     * @param array                $request    The POST parameters
+     * @param array                $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
+     * @param array                $cookies    The COOKIE parameters
+     * @param array                $files      The FILES parameters
+     * @param array                $server     The SERVER parameters
+     * @param string|resource|null $content    The raw body data
+     */
+    public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
     {
         $this->query   = $query;
         $this->request = $request;
+        $this->server  = $server;
+        $this->content = $content;
     }
 
     public function get($key)
@@ -34,5 +68,15 @@ class Request
     public function post($key)
     {
         return $this->request[$key];
+    }
+
+    public function getServer($key)
+    {
+        return $this->server[$key];
+    }
+
+    public function getContent()
+    {
+        return $this->content;
     }
 }
