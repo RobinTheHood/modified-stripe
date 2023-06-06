@@ -12,7 +12,8 @@
  *
  */
 
-use RobinTheHood\Stripe\Classes\{Controller, Constants};
+use RobinTheHood\Stripe\Classes\Constants;
+use RobinTheHood\Stripe\Classes\Controller\Controller;
 use RobinTheHood\Stripe\Classes\Framework\RequestFactory;
 
 /**

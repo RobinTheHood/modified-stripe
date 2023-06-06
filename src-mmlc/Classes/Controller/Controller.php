@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace RobinTheHood\Stripe\Classes;
+namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Constants;
@@ -21,7 +21,10 @@ use RobinTheHood\Stripe\Classes\Framework\AbstractController;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
+use RobinTheHood\Stripe\Classes\Repository;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
+use RobinTheHood\Stripe\Classes\StripeConfiguration;
+use RobinTheHood\Stripe\Classes\StripeService;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Event;
 use Stripe\Stripe;
