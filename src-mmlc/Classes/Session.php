@@ -36,11 +36,6 @@ class Session
         require_once DIR_WS_CLASSES . 'order.php';
     }
 
-    // public function getOrderId(): int
-    // {
-    //     return $_SESSION['tmp_oID'] ?? 0;
-    // }
-
     public function getOrder(): ?Order
     {
         $orderData = $_SESSION[self::SESSION_PREFIX][self::SESSION_INDEX_ORDER] ?? '';
