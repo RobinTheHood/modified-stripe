@@ -19,14 +19,23 @@ use Exception;
 use Stripe\Event;
 use Stripe\WebhookEndpoint;
 
+/**
+ * This class is intended to simplify the handling of some stripe processes. The class should help to avoid loading
+ * the required configurations and conclusions from the settings yourself. It is mainly used in the controller.
+ */
 class StripeService
 {
     private $liveMode;
 
+    /** @var string The live or sandbox (server) secret*/
     private $secret;
 
+    /** @var string A Webhook Entpoint secret */
     private $endpointSecret;
 
+    /**
+     * A helper method that we can use to more easily create a new StripeSerive Object.
+     */
     public static function createFromConfig(StripeConfiguration $config): StripeService
     {
         $liveMode = $config->getLiveMode();

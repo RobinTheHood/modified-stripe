@@ -18,6 +18,12 @@ namespace RobinTheHood\Stripe\Classes;
 use Exception;
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 
+/**
+ * This class makes it easy to access the modified user configuration of the Stripe module. Unlike the pure
+ * Configuration class, which creates many magic attributes, this class helps the IDE to show us autocompletion.
+ *
+ * @link https://github.com/RobinTheHood/modified-std-module#easy-access-with-class-configuration
+ */
 class StripeConfiguration extends Configuration
 {
     public function getLiveMode(): bool

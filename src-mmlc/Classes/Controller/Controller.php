@@ -36,9 +36,6 @@ use Stripe\Stripe;
  */
 class Controller extends AbstractController
 {
-    /**
-     * @link https://github.com/RobinTheHood/modified-std-module#easy-access-with-class-configuration
-     */
     private StripeConfiguration $config;
 
     public function __construct()

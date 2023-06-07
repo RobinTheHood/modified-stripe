@@ -17,6 +17,7 @@ namespace RobinTheHood\Stripe\Classes\Framework;
 
 class RedirectResponse extends Response
 {
+    /** @var string */
     private $url;
 
     public function __construct(string $url)

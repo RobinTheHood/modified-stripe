@@ -15,10 +15,15 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes\Framework;
 
+/**
+ * The AbstractController can automatically forward requests to methods beginning with the invoke prefix via the ?action=
+ * query parameter in the URL. If action is empty or not set, invokeIndex() is called by default.
+ * The entry point of this class is in file shop-root/rth_stripe.php
+ */
 abstract class AbstractController
 {
     /**
-     * @var AbstractController[] $controllers
+     * @var AbstractController[]
      */
     private array $controllers = [];
 

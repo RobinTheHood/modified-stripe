@@ -15,6 +15,13 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes\Framework;
 
+/**
+ * This class is based on the request class from symfony so as not to reinvent the wheel.
+ *
+ * We pack all super global PHP request information in this class so that 1. we don't work with global variables in
+ * further code and 2. so that we can inject our own request values into our controller for test purposes without
+ * actually starting a request from a client . This is useful for unit testing.
+ */
 class Request
 {
     /**

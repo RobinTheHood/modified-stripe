@@ -19,8 +19,7 @@ use Exception;
 
 /**
  * We need to save the current PHP session, as it may have already expired if the customer takes a long time
- * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
- * placed in the shop.
+ * with the Stripe payment process. The class should help to simply restore the session
  *
  * The class should take over the task of saving and loading PHP session.
  */
