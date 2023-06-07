@@ -42,6 +42,20 @@ class Repository
         $this->query($sql);
     }
 
+    public function createRthStripePayment(): void
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS `rth_stripe_payment` (
+            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+            `created` datetime DEFAULT NULL,
+            `order_id` int(11) DEFAULT NULL,
+            `stripe_payment_intent_id` varchar(255) DEFAULT NULL,
+            PRIMARY KEY (`id`)
+          );
+        ";
+
+        $this->query($sql);
+    }
+
     public function getRthStripePhpSessionById(string $id)
     {
         $sql = "SELECT * FROM rth_stripe_php_session WHERE id='$id'";

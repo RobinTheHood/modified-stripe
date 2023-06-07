@@ -144,6 +144,7 @@ class payment_rth_stripe extends PaymentModule
 
         $repo = new Repository();
         $repo->createRthStripePhpSession();
+        $repo->createRthStripePayment();
     }
 
     public function remove(): void
