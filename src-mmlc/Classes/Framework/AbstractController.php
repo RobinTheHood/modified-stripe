@@ -69,11 +69,11 @@ abstract class AbstractController
         $this->controllers[] = $contoller;
     }
 
-    public function preInvoke(Request $request)
+    public function preInvoke(Request $request): void
     {
     }
 
-    public function postInvoke(Request $request)
+    public function postInvoke(Request $request): void
     {
     }
 }

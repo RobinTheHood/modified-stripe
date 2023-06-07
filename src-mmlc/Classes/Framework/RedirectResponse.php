@@ -25,7 +25,7 @@ class RedirectResponse extends Response
         $this->url = $url;
     }
 
-    public function send()
+    public function send(): void
     {
         header("HTTP/1.1 303 See Other");
         header("Location: " . $this->url);
