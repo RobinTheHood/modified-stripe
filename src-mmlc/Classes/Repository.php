@@ -98,6 +98,15 @@ class Repository
         $this->query($sql);
     }
 
+    public function insertRthStripePayment(int $orderId, string $stripePaymentIntentId): void
+    {
+        $sql = "INSERT INTO rth_stripe_payment (
+            `created`, `orders_id`, `stripe_payment_intent_id`
+        ) VALUES (
+            NOW(), '$orderId', '$stripePaymentIntentId'
+        )";
+    }
+
     private function query(string $sql)
     {
         $query = xtc_db_query($sql);
