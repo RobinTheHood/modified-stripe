@@ -15,54 +15,52 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes;
 
-use Exception;
+use RobinTheHood\Stripe\Classes\Framework\Database;
 
 /**
  * In this class we outsource all queries to the database. So we only need SQL in this file.
  */
 class Repository
 {
-    public function test()
-    {
-        $sql = "SELECT x";
+    private Database $db;
 
-        $this->query($sql);
+    public function __construct(Database $db)
+    {
+        $this->db = $db;
     }
 
-    public function createRthStripePhpSession()
+    public function createRthStripePhpSession(): void
     {
-        $sql = "CREATE TABLE IF NOT EXISTS `rth_stripe_php_session` (
-            `id` varchar(32) NOT NULL,
-            `created` datetime DEFAULT NULL,
-            `data` longtext DEFAULT NULL,
-            PRIMARY KEY (`id`)
-          );
-        ";
-
-        $this->query($sql);
+        $this->db->query(
+            "CREATE TABLE IF NOT EXISTS `rth_stripe_php_session` (
+                `id` varchar(32) NOT NULL,
+                `created` datetime DEFAULT NULL,
+                `data` longtext DEFAULT NULL,
+                PRIMARY KEY (`id`)
+            );"
+        );
     }
 
     public function createRthStripePayment(): void
     {
-        $sql = "CREATE TABLE IF NOT EXISTS `rth_stripe_payment` (
-            `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-            `created` datetime DEFAULT NULL,
-            `order_id` int(11) DEFAULT NULL,
-            `stripe_payment_intent_id` varchar(255) DEFAULT NULL,
-            PRIMARY KEY (`id`)
-          );
-        ";
-
-        $this->query($sql);
+        $this->db->query(
+            "CREATE TABLE IF NOT EXISTS `rth_stripe_payment` (
+                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                `created` datetime DEFAULT NULL,
+                `order_id` int(11) DEFAULT NULL,
+                `stripe_payment_intent_id` varchar(255) DEFAULT NULL,
+                PRIMARY KEY (`id`)
+            );"
+        );
     }
 
     public function getRthStripePhpSessionById(string $id)
     {
-        $sql = "SELECT * FROM rth_stripe_php_session WHERE id='$id'";
+        $query = $this->db->query(
+            "SELECT * FROM rth_stripe_php_session WHERE id='$id'"
+        );
 
-        $query = $this->query($sql);
-
-        $row = xtc_db_fetch_array($query);
+        $row = $this->db->fetch($query);
         if (!isset($row['id'])) {
             return false;
         }
@@ -72,40 +70,30 @@ class Repository
 
     public function insertRthStripePhpSession(string $id, string $data)
     {
-        $sql = "INSERT INTO rth_stripe_php_session (
-            `id`, `data`, `created`
-        ) VALUES (
-            '$id', '$data', NOW()
-        )";
-
-        $this->query($sql);
+        $this->db->query(
+            "INSERT INTO rth_stripe_php_session (
+                `id`, `data`, `created`
+            ) VALUES (
+                '$id', '$data', NOW()
+            )"
+        );
     }
 
     public function updateOrderStatus(int $orderId, int $statusId): void
     {
-        $sql = "UPDATE `orders` SET `orders_status` = '$statusId', `last_modified` = NOW() WHERE orders_id = '$orderId'";
-        $this->query($sql);
+        $this->db->query(
+            "UPDATE `orders` SET `orders_status` = '$statusId', `last_modified` = NOW() WHERE orders_id = '$orderId'"
+        );
     }
 
     public function insertOrderStatusHistory(int $orderId, int $statusId, string $comment = '')
     {
-        $sql = "INSERT INTO orders_status_history (
-            `orders_id`, `orders_status_id`, `date_added`, `customer_notified`, `comments`, `comments_sent`
-        ) VALUES (
-            '$orderId', '$statusId', NOW(), '0', '$comment', '0'
-        )";
-
-        $this->query($sql);
-    }
-
-    private function query(string $sql)
-    {
-        $query = xtc_db_query($sql);
-
-        if (!$query) {
-            throw new Exception("Error in Repository SQL Query, you can find more infos in modified wraning logs - $sql");
-        }
-
-        return $query;
+        $this->db->query(
+            "INSERT INTO orders_status_history (
+                `orders_id`, `orders_status_id`, `date_added`, `customer_notified`, `comments`, `comments_sent`
+            ) VALUES (
+                '$orderId', '$statusId', NOW(), '0', '$comment', '0'
+            )"
+        );
     }
 }

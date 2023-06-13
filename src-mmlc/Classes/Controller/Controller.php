@@ -18,6 +18,7 @@ namespace RobinTheHood\Stripe\Classes\Controller;
 use Exception;
 use RobinTheHood\Stripe\Classes\Constants;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
+use RobinTheHood\Stripe\Classes\Framework\Database;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
@@ -46,9 +47,6 @@ class Controller extends AbstractController
 
     protected function invokeIndex(Request $request): Response
     {
-        $repo = new Repository();
-        $repo->test();
-
         return new Response('There is nothing to do');
     }
 
@@ -206,7 +204,8 @@ class Controller extends AbstractController
             die();
         }
 
-        $repo = new Repository();
+        // TODO: Do not use new statement here - dependency injection - DI Container
+        $repo = new Repository(new Database());
         $repo->updateOrderStatus($order->getId(), $newOrderStatusId);
         $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
     }

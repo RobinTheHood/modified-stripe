@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
+use RobinTheHood\Stripe\Classes\Framework\Database;
 
 /**
  * We need to save the current PHP session, as it may have already expired if the customer takes a long time
@@ -66,7 +67,8 @@ class Session
         $sessionData = serialize($_SESSION);
         $sessionData = base64_encode($sessionData);
 
-        $repo = new Repository();
+        // TODO: Do not use new statement here - dependency injection - use/add a DI Container
+        $repo = new Repository(new Database());
         $repo->insertRthStripePhpSession($sessionId, $sessionData);
 
         return $sessionId;
@@ -77,7 +79,8 @@ class Session
      */
     public function load(string $sessionId)
     {
-        $repo = new Repository();
+        // TODO: Do not use new statement here - dependency injection - use/add a DI Container
+        $repo = new Repository(new Database());
 
         $phpSession = $repo->getRthStripePhpSessionById($sessionId);
         if (!$phpSession) {
