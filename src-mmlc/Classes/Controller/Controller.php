@@ -181,6 +181,7 @@ class Controller extends AbstractController
     {
         $newOrderStatusId = 1; // TODO: Make this configurable via the module settings
 
+        /** @var StripeSession */
         $session           = $event->data->object;
         $clientReferenceId = $session->client_reference_id;
         $phpSessionId      = $clientReferenceId;
@@ -208,6 +209,9 @@ class Controller extends AbstractController
         $repo = new Repository(new Database());
         $repo->updateOrderStatus($order->getId(), $newOrderStatusId);
         $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
+
+        // Create a link between the order and the payment
+        $repo->insertRthStripePayment($order->getId(), $session->payment_intent->id);
     }
 
     private function getSecretKey(): string

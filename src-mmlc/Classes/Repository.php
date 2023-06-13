@@ -96,4 +96,15 @@ class Repository
             )"
         );
     }
+
+    public function insertRthStripePayment(int $orderId, string $stripePaymentIntentId): void
+    {
+        $this->db->query(
+            "INSERT INTO rth_stripe_payment (
+                `created`, `orders_id`, `stripe_payment_intent_id`
+            ) VALUES (
+                NOW(), '$orderId', '$stripePaymentIntentId'
+            )"
+        );
+    }
 }
