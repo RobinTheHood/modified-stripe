@@ -19,6 +19,7 @@ use Exception;
 use RobinTheHood\Stripe\Classes\Constants;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
 use RobinTheHood\Stripe\Classes\Framework\Database;
+use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
@@ -39,10 +40,13 @@ class Controller extends AbstractController
 {
     private StripeConfiguration $config;
 
-    public function __construct()
+    private DIContainer $container;
+
+    public function __construct(DIContainer $container)
     {
         parent::__construct();
-        $this->config = new StripeConfiguration(Constants::MODULE_PAYMENT_NAME);
+        $this->config    = new StripeConfiguration(Constants::MODULE_PAYMENT_NAME);
+        $this->container = $container;
     }
 
     protected function invokeIndex(Request $request): Response
@@ -69,7 +73,7 @@ class Controller extends AbstractController
          * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
          * placed in the shop.
          */
-        $phpSession = new PhpSession();
+        $phpSession = $this->container->get(PhpSession::class);
         $sessionId  = $phpSession->save();
 
         $order = $phpSession->getOrder();
@@ -119,7 +123,7 @@ class Controller extends AbstractController
             $session      = $stripe->checkout->sessions->retrieve($_GET['session_id']);
             $phpSessionId = $session->client_reference_id;
 
-            $phpSession = new PhpSession();
+            $phpSession = $this->container->get(PhpSession::class);
             $phpSession->load($phpSessionId);
 
             // TODO: Check if the order was realy paid, if possible
@@ -191,7 +195,7 @@ class Controller extends AbstractController
         }
 
         try {
-            $phpSession = new PhpSession();
+            $phpSession = $this->container->get(PhpSession::class);
             $phpSession->load($phpSessionId);
         } catch (Exception $e) {
             error_log('Can not handle stripe event checkout.session.completed - ' . $e->getMessage());
@@ -205,8 +209,8 @@ class Controller extends AbstractController
             die();
         }
 
-        // TODO: Do not use new statement here - dependency injection - DI Container
-        $repo = new Repository(new Database());
+        /** @var Repository */
+        $repo = $this->container->get(Repository::class);
         $repo->updateOrderStatus($order->getId(), $newOrderStatusId);
         $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
 

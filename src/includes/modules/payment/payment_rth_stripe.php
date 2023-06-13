@@ -20,6 +20,7 @@ declare(strict_types=1);
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\Stripe\Classes\{Order, Session, Constants, Repository, StripeConfiguration, StripeService};
 use RobinTheHood\Stripe\Classes\Framework\Database;
+use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 use Stripe\WebhookEndpoint;
 
@@ -69,6 +70,8 @@ class payment_rth_stripe extends PaymentModule
         'API_LIVE_ENDPOINT_SECRET',
     ];
 
+    private DIContainer $container;
+
     public function __construct()
     {
         parent::__construct(self::NAME);
@@ -86,6 +89,8 @@ class payment_rth_stripe extends PaymentModule
             $buttonText = 'Stripe Webhook hinzufügen';
             $this->addAction('connect', $buttonText);
         }
+
+        $this->container = new DIContainer();
     }
 
     public function invokeConnect()
@@ -143,8 +148,8 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
         $this->addConfiguration('API_LIVE_ENDPOINT_SECRET', '', 6, 1, $setFunctionFieldapiLiveEndpointSecret);
 
-        // TODO: Do not use new statement here - dependency injection - use/add a DI Container
-        $repo = new Repository(new Database());
+        /** @var Repository **/
+        $repo = $this->container->get(Repository::class);
         $repo->createRthStripePhpSession();
         $repo->createRthStripePayment();
     }
@@ -247,7 +252,7 @@ class payment_rth_stripe extends PaymentModule
         // modified Order Object has no orderId.
         $rthOrder = new Order($orderId, $order);
 
-        $session = new Session();
+        $session = $this->container->get(Session::class);
         $session->setOrder($rthOrder);
 
         // TODO: Correct the entry in Order Status History, see also method description.

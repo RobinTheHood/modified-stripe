@@ -29,8 +29,12 @@ class Session
     private const SESSION_PREFIX      = 'rth_stripe';
     private const SESSION_INDEX_ORDER = 'order';
 
-    public function __construct()
+    private Repository $repo;
+
+    public function __construct(Repository $repo)
     {
+        $this->repo = $repo;
+
         // We need this, because modified classes are not loaded by the composer autoload
         // The classes that we want to unserialize must be loaded before we unserialize them
         require_once DIR_WS_CLASSES . 'order_total.php';
@@ -67,9 +71,7 @@ class Session
         $sessionData = serialize($_SESSION);
         $sessionData = base64_encode($sessionData);
 
-        // TODO: Do not use new statement here - dependency injection - use/add a DI Container
-        $repo = new Repository(new Database());
-        $repo->insertRthStripePhpSession($sessionId, $sessionData);
+        $this->repo->insertRthStripePhpSession($sessionId, $sessionData);
 
         return $sessionId;
     }
@@ -79,10 +81,7 @@ class Session
      */
     public function load(string $sessionId)
     {
-        // TODO: Do not use new statement here - dependency injection - use/add a DI Container
-        $repo = new Repository(new Database());
-
-        $phpSession = $repo->getRthStripePhpSessionById($sessionId);
+        $phpSession = $this->repo->getRthStripePhpSessionById($sessionId);
         if (!$phpSession) {
             throw new Exception("Can not find PhpSession with id: $sessionId");
         }
