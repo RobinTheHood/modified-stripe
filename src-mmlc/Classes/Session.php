@@ -16,11 +16,11 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
+use RobinTheHood\Stripe\Classes\Framework\Database;
 
 /**
  * We need to save the current PHP session, as it may have already expired if the customer takes a long time
- * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
- * placed in the shop.
+ * with the Stripe payment process. The class should help to simply restore the session
  *
  * The class should take over the task of saving and loading PHP session.
  */
@@ -29,8 +29,12 @@ class Session
     private const SESSION_PREFIX      = 'rth_stripe';
     private const SESSION_INDEX_ORDER = 'order';
 
-    public function __construct()
+    private Repository $repo;
+
+    public function __construct(Repository $repo)
     {
+        $this->repo = $repo;
+
         // We need this, because modified classes are not loaded by the composer autoload
         // The classes that we want to unserialize must be loaded before we unserialize them
         require_once DIR_WS_CLASSES . 'order_total.php';
@@ -67,8 +71,7 @@ class Session
         $sessionData = serialize($_SESSION);
         $sessionData = base64_encode($sessionData);
 
-        $repo = new Repository();
-        $repo->insertRthStripePhpSession($sessionId, $sessionData);
+        $this->repo->insertRthStripePhpSession($sessionId, $sessionData);
 
         return $sessionId;
     }
@@ -78,9 +81,7 @@ class Session
      */
     public function load(string $sessionId)
     {
-        $repo = new Repository();
-
-        $phpSession = $repo->getRthStripePhpSessionById($sessionId);
+        $phpSession = $this->repo->getRthStripePhpSessionById($sessionId);
         if (!$phpSession) {
             throw new Exception("Can not find PhpSession with id: $sessionId");
         }
@@ -92,7 +93,7 @@ class Session
         $sessionData = base64_decode($phpSession['data']);
         $session     = unserialize($sessionData);
 
-        if ($session) {
+        if (!$session) {
             throw new Exception("Can not unserialize PhpSession with id: $sessionId");
         }
 

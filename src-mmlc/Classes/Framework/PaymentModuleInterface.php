@@ -15,7 +15,7 @@
 
 declare(strict_types=1);
 
-namespace RobinTheHood\Stripe\Classes;
+namespace RobinTheHood\Stripe\Classes\Framework;
 
 /**
  * We created this interface so that we and the software can see at first glance which methods a modified Payment

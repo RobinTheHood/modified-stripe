@@ -25,6 +25,9 @@ define($prefix . 'STATUS_DESC', '');
 // TEXT_TITLE (required) to display the payment name on checkout_confirmation.php, admin/customers_status.php, etc.
 define($prefix . 'TEXT_TITLE', 'Stripe (RobinTheHood)');
 
+define($prefix . 'LIVE_MODE_TITLE', 'Livemode aktiviert');
+define($prefix . 'LIVE_MODE_DESC', 'Soll Stripe im Live oder Sandbox Modus arbeiten.');
+
 /**
  * API
  */
@@ -37,4 +40,7 @@ define($prefix . 'API_LIVE_SECRET_TITLE', 'Geheimschlüssel für den Live-Modus'
 define($prefix . 'API_LIVE_SECRET_DESC', 'Verwenden Sie diesen Schlüssel, um Anfragen auf Ihrem Server im Live-Modus zu authentifizieren. Standardmäßig können Sie diesen Schlüssel verwenden, um jede API-Anfrage ohne Einschränkungen durchzuführen.');
 define($prefix . 'API_LIVE_KEY_TITLE', 'Veröffentlichbarer Schlüssel im Live-Modus');
 define($prefix . 'API_LIVE_KEY_DESC', 'Verwenden Sie diesen Schlüssel im clientseitigen Code Ihrer Web- oder Mobil-App, wenn Sie bereit sind, Ihre App zu starten.');
+
+define($prefix . 'API_LIVE_ENDPOINT_SECRET_TITLE', 'Geheimer Webhook Schlüssel');
+define($prefix . 'API_LIVE_ENDPOINT_SECRET_DESC', 'Dieser Schlüssel wird benötigt, damit der Server kontrollieren kann, ob die Anfragen von Stripe kommen.');
 /** */

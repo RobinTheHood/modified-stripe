@@ -18,8 +18,10 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, PaymentModule, Repository, Field};
-use RobinTheHood\Stripe\Classes\Configuration\Checkout;
+use RobinTheHood\Stripe\Classes\{Order, Session, Constants, Repository, StripeConfiguration, StripeService};
+use RobinTheHood\Stripe\Classes\Framework\Database;
+use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
@@ -29,10 +31,26 @@ class payment_rth_stripe extends PaymentModule
 
     /**
      * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)
+     * Because we set $tmpOrders true, checkout_process.php first creates a temp Order
      *
      * @var string $form_action_url
      */
     public $form_action_url = '/rth_stripe.php?action=checkout';
+
+    /**
+     * If $tmpOrders is true, checkout_process.php creates a temp Order.
+     *
+     * @var bool $tmpOrders
+     */
+    public $tmpOrders = true;
+
+    /**
+     * // TODO: Make this configurable via the module settings
+     * If $tmpOrders is true, checkout_process.php creates a temp Order with statusId $tmpStatus
+     *
+     * @var int $tmpStatus
+     */
+    public $tmpStatus = 6; // StatusId 6 is a default modified status 'pending payment'
 
     /**
      * Configuration keys which are automatically added/removed on
@@ -44,18 +62,26 @@ class payment_rth_stripe extends PaymentModule
      * @var array
      */
     public static array $configurationKeys = [
+        'LIVE_MODE',
         'API_SANDBOX_KEY',
         'API_SANDBOX_SECRET',
         'API_LIVE_KEY',
         'API_LIVE_SECRET',
+        'API_LIVE_ENDPOINT_SECRET',
     ];
+
+    private DIContainer $container;
 
     public function __construct()
     {
         parent::__construct(self::NAME);
         $this->checkForUpdate(true);
 
-        if ($this->hasWebhookEndpoint()) {
+        $config = new StripeConfiguration(self::NAME);
+        //return;
+        $stripeService = StripeService::createFromConfig($config);
+
+        if ($stripeService->hasWebhookEndpoint()) {
             $buttonText = 'Stripe Webhook entfernen';
             $this->addAction('disconnect', $buttonText);
         } else {
@@ -63,14 +89,7 @@ class payment_rth_stripe extends PaymentModule
             $this->addAction('connect', $buttonText);
         }
 
-        Checkout::setLanguageConstants();
-
-        self::$configurationKeys = array_merge(
-            self::$configurationKeys,
-            Checkout::getConfigurationKeys()
-        );
-
-        $this->addKeys(self::$configurationKeys);
+        $this->container = new DIContainer();
     }
 
     public function invokeConnect()
@@ -78,11 +97,13 @@ class payment_rth_stripe extends PaymentModule
         // TODO: Register Webhook Endpoint
         // https://stripe.com/docs/webhooks/go-live
 
-        if ($this->hasWebhookEndpoint()) {
+        $config = new Configuration(self::NAME);
+
+        $stripeService = StripeService::createFromConfig($config);
+
+        if ($stripeService->hasWebhookEndpoint()) {
             return;
         }
-
-        $config = new Configuration(self::NAME);
 
         \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
 
@@ -105,19 +126,31 @@ class payment_rth_stripe extends PaymentModule
     {
         parent::install();
 
-        $this->addConfiguration('API_SANDBOX_KEY', '', 6, 1, Field::getSetFunction('apiSandboxKey'));
-        $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, Field::getSetFunction('apiSandboxSecret'));
-        $this->addConfiguration('API_LIVE_KEY', '', 6, 1, Field::getSetFunction('apiLiveKey'));
-        $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, Field::getSetFunction('apiLiveSecret'));
+        /**
+         * Namespaces are encoded in base64 since the backward slashes will
+         * otherwise be removed before saving. The `setFunction` method
+         * will decode the namespaces and forward all data.
+         *
+         * @see PaymentModule::setFunction()
+         */
+        $setFunctionField                      = self::class . '::setFunction(\'%s\',';
+        $setFunctionFieldapiSandboxKey         = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxKey'));
+        $setFunctionFieldapiSandboxSecret      = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxSecret'));
+        $setFunctionFieldapiLiveKey            = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveKey'));
+        $setFunctionFieldapiLiveSecret         = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveSecret'));
+        $setFunctionFieldapiLiveEndpointSecret = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveEndPointSecret'));
 
-        foreach (Checkout::getConfigurationKeys() as $configurationKey) {
-            $configurationValue = Checkout::getConfigurationValue($configurationKey);
+        $this->addConfigurationSelect('LIVE_MODE', 'false', 6, 1);
+        $this->addConfiguration('API_SANDBOX_KEY', '', 6, 1, $setFunctionFieldapiSandboxKey);
+        $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, $setFunctionFieldapiSandboxSecret);
+        $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
+        $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
+        $this->addConfiguration('API_LIVE_ENDPOINT_SECRET', '', 6, 1, $setFunctionFieldapiLiveEndpointSecret);
 
-            $this->addConfiguration($configurationKey, $configurationValue, 6, 1);
-        }
-
-        $repo = new Repository();
+        /** @var Repository **/
+        $repo = $this->container->get(Repository::class);
         $repo->createRthStripePhpSession();
+        $repo->createRthStripePayment();
     }
 
     public function remove(): void
@@ -164,6 +197,9 @@ class payment_rth_stripe extends PaymentModule
     }
 
     /**
+     * // TODO: Because we are switching to temporary orders, this method is no longer necessary in this form and
+     * // TODO: can be revised.
+     *
      * {@inheritdoc}
      *
      * Overwrites PaymentModule::process_button()
@@ -176,17 +212,51 @@ class payment_rth_stripe extends PaymentModule
      */
     public function process_button(): string
     {
-        $order = new Order();
+        // global $order;
 
-        $session = new Session();
-        $session->setOrder($order);
+        // $rthOrder = new Order($order);
 
-        // NOTE: Maybe the following code could be useful, that remains to be seen.
-        // $sessionId = $session->createSessionId();
-        // $hiddenInputHtml = xtc_draw_hidden_field('rth_stripe_session_id', $sessionId);
-        // return $hiddenInputHtml;
+        // $session = new Session();
+        // $session->setOrder($rthOrder);
 
         return '';
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites PaymentModule::payment_action()
+     *
+     * This method is only called when checkout_process.php creates a temporary order. The method is used by
+     * checkout_process.php after creating the order and before notifying the customer If we make a redirect in the
+     * method, the customer will not be notified for the time being. However, the Order Status History noted that the
+     * customer was notified. We need to correct the entry in Order Status History here.
+     *
+     * At this point we save the order in the session, because in the next step rth_stripe.php we no longer have easy
+     * access to the order. We can make life easier for ourselves if we already save the order in the session right now.
+     *
+     * @link https://docs.module-loader.de/module-payment/#payment_action
+     */
+    public function payment_action(): void
+    {
+        // Hopefully a temporary modified order obj that modified creates for us and stores in the database.
+        global $order;
+
+        $orderId = $_SESSION['tmp_oID'] ?? 0;
+        if (!$orderId) {
+            trigger_error('No temporary Order created');
+        }
+
+        // We use our Order class, because so we can wrap the $orderId and a modified Order in one object. A temp
+        // modified Order Object has no orderId.
+        $rthOrder = new Order($orderId, $order);
+
+        $session = $this->container->get(Session::class);
+        $session->setOrder($rthOrder);
+
+        // TODO: Correct the entry in Order Status History, see also method description.
+
+        xtc_redirect($this->form_action_url);
     }
 
     public function after_process(): void
@@ -201,21 +271,21 @@ class payment_rth_stripe extends PaymentModule
         // NOTE: https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-payment_status
     }
 
-    private function hasWebhookEndpoint(): bool
-    {
-        $config = new Configuration(self::NAME);
+    // private function hasWebhookEndpoint(): bool
+    // {
+    //     $config = new Configuration(self::NAME);
 
-        try {
-            \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
-            $endpoints = WebhookEndpoint::all();
-        } catch (Exception $e) {
-            return false;
-        }
+    //     try {
+    //         \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
+    //         $endpoints = WebhookEndpoint::all();
+    //     } catch (Exception $e) {
+    //         return false;
+    //     }
 
-        if (!$endpoints['data']) {
-            return false;
-        }
+    //     if (!$endpoints['data']) {
+    //         return false;
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 }
