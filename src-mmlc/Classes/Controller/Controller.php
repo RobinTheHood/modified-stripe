@@ -83,8 +83,11 @@ class Controller extends AbstractController
 
         Stripe::setApiKey($this->getSecretKey());
 
-        $name        = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']);
-        $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']);
+        /**
+         * TODO: Use reasonable defaults per language.
+         */
+        $name        = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
+        $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
 
         $priceData = [
             'currency'     => 'eur',
@@ -94,6 +97,7 @@ class Controller extends AbstractController
                 'description' => $description,
             ]
         ];
+
 
         /**
          * Creates a Stripe checkout session object. Don't confuse it with a PHP session. Both use the same name.
