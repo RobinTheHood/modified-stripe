@@ -100,7 +100,7 @@ class Field
         return $field;
     }
 
-    public static function checkoutTitle(string $value, string $option): string
+    public static function checkoutTitleDesc(string $value, string $option): string
     {
         require_once 'includes/functions/general.php';
 
@@ -113,7 +113,7 @@ class Field
             <ul class="navigation">
                 <?php foreach ($languages as $language) { ?>
                     <li>
-                        <label for="<?= 'tab-' . $language['code']; ?>">
+                        <label for="<?= $option . '-' . $language['code']; ?>">
                             <?= xtc_image(DIR_WS_LANGUAGES . $language['directory'] . '/admin/images/' . $language['image'], $language['name']); ?>
 
                             <?= $language['name'] ?>
@@ -124,7 +124,7 @@ class Field
             <ul class="content">
                 <?php foreach ($languages as $language) { ?>
                     <li>
-                        <input type="radio" name="tab" id="<?= 'tab-' . $language['code']; ?>" />
+                        <input type="radio" name="tab" id="<?= $option . '-' . $language['code']; ?>" />
 
                         <div class="content">
                             <input type="text" name="configuration[<?= $option . '][' . strtoupper($language['code']) . ']' ?>" value="<?= parse_multi_language_value($value, $language['code'], true) ?>" />

@@ -64,7 +64,7 @@ ul.content > li > input[type="radio"] + .content {
 }
 
 ul.content > li > input[type="radio"]:checked + .content {
-    z-index: 9;
+    z-index: 2;
 }
 
 ul.content > li > input[type="radio"]:checked + .content > input {
