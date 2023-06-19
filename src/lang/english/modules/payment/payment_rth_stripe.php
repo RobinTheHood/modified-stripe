@@ -38,3 +38,8 @@ define($prefix . 'API_LIVE_SECRET_KEY_DESC', 'Use this key to authenticate reque
 define($prefix . 'API_LIVE_KEY_TITLE', 'Live mode publishable key');
 define($prefix . 'API_LIVE_KEY_DESC', 'Use this key, when you’re ready to launch your app, in your web or mobile app’s client-side code.');
 /** */
+
+define($prefix . 'CHECKOUT_TITLE_TITLE', 'Checkout title');
+define($prefix . 'CHECKOUT_TITLE_DESC', 'Text to be used as the title in the Stripe Checkout.');
+define($prefix . 'CHECKOUT_DESC_TITLE', 'Checkout description');
+define($prefix . 'CHECKOUT_DESC_DESC', 'Text to be used as description in the Stripe Checkout.');
