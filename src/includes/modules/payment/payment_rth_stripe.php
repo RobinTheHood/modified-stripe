@@ -68,6 +68,7 @@ class payment_rth_stripe extends PaymentModule
         'API_LIVE_KEY',
         'API_LIVE_SECRET',
         'API_LIVE_ENDPOINT_SECRET',
+        'CHECKOUT_TITLE',
     ];
 
     private DIContainer $container;
@@ -140,6 +141,7 @@ class payment_rth_stripe extends PaymentModule
         $setFunctionFieldapiLiveKey            = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveKey'));
         $setFunctionFieldapiLiveSecret         = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveSecret'));
         $setFunctionFieldapiLiveEndpointSecret = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveEndPointSecret'));
+        $setFunctionFieldcheckoutTitle         = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::checkoutTitle'));
 
         $this->addConfigurationSelect('LIVE_MODE', 'false', 6, 1);
         $this->addConfiguration('API_SANDBOX_KEY', '', 6, 1, $setFunctionFieldapiSandboxKey);
@@ -147,6 +149,7 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
         $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
         $this->addConfiguration('API_LIVE_ENDPOINT_SECRET', '', 6, 1, $setFunctionFieldapiLiveEndpointSecret);
+        $this->addConfiguration('CHECKOUT_TITLE', '', 6, 1, $setFunctionFieldcheckoutTitle);
 
         /** @var Repository **/
         $repo = $this->container->get(Repository::class);
