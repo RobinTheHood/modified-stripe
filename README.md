@@ -79,6 +79,10 @@ By following these steps, you will have a fully set up development environment f
 
 If you have any further questions or need additional assistance, feel free to ask. Happy coding!
 
+### Tooling Tips
+
+- `stripe listen --forward-to https://mmlc.ddev.site:443/rth_stripe.php\?action\=receiveHook`
+- `tail -f ../log/mod_error_2023-06-06.log -f ../log/mod_error_admin_2023-06-06.log`
 
 ### How the Stripe Module Works
 
