@@ -1,0 +1,73 @@
+/**
+ * Tabs
+ */
+.tabs {
+    --maxWidth: 968.217px;
+}
+
+/** Navigation */
+ul.navigation {
+    display: flex;
+    max-width: var(--maxWidth);
+    padding: 0 !important;
+    margin: 0;
+
+    list-style: none;
+    overflow: auto;
+}
+ul.navigation > li {
+    padding: 8px 20px;
+
+    cursor: pointer;
+    user-select: none;
+
+    border-top: 1px solid #aaa;
+    border-left: 1px solid #aaa;
+    background-color: #f7f7f7;
+    border-collapse: collapse;
+}
+ul.navigation > li:last-of-type {
+    border-right: 1px solid #aaa;
+}
+ul.navigation > li:focus,
+ul.navigation > li:active {
+    background-color: #d0d0d0;
+}
+
+/** Content */
+ul.content {
+    position: relative;
+    width: 100%;
+    max-width: var(--maxWidth);
+    height: 29px;
+    padding: 0 !important;
+    margin: 0;
+
+    list-style: none;
+}
+
+ul.content > li {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+ul.content > li > input[type="radio"] + .content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+}
+
+ul.content > li > input[type="radio"]:checked + .content {
+    z-index: 2;
+}
+
+ul.content > li > input[type="radio"]:checked + .content > input {
+    width: 100%;
+}
+/** */

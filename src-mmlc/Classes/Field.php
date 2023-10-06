@@ -99,4 +99,42 @@ class Field
 
         return $field;
     }
+
+    public static function checkoutTitleDesc(string $value, string $option): string
+    {
+        require_once 'includes/functions/general.php';
+
+        $languages = xtc_get_languages();
+
+        ob_start();
+        ?>
+
+        <div class="tabs">
+            <ul class="navigation">
+                <?php foreach ($languages as $language) { ?>
+                    <li>
+                        <label for="<?= $option . '-' . $language['code']; ?>">
+                            <?= xtc_image(DIR_WS_LANGUAGES . $language['directory'] . '/admin/images/' . $language['image'], $language['name']); ?>
+
+                            <?= $language['name'] ?>
+                        </label>
+                    </li>
+                <?php } ?>
+            </ul>
+            <ul class="content">
+                <?php foreach ($languages as $language) { ?>
+                    <li>
+                        <input type="radio" name="tab" id="<?= $option . '-' . $language['code']; ?>" />
+
+                        <div class="content">
+                            <input type="text" name="configuration[<?= $option . '][' . strtoupper($language['code']) . ']' ?>" value="<?= parse_multi_language_value($value, $language['code'], true) ?>" />
+                        </div>
+                    </li>
+                <?php } ?>
+            </ul>
+        </div>
+
+        <?php
+        return ob_get_clean();
+    }
 }

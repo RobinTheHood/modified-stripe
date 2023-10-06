@@ -44,3 +44,8 @@ define($prefix . 'API_LIVE_KEY_DESC', 'Verwenden Sie diesen Schlüssel im client
 define($prefix . 'API_LIVE_ENDPOINT_SECRET_TITLE', 'Geheimer Webhook Schlüssel');
 define($prefix . 'API_LIVE_ENDPOINT_SECRET_DESC', 'Dieser Schlüssel wird benötigt, damit der Server kontrollieren kann, ob die Anfragen von Stripe kommen.');
 /** */
+
+define($prefix . 'CHECKOUT_TITLE_TITLE', 'Checkout Titel');
+define($prefix . 'CHECKOUT_TITLE_DESC', 'Text der im Stripe Checkout als Titel verwendet werden soll.');
+define($prefix . 'CHECKOUT_DESC_TITLE', 'Checkout Beschreibung');
+define($prefix . 'CHECKOUT_DESC_DESC', 'Text der im Stripe Checkout als Beschreibung verwendet werden soll.');
