@@ -31,10 +31,6 @@ if (payment_rth_stripe::class !== $order->info['payment_method']) {
         padding-top: 20px;
     }
 
-    .rth-stripe .rth-stripe-property-list {
-
-    }
-
     .rth-stripe .rth-stripe-property-list-row {
         display: flex;
         margin: 8px 0px;
