@@ -151,6 +151,8 @@ class Controller extends AbstractController
 
     /**
      * // TODO: move this to its own Webhook Controller
+     *
+     * The receiveHook action was registered as a WebHook with Stripe, so we can receive it in this method.
      */
     protected function invokeReceiveHook(Request $request): Response
     {

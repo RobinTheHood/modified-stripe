@@ -33,7 +33,7 @@ class payment_rth_stripe extends PaymentModule
      * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)
      * Because we set $tmpOrders true, checkout_process.php first creates a temp Order
      *
-     * @var string $form_action_url
+     * @var string $form_action_url RobinTheHood\Stripe\Classes\Controller\Controller::invokeCheckout()
      */
     public $form_action_url = '/rth_stripe.php?action=checkout';
 
@@ -262,6 +262,7 @@ class payment_rth_stripe extends PaymentModule
 
         // TODO: Correct the entry in Order Status History, see also method description.
 
+        // See RobinTheHood\Stripe\Classes\Controller\Controller::invokeCheckout()
         xtc_redirect($this->form_action_url);
     }
 
