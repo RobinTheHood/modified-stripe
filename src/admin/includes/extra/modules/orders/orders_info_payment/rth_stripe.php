@@ -1,3 +1,17 @@
+<?php
+
+use RobinTheHood\Stripe\Classes\Constants;
+
+if (rth_is_module_disabled(Constants::MODULE_PAYMENT_NAME)) {
+    return;
+}
+
+if (payment_rth_stripe::class !== $order->info['payment_method']) {
+    return;
+}
+
+?>
+
 <style>
     .rth-stripe {
         padding: 20px;
