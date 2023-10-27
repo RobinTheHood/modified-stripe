@@ -1,4 +1,83 @@
+<style>
+    .rth-stripe {
+        padding: 20px;
+        background-color: white;
+        margin-top: 10px;
+        width: 100%
+    }
+
+    .rth-stripe h3 {
+        color: rgb(26, 27, 37);
+        font-size: 18px;
+        margin-top: 0px;
+    }
+
+    .rth-stripe .rth-stripe-content {
+        border-top: 1px solid rgb(235,238,241);
+        padding-top: 20px;
+    }
+
+    .rth-stripe .rth-stripe-property-list {
+
+    }
+
+    .rth-stripe .rth-stripe-property-list-row {
+        display: flex;
+        margin: 8px 0px;
+    }
+
+    .rth-stripe .rth-stripe-property-list-item-label {
+        min-width: 180px;
+        color: rgb(104, 115, 133);
+    }
+
+    .rth-stripe .rth-stripe-property-list-item-value {
+        color: rgb(65, 69, 82);
+    }
+</style>
+
 <tr>
+    <td colspan="2">
+        <div class="rth-stripe">
+            <h3>Stripe - Zahlungsmethode</h3>
+            <div class="rth-stripe-content">
+                <div class="rth-stripe-property-list">
+                    <div class="rth-stripe-property-list-row">
+                        <div class="rth-stripe-property-list-item-label">ID</div>
+                        <div class="rth-stripe-property-list-item-value">pm_1O5ngnJIsfvAtVBdxcIxeu3b</div>
+                    </div>
+
+                    <div class="rth-stripe-property-list-row">
+                        <div class="rth-stripe-property-list-item-label">Nummer</div>
+                        <div class="rth-stripe-property-list-item-value">•••• 4242</div>
+                    </div>
+
+                    <div class="rth-stripe-property-list-row">
+                        <div class="rth-stripe-property-list-item-label">Fingerabdruck</div>
+                        <div class="rth-stripe-property-list-item-value">uyMGel009AKHV6UG</div>
+                    </div>
+
+                    <div class="rth-stripe-property-list-row">
+                        <div class="rth-stripe-property-list-item-label">Gültig bis</div>
+                        <div class="rth-stripe-property-list-item-value">04 / 2024</div>
+                    </div>
+
+                    <div class="rth-stripe-property-list-row">
+                        <div class="rth-stripe-property-list-item-label">Typ</div>
+                        <div class="rth-stripe-property-list-item-value">Visa credit Karte</div>
+                    </div>
+
+                    <div class="rth-stripe-property-list-row">
+                        <div class="rth-stripe-property-list-item-label">Aussteller</div>
+                        <div class="rth-stripe-property-list-item-value">Stripe Payments UK Limited</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+</td>
+
+<tr style="display: none">
     <td>
         <div style="border: 1px solid rgb(153, 102, 255);">
             Stripe Payment Info
