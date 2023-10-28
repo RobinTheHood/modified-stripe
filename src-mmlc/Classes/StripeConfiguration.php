@@ -35,6 +35,9 @@ class StripeConfiguration extends Configuration
         }
     }
 
+    /**
+     * Returns a Sandbox Secrect Key sk_test_xxxx
+     */
     public function getApiSandboxSecret(): string
     {
         try {
@@ -44,6 +47,9 @@ class StripeConfiguration extends Configuration
         }
     }
 
+    /**
+     * Returns a Secrect Key sk_xxxx
+     */
     public function getApiLiveSecret(): string
     {
         try {
