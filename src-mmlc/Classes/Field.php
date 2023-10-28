@@ -42,7 +42,8 @@ class Field
 
         ob_start()
         ?>
-        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="sk_test_..."/>
+        <input id="apiSandboxSerect" type="password" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="sk_test_..."/>
+        <input type="checkbox" onchange="const input = document.getElementById('apiSandboxSerect'); if (this.checked) {input.setAttribute('type', 'text')} else {input.setAttribute('type', 'password')}"> anzeigen
         <?php
         $field = ob_get_clean();
 
@@ -76,7 +77,8 @@ class Field
 
         ob_start()
         ?>
-        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="sk_live_..."/>
+        <input id="apiSerect" type="password" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="sk_live_..."/>
+        <input type="checkbox" onchange="const input = document.getElementById('apiSerect'); if (this.checked) {input.setAttribute('type', 'text')} else {input.setAttribute('type', 'password')}"> anzeigen
         <?php
         $field = ob_get_clean();
 
@@ -93,7 +95,8 @@ class Field
 
         ob_start()
         ?>
-        <input type="text" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="whsec_..."/>
+        <input id="webhookSerect" type="password" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="whsec_..."/>
+        <input type="checkbox" onchange="const input = document.getElementById('webhookSerect'); if (this.checked) {input.setAttribute('type', 'text')} else {input.setAttribute('type', 'password')}"> anzeigen
         <?php
         $field = ob_get_clean();
 
