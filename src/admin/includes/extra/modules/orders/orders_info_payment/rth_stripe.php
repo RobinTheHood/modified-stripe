@@ -3,22 +3,56 @@
 use RobinTheHood\Stripe\Classes\Constants;
 use RobinTheHood\Stripe\Classes\Repository;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+use RobinTheHood\Stripe\Classes\StripeConfiguration;
+
+// restore_error_handler();
+// restore_exception_handler();
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL ^ E_NOTICE);
 
 if (rth_is_module_disabled(Constants::MODULE_PAYMENT_NAME)) {
     return;
 }
 
 $orderInfo = $order->info;
-$orderId   = $orderInfo['orders_id'];
+$orderId = $orderInfo['orders_id'];
 
 if (payment_rth_stripe::class !== $orderInfo['payment_method']) {
     return;
 }
 
-$diContainer     = new DIContainer();
-$repository      = $diContainer->get(Repository::class);
-$rthStripPayment = $repository->getRthStripePaymentByOrderId($orderId);
+$diContainer = new DIContainer();
+$repository = $diContainer->get(Repository::class);
+$rthStripePayment = $repository->getRthStripePaymentByOrderId($orderId);
 
+$config = new StripeConfiguration(Constants::MODULE_PAYMENT_NAME);
+$liveMode = $config->getLiveMode();
+
+if ($liveMode) {
+    $secret = $config->getApiLiveSecret();
+} else {
+    $secret = $config->getApiSandboxSecret();
+}
+
+
+$stripe = new \Stripe\StripeClient($secret);
+
+try {
+    $paymentIntent = $stripe->paymentIntents->retrieve(
+        $rthStripePayment['stripe_payment_intent_id'],
+        []
+    );
+} catch (InvalidArgumentException $e) {
+}
+
+try {
+    $paymentMethod = $stripe->paymentMethods->retrieve(
+        $paymentIntent->payment_method,
+        []
+    );
+} catch (InvalidArgumentException $e) {
+}
 ?>
 
 <style>
@@ -60,38 +94,33 @@ $rthStripPayment = $repository->getRthStripePaymentByOrderId($orderId);
         <div class="rth-stripe">
             <h3>Stripe - Zahlungsmethode</h3>
             <div class="rth-stripe-content">
-                <?php if (null === $rthStripPayment) { ?>
+                <?php if (null === $rthStripePayment) { ?>
                     Fehler: Keine Zahlung mit Stripe gefunden. Suche auf stripe.com in deinem Account nach der passenden Zahlung.
                 <?php } else { ?>
                     <div class="rth-stripe-property-list">
                         <div class="rth-stripe-property-list-row">
                             <div class="rth-stripe-property-list-item-label">ID</div>
-                            <div class="rth-stripe-property-list-item-value">pm_1O5ngnJIsfvAtVBdxcIxeu3b</div>
+                            <div class="rth-stripe-property-list-item-value"><?= $paymentMethod->id ?></div>
                         </div>
 
                         <div class="rth-stripe-property-list-row">
                             <div class="rth-stripe-property-list-item-label">Nummer</div>
-                            <div class="rth-stripe-property-list-item-value">•••• 4242</div>
+                            <div class="rth-stripe-property-list-item-value">•••• <?= $paymentMethod->card->last4 ?></div>
                         </div>
 
                         <div class="rth-stripe-property-list-row">
                             <div class="rth-stripe-property-list-item-label">Fingerabdruck</div>
-                            <div class="rth-stripe-property-list-item-value">uyMGel009AKHV6UG</div>
+                            <div class="rth-stripe-property-list-item-value"><?= $paymentMethod->card->fingerprint ?></div>
                         </div>
 
                         <div class="rth-stripe-property-list-row">
                             <div class="rth-stripe-property-list-item-label">Gültig bis</div>
-                            <div class="rth-stripe-property-list-item-value">04 / 2024</div>
+                            <div class="rth-stripe-property-list-item-value"><?= $paymentMethod->card->exp_month ?> / <?= $paymentMethod->card->exp_year ?></div>
                         </div>
 
                         <div class="rth-stripe-property-list-row">
                             <div class="rth-stripe-property-list-item-label">Typ</div>
-                            <div class="rth-stripe-property-list-item-value">Visa credit Karte</div>
-                        </div>
-
-                        <div class="rth-stripe-property-list-row">
-                            <div class="rth-stripe-property-list-item-label">Aussteller</div>
-                            <div class="rth-stripe-property-list-item-value">Stripe Payments UK Limited</div>
+                            <div class="rth-stripe-property-list-item-value"><?= $paymentMethod->card->brand ?></div>
                         </div>
                     </div>
                 <?php } ?>
