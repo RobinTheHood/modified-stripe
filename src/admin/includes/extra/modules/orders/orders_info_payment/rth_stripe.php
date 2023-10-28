@@ -1,14 +1,23 @@
 <?php
 
 use RobinTheHood\Stripe\Classes\Constants;
+use RobinTheHood\Stripe\Classes\Repository;
+use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 
 if (rth_is_module_disabled(Constants::MODULE_PAYMENT_NAME)) {
     return;
 }
 
-if (payment_rth_stripe::class !== $order->info['payment_method']) {
+$orderInfo = $order->info;
+$orderId   = $orderInfo['orders_id'];
+
+if (payment_rth_stripe::class !== $orderInfo['payment_method']) {
     return;
 }
+
+$diContainer     = new DIContainer();
+$repository      = $diContainer->get(Repository::class);
+$rthStripPayment = $repository->getRthStripePaymentByOrderId($orderId);
 
 ?>
 
@@ -51,37 +60,41 @@ if (payment_rth_stripe::class !== $order->info['payment_method']) {
         <div class="rth-stripe">
             <h3>Stripe - Zahlungsmethode</h3>
             <div class="rth-stripe-content">
-                <div class="rth-stripe-property-list">
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">ID</div>
-                        <div class="rth-stripe-property-list-item-value">pm_1O5ngnJIsfvAtVBdxcIxeu3b</div>
-                    </div>
+                <?php if (null === $rthStripPayment) { ?>
+                    Fehler: Keine Zahlung mit Stripe gefunden. Suche auf stripe.com in deinem Account nach der passenden Zahlung.
+                <?php } else { ?>
+                    <div class="rth-stripe-property-list">
+                        <div class="rth-stripe-property-list-row">
+                            <div class="rth-stripe-property-list-item-label">ID</div>
+                            <div class="rth-stripe-property-list-item-value">pm_1O5ngnJIsfvAtVBdxcIxeu3b</div>
+                        </div>
 
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Nummer</div>
-                        <div class="rth-stripe-property-list-item-value">•••• 4242</div>
-                    </div>
+                        <div class="rth-stripe-property-list-row">
+                            <div class="rth-stripe-property-list-item-label">Nummer</div>
+                            <div class="rth-stripe-property-list-item-value">•••• 4242</div>
+                        </div>
 
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Fingerabdruck</div>
-                        <div class="rth-stripe-property-list-item-value">uyMGel009AKHV6UG</div>
-                    </div>
+                        <div class="rth-stripe-property-list-row">
+                            <div class="rth-stripe-property-list-item-label">Fingerabdruck</div>
+                            <div class="rth-stripe-property-list-item-value">uyMGel009AKHV6UG</div>
+                        </div>
 
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Gültig bis</div>
-                        <div class="rth-stripe-property-list-item-value">04 / 2024</div>
-                    </div>
+                        <div class="rth-stripe-property-list-row">
+                            <div class="rth-stripe-property-list-item-label">Gültig bis</div>
+                            <div class="rth-stripe-property-list-item-value">04 / 2024</div>
+                        </div>
 
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Typ</div>
-                        <div class="rth-stripe-property-list-item-value">Visa credit Karte</div>
-                    </div>
+                        <div class="rth-stripe-property-list-row">
+                            <div class="rth-stripe-property-list-item-label">Typ</div>
+                            <div class="rth-stripe-property-list-item-value">Visa credit Karte</div>
+                        </div>
 
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Aussteller</div>
-                        <div class="rth-stripe-property-list-item-value">Stripe Payments UK Limited</div>
+                        <div class="rth-stripe-property-list-row">
+                            <div class="rth-stripe-property-list-item-label">Aussteller</div>
+                            <div class="rth-stripe-property-list-item-value">Stripe Payments UK Limited</div>
+                        </div>
                     </div>
-                </div>
+                <?php } ?>
             </div>
         </div>
     </td>
