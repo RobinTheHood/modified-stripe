@@ -101,7 +101,7 @@ class Repository
     {
         $this->db->query(
             "INSERT INTO rth_stripe_payment (
-                `created`, `orders_id`, `stripe_payment_intent_id`
+                `created`, `order_id`, `stripe_payment_intent_id`
             ) VALUES (
                 NOW(), '$orderId', '$stripePaymentIntentId'
             )"

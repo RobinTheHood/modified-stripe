@@ -224,7 +224,7 @@ class Controller extends AbstractController
         $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
 
         // Create a link between the order and the payment
-        $repo->insertRthStripePayment($order->getId(), $session->payment_intent->id);
+        $repo->insertRthStripePayment($order->getId(), $session->payment_intent);
     }
 
     private function getSecretKey(): string
