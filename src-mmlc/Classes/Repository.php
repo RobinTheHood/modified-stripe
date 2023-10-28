@@ -97,6 +97,20 @@ class Repository
         );
     }
 
+    public function getRthStripePaymentByOrderId(int $orderId): ?array
+    {
+        $query = $this->db->query(
+            "SELECT * FROM rth_stripe_payment WHERE order_id='$orderId'"
+        );
+
+        $row = $this->db->fetch($query);
+        if (!isset($row['id'])) {
+            return null;
+        }
+
+        return $row;
+    }
+
     public function insertRthStripePayment(int $orderId, string $stripePaymentIntentId): void
     {
         $this->db->query(
