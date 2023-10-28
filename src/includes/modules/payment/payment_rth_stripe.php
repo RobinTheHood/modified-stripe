@@ -150,8 +150,8 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
         $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
         $this->addConfiguration('API_LIVE_ENDPOINT_SECRET', '', 6, 1, $setFunctionFieldapiLiveEndpointSecret);
-        $this->addConfiguration('CHECKOUT_TITLE', '', 6, 1, $setFunctionFieldcheckoutTitleDesc);
-        $this->addConfiguration('CHECKOUT_DESC', '', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+        $this->addConfiguration('CHECKOUT_TITLE', 'DE::Einkauf bei SHOPNAME||EN::Purchase at SHOPNAME', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+        $this->addConfiguration('CHECKOUT_DESC', 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order', 6, 1, $setFunctionFieldcheckoutTitleDesc);
 
         /** @var Repository **/
         $repo = $this->container->get(Repository::class);
