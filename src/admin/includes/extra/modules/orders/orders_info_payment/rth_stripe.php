@@ -123,6 +123,8 @@ try {
                             <div class="rth-stripe-property-list-item-value"><?= $paymentMethod->card->brand ?></div>
                         </div>
                     </div>
+                    <br>
+                    Rückzahlungen kannst du über stripe.com durchführen.
                 <?php } ?>
             </div>
         </div>
