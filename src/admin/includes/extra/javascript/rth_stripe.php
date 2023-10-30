@@ -22,40 +22,32 @@ if (rth_is_module_disabled(Classes\Constants::MODULE_PAYMENT_NAME)) {
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.rth-stripe-tabs');
         tabs.forEach(function(tab) {
-            // console.log(tab);
-
             const navigationItems = tab.querySelectorAll('ul.navigation li');
             const contentItems = tab.querySelectorAll('ul.content li');
 
-            navigationItems[0].classList.add("active");
-
-            contentItems.forEach(function (item) {
-                item.style.display = 'none';
-            });
-            contentItems[0].style.display = 'block';
-
+            // add a click event function for all tab headings
             navigationItems.forEach(function(item, itemIndex) {
-                // console.log(item);
-
                 item.addEventListener('click', function () {
-                    navigationItems.forEach(function (item) {
-                        item.classList.remove("active");
-                    });
-
-                    contentItems.forEach(function (item) {
-                        item.style.display = 'none';
-                    });
-
-                    contentItems[itemIndex].style.display = "block";
-
-                    // console.log(this);
-
-                    this.classList.add("active");
+                    switchTab(itemIndex);
                 });
-
             })
 
-        });
+            const switchTab = function (tabIndex) {
+                // set tab heading to active
+                navigationItems.forEach(function (item) {
+                    item.classList.remove("active");
+                });
+                navigationItems[tabIndex].classList.add("active");
 
+                // set tab content to visible
+                contentItems.forEach(function (item) {
+                    item.style.display = 'none';
+                });
+                contentItems[tabIndex].style.display = 'block';
+            };
+
+            // set first tab to active after page load
+            switchTab(0);
+        });
     }, false);
 </script>
