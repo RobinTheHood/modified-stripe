@@ -13,8 +13,6 @@
 
 namespace RobinTheHood\Stripe;
 
-require_once DIR_FS_DOCUMENT_ROOT . '/includes/extra/functions/rth_modified_std_module.php';
-
 if (rth_is_module_disabled(Classes\Constants::MODULE_PAYMENT_NAME)) {
     return;
 }
