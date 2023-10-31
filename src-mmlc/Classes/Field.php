@@ -112,23 +112,18 @@ class Field
         ob_start();
         ?>
 
-        <div class="tabs">
+        <div class="rth-stripe-tabs">
             <ul class="navigation">
                 <?php foreach ($languages as $language) { ?>
                     <li>
-                        <label for="<?= $option . '-' . $language['code']; ?>">
                             <?= xtc_image(DIR_WS_LANGUAGES . $language['directory'] . '/admin/images/' . $language['image'], $language['name']); ?>
-
                             <?= $language['name'] ?>
-                        </label>
                     </li>
                 <?php } ?>
             </ul>
             <ul class="content">
                 <?php foreach ($languages as $language) { ?>
                     <li>
-                        <input type="radio" name="tab" id="<?= $option . '-' . $language['code']; ?>" />
-
                         <div class="content">
                             <input type="text" name="configuration[<?= $option . '][' . strtoupper($language['code']) . ']' ?>" value="<?= parse_multi_language_value($value, $language['code'], true) ?>" />
                         </div>
