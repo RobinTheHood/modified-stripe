@@ -193,10 +193,16 @@ class payment_rth_stripe extends PaymentModule
      */
     public function selection(): array
     {
+        $selectionFieldArray = [
+            'title' => '',
+            'field' => xtc_draw_hidden_field(xtc_session_name(), xtc_session_id())
+        ];
+
         $selectionArray = [
             'id'          => $this->code,
             'module'      => 'Stripe (RobinTheHood)',
-            'description' => 'Zahle mit Stripe'
+            'description' => 'Zahle mit Stripe',
+            'fields'      => [$selectionFieldArray]
         ];
 
         return $selectionArray;
