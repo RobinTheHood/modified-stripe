@@ -142,9 +142,10 @@ class Controller extends AbstractController
         }
     }
 
-    public function invokeCancel(): void
+    public function invokeCancel(): Response
     {
-        dd('The order could not be paid.');
+        return new RedirectResponse('/checkout_confirmation.php');
+        //dd('The order could not be paid.');
 
         // TODO: handle cancel
     }
