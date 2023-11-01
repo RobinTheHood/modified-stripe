@@ -53,6 +53,19 @@ try {
     );
 } catch (InvalidArgumentException $e) {
 }
+
+try {
+    $latestCharge = $stripe->charges->retrieve(
+        $paymentIntent['latest_charge'],
+        []
+    );
+} catch (InvalidArgumentException $e) {
+}
+
+echo '<pre>';
+var_dump($paymentIntent);
+var_dump($latestCharge);
+var_dump($latestCharge['payment_method_details']);
 ?>
 
 <style>
