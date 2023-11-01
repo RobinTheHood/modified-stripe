@@ -231,7 +231,42 @@ class payment_rth_stripe extends PaymentModule
         // $session = new Session();
         // $session->setOrder($rthOrder);
 
-        return '';
+        //return '';
+
+        $htmlStr = xtc_draw_hidden_field(xtc_session_name(), xtc_session_id());
+
+        return $htmlStr;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function before_process(): void
+    {
+        require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
+
+        /** @var int|false */
+        $tempOrderId = $_SESSION['tmp_oID'] ?? false;
+
+        if (!$tempOrderId) {
+            return;
+        }
+
+        if (!is_numeric($tempOrderId)) {
+            return;
+        }
+
+        $_SESSION['tmp_oID'] = null;
+
+        // TODO: maybe we should remove this order
+        $restockOrder    = true;
+        $reactiveProduct = true;
+        //xtc_remove_order(order_id: $tempOrderId, restock: $restockOrder, activate: $reactiveProduct);
+        xtc_remove_order($tempOrderId, restock: $restockOrder, activate: $reactiveProduct);
+        //xtc_remove_order($tempOrderId, $restockOrder, $reactiveProduct);
+
+        // unset($_SESSION['tmp_oID']);
+        xtc_redirect('checkout_confirmation.php');
     }
 
     /**
