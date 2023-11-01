@@ -113,3 +113,17 @@ The Stripe module is a payment module designed for modified shops, accessible th
 
 ## Support and Questions
 You can ask your questions on our [discord server](https://discord.gg/9NqwJqP).
+
+## Good to know
+
+### Apple Pay
+
+Apple Pay is only displayed in the Safari browser and only if you have configured a card in your wallet on your device (iPhone). If no card is configured, the Apple Pay button will not work
+
+For Apple Pay you have to Setup your Domain at and add a file at Settings > Payment Methods > Payment Methods Domains: `/.well-known/apple-developer-merchantid-domain-association`
+
+Maybe you have to configure your .htacces:
+
+```htaccess
+RewriteRule ^/.well-known/apple-developer-merchantid-domain-association .well-known/apple-developer-merchantid-domain-association [QSA,L]
+``````
