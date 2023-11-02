@@ -203,6 +203,22 @@ class payment_rth_stripe extends PaymentModule
     }
 
     /**
+     * //TODOO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
+     */
+    public function pre_confirmation_check(): void
+    {
+        $tempOrderId = $this->getTemporaryOrderId();
+
+        if (!$this->isValidOrderId($tempOrderId)) {
+            return;
+        }
+
+        $this->removeTemporaryOrder($tempOrderId);
+        $this->setTemporaryOrderId(false);
+        xtc_redirect('checkout_confirmation.php');
+    }
+
+    /**
      * // TODO: Because we are switching to temporary orders, this method is no longer necessary in this form and
      * // TODO: can be revised.
      *
