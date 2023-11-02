@@ -63,9 +63,6 @@ class Controller extends AbstractController
      */
     protected function invokeCheckout(): Response
     {
-        require_once DIR_WS_FUNCTIONS . 'sessions.php';
-        include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
-
         $domain = HTTPS_SERVER;
 
         /**

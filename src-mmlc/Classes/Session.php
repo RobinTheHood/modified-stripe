@@ -23,6 +23,12 @@ use RobinTheHood\Stripe\Classes\Framework\Database;
  * with the Stripe payment process. The class should help to simply restore the session
  *
  * The class should take over the task of saving and loading PHP session.
+ *
+ * The following files are required. See rth_stripe.php
+ * DIR_WS_FUNCTIONS . 'sessions.php';
+ * DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
+ * DIR_WS_CLASSES . 'order_total.php';
+ * DIR_WS_CLASSES . 'order.php';
  */
 class Session
 {
@@ -34,11 +40,6 @@ class Session
     public function __construct(Repository $repo)
     {
         $this->repo = $repo;
-
-        // We need this, because modified classes are not loaded by the composer autoload
-        // The classes that we want to unserialize must be loaded before we unserialize them
-        require_once DIR_WS_CLASSES . 'order_total.php';
-        require_once DIR_WS_CLASSES . 'order.php';
     }
 
     public function getOrder(): ?Order

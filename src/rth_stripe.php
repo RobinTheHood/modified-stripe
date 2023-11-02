@@ -24,9 +24,14 @@ use RobinTheHood\Stripe\Classes\Framework\RequestFactory;
  * files from includes/extra/functions/ that we need for autoloading are then not loaded either. Now we have to do that
  * ourselves.
  */
-include 'includes/application_top_callback.php';
+
+require_once 'includes/application_top_callback.php';
+require_once DIR_WS_FUNCTIONS . 'sessions.php';
+require_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
 require_once DIR_FS_CATALOG . 'includes/extra/functions/composer_autoload.php';
 require_once DIR_FS_CATALOG . 'includes/extra/functions/rth_modified_std_module.php';
+require_once DIR_WS_CLASSES . 'order_total.php';
+require_once DIR_WS_CLASSES . 'order.php';
 
 $rthDevMode = true;
 
