@@ -142,12 +142,14 @@ class Controller extends AbstractController
         }
     }
 
+    /**
+     * //TODOO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
+     *
+     * @see modules/payment/payment_rth_stripe.php::pre_confirmation_check() to learn how the temporary order is deleted
+     */
     public function invokeCancel(): Response
     {
         return new RedirectResponse('/checkout_confirmation.php');
-        //dd('The order could not be paid.');
-
-        // TODO: handle cancel
     }
 
     /**
