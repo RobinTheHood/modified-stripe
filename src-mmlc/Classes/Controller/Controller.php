@@ -63,9 +63,6 @@ class Controller extends AbstractController
      */
     protected function invokeCheckout(): Response
     {
-        require_once DIR_WS_FUNCTIONS . 'sessions.php';
-        include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
-
         $domain = HTTPS_SERVER;
 
         /**
@@ -142,11 +139,14 @@ class Controller extends AbstractController
         }
     }
 
-    public function invokeCancel(): void
+    /**
+     * //TODOO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
+     *
+     * @see modules/payment/payment_rth_stripe.php::pre_confirmation_check() to learn how the temporary order is deleted
+     */
+    public function invokeCancel(): Response
     {
-        dd('The order could not be paid.');
-
-        // TODO: handle cancel
+        return new RedirectResponse('/checkout_confirmation.php');
     }
 
     /**

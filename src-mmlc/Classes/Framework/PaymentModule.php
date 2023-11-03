@@ -17,7 +17,9 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes\Framework;
 
+use order as ModifiedOrder;
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
+use RuntimeException;
 
 /**
  * In this class we have outsourced everything that is not for a specific modified PaymentModule. The methods in
@@ -172,5 +174,65 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
     public function info()
     {
         return;
+    }
+
+    protected function getModifiedOrder(): ?ModifiedOrder
+    {
+        global $order;
+        return $order;
+    }
+
+    /**
+     * Gets a temprary order id
+     */
+    protected function getTemporaryOrderId(): int|false
+    {
+        /** @var int|false */
+        $tempOrderId = $_SESSION['tmp_oID'] ?? false;
+        return $tempOrderId;
+    }
+
+    /**
+     * Sets a temporary order id
+     */
+    protected function setTemporaryOrderId(int|bool $tempOrderId): void
+    {
+        $_SESSION['tmp_oID'] = $tempOrderId;
+    }
+
+    /**
+     * Checks whether it is a valid order ID.
+     */
+    protected function isValidOrderId(mixed $tempOrderId): bool
+    {
+        if (!$tempOrderId) {
+            return false;
+        }
+
+        if (!is_numeric($tempOrderId)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes an temporary order based on the temporary order id
+     *
+     * @param bool $restockOrder Add the inventory from the order back to the products
+     * @param bool $reactiveProduct Activate the product if it has been deactivated
+     */
+    protected function removeTemporaryOrder(
+        int $tempOrderId,
+        bool $restockOrder = true,
+        bool $reactiveProduct = true
+    ): void {
+        if (!$this->isValidOrderId($tempOrderId)) {
+            throw new RuntimeException("Can not remove temporary order. $tempOrderId is not a valid order id");
+        }
+
+        require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
+
+        xtc_remove_order($tempOrderId, $restockOrder, $reactiveProduct);
     }
 }

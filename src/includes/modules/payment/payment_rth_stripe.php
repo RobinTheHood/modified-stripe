@@ -209,6 +209,22 @@ class payment_rth_stripe extends PaymentModule
     }
 
     /**
+     * //TODOO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
+     */
+    public function pre_confirmation_check(): void
+    {
+        $tempOrderId = $this->getTemporaryOrderId();
+
+        if (!$this->isValidOrderId($tempOrderId)) {
+            return;
+        }
+
+        $this->removeTemporaryOrder($tempOrderId);
+        $this->setTemporaryOrderId(false);
+        xtc_redirect('checkout_confirmation.php');
+    }
+
+    /**
      * // TODO: Because we are switching to temporary orders, this method is no longer necessary in this form and
      * // TODO: can be revised.
      *
@@ -252,16 +268,21 @@ class payment_rth_stripe extends PaymentModule
     public function payment_action(): void
     {
         // Hopefully a temporary modified order obj that modified creates for us and stores in the database.
-        global $order;
+        // global $order;
 
-        $orderId = $_SESSION['tmp_oID'] ?? 0;
-        if (!$orderId) {
+        $tempOrderId = $this->getTemporaryOrderId();
+        if (!$tempOrderId) {
             trigger_error('No temporary Order created');
         }
 
         // We use our Order class, because so we can wrap the $orderId and a modified Order in one object. A temp
         // modified Order Object has no orderId.
-        $rthOrder = new Order($orderId, $order);
+        $modifiedOrder = $this->getModifiedOrder();
+        if (!$modifiedOrder) {
+            // TODO: Handle error
+        }
+
+        $rthOrder = new Order($tempOrderId, $modifiedOrder);
 
         $session = $this->container->get(Session::class);
         $session->setOrder($rthOrder);
