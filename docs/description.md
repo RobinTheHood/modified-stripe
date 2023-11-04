@@ -1,8 +1,14 @@
-⚠️ Achtung: Dieses Modul befindet sich in der Beta Test-Phase. Das Modul im Produktiv-System nur mit Bedacht einsetzten.
+⚠️ Achtung: Dieses Modul befindet sich in der Beta Test-Phase. Das Modul im Produktiv-System nur mit Bedacht einsetzen.
 
 ## 💳 Revolutioniere deinen Online-Shop mit unserem kostenlosen Stripe Zahlungs Modul
 
-Bereit für den Sprung in die Zukunft des E-Commerce? Unser maßgeschneidertes Stripe-Zahlungsmodul für das Modified Shop System macht es möglich. Mit diesem innovativen Tool kannst du deine Zahlungsmöglichkeiten erweitern und deinen Kunden ein nahtloses und sicheres Einkaufserlebnis bieten.
+Bereit für den Sprung in die Zukunft des E-Commerce? Unser maßgeschneidertes Stripe-Zahlungsmodul für das modified Shop System macht es möglich. Mit diesem innovativen Tool kannst du deine Zahlungsmöglichkeiten erweitern und deinen Kunden ein nahtloses und sicheres Einkaufserlebnis bieten.
+
+## 🚀 Steige in die Zukunft des E-Commerce ein
+
+Ermögliche deinen Kunden ein müheloses Einkaufserlebnis und steigere deine Umsätze mit unserem Stripe-Zahlungsmodul. Starte noch heute und beobachte, wie die Zahlungen reibungslos eingehen.
+
+Bereit für die nächste Stufe deines Online-Shops? Lade dir jetzt das Stripe Modul und revolutioniere das Einkaufen für deine Kunden.
 
 ## Warum unser Stripe Zahlungs Modul?
 
@@ -21,7 +27,5 @@ Teste und optimiere dein Zahlungsmodul im Sandbox-Modus, ohne echtes Geld auszug
 ### ⭐️ Benutzerfreundlichkeit
 Unser Stripe-Zahlungsmodul wurde mit Blick auf die Benutzerfreundlichkeit entwickelt. Sowohl für Shop-Besitzer als auch für Kunden ist die Bedienung ein Kinderspiel.
 
-## 🚀 Steige in die Zukunft des E-Commerce ein
-Ermögliche deinen Kunden ein müheloses Einkaufserlebnis und steigere deine Umsätze mit unserem Stripe-Zahlungsmodul. Starte noch heute und beobachte, wie die Zahlungen reibungslos eingehen.
-
-Bereit für die nächste Stufe deines Online-Shops? Lade dir jetzt das Stripe Modul und revolutioniere das Einkaufen für deine Kunden.
+### ⭐️ OpenSource und Kostenlos
+Unser Stripe-Zahlungsmodul ist nicht nur kostenlos, sondern auch OpenSource auf GitHub. Das bedeutet, du hast volle Kontrolle über den Quellcode und kannst auf Unterstützung und Updates der OpenSource-Gemeinschaft zählen. Unser Modul überzeugt durch sauberen, verständlichen Code, bewährte Praktiken und ausführlichen dokumentierten Code. Dies alles sichert langfristige Wartbarkeit und fördert die Zusammenarbeit zur stetigen Weiterentwicklung des Moduls.
