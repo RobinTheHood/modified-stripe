@@ -29,7 +29,7 @@ Stellen Sie sicher, dass Sie vor der Installation dieses Moduls ein vollständig
 6. Stellen Sie sicher, dass Sie den Test-Modus verwenden, wenn Sie das Modul zunächst testen möchten.
 7. Speichern Sie die Einstellungen.
 
-### Plugin Konfiguration
+### Modul Konfiguration
 Im Stripe Zahlungsmodul stehen Ihnen wichtige Konfigurationsmöglichkeiten zur Verfügung, um Ihre Zahlungsabwicklung optimal anzupassen. Hier finden Sie eine Übersicht der verfügbaren Felder und deren Verwendung. Stellen Sie sicher, dass Sie die richtigen Schlüssel im entsprechenden Modus verwenden, um reibungslose und sichere Zahlungen zu gewährleisten.
 
 #### Allgemeine Einstellungen
