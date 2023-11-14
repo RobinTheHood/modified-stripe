@@ -95,6 +95,11 @@ class payment_rth_stripe extends PaymentModule
         $this->container = new DIContainer();
     }
 
+    public function getTitle()
+    {
+        return parent::getTitle() . '<br><img style="width: 50px" src="' . DIR_WS_CATALOG . 'vendor-mmlc/robinthehood/stripe/assets/img/icon.svg">';
+    }
+
     public function invokeConnect()
     {
         // TODO: Register Webhook Endpoint
