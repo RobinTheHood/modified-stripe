@@ -129,6 +129,7 @@ class Controller extends AbstractController
 
             $phpSession = $this->container->get(PhpSession::class);
             $phpSession->load($phpSessionId);
+            $_SESSION['rth_stripe_status'] = 'success';
 
             // TODO: Check if the order was realy paid, if possible
             // TODO: Load the php session if the payment process took too long
