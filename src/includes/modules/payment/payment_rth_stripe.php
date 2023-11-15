@@ -200,7 +200,7 @@ class payment_rth_stripe extends PaymentModule
 
         $selectionArray = [
             'id'          => $this->code,
-            'module'      => 'Stripe (RobinTheHood)',
+            'module'      => 'Stripe',
             'description' => 'Zahle mit Stripe',
             'fields'      => [$selectionFieldArray]
         ];
