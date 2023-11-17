@@ -95,6 +95,19 @@ class payment_rth_stripe extends PaymentModule
         $this->container = new DIContainer();
     }
 
+    /**
+     * Show an icon in the module name if version is 2.0.6.0. In newer versions of modified it is new standard to not
+     * display an icon anymore.
+     */
+    public function getTitle()
+    {
+        if (defined('PROJECT_VERSION_NO') && in_array(PROJECT_VERSION_NO, ['2.0.6.0'])) {
+            $imgSrc = DIR_WS_CATALOG . 'vendor-mmlc/robinthehood/stripe/assets/img/icon.svg';
+            return parent::getTitle() . '<br><img style="width: 50px" src="' . $imgSrc . '">';
+        }
+        return parent::getTitle();
+    }
+
     public function invokeConnect()
     {
         // TODO: Register Webhook Endpoint
