@@ -10,6 +10,7 @@
         "vendor-dir": "src-mmlc/vendor"
     },
     "require": {
+        "php": ">=8.0",
         "stripe/stripe-php": "^10.7"
     }
 }

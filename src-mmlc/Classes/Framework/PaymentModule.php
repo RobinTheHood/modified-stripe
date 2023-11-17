@@ -184,8 +184,10 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
 
     /**
      * Gets a temprary order id
+     *
+     * @return int|false
      */
-    protected function getTemporaryOrderId(): int|false
+    protected function getTemporaryOrderId()
     {
         /** @var int|false */
         $tempOrderId = $_SESSION['tmp_oID'] ?? false;
@@ -194,8 +196,10 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
 
     /**
      * Sets a temporary order id
+     *
+     * @param int|bool $tempOrderId
      */
-    protected function setTemporaryOrderId(int|bool $tempOrderId): void
+    protected function setTemporaryOrderId($tempOrderId): void
     {
         $_SESSION['tmp_oID'] = $tempOrderId;
     }
