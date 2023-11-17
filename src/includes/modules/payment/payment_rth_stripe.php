@@ -26,7 +26,7 @@ use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
 {
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.2.0';
     public const NAME    = Constants::MODULE_PAYMENT_NAME;
 
     /**
@@ -174,7 +174,11 @@ class payment_rth_stripe extends PaymentModule
 
         if (!$currentVersion) {
             $this->setVersion(self::VERSION);
+            return self::UPDATE_SUCCESS;
+        }
 
+        if (version_compare($this->getVersion(), self::VERSION, '<')) {
+            $this->setVersion(self::VERSION);
             return self::UPDATE_SUCCESS;
         }
 
