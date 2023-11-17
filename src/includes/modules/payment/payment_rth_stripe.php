@@ -299,7 +299,7 @@ class payment_rth_stripe extends PaymentModule
     {
         // If an error occurs on checkout_process.php, it may happen that a temporary order was created without that we
         // was already on Stripe. In this case the checkout_process should immediately redirect to Stripe again.
-        if ($_SESSION['tmp_oID'] && 'succsess' !== $_SESSION['rth_stripe_status']) {
+        if ($_SESSION['tmp_oID'] && 'success' !== $_SESSION['rth_stripe_status']) {
             xtc_redirect($this->form_action_url);
         }
     }
