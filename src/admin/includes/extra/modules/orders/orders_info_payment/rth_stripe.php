@@ -1,8 +1,6 @@
 <?php
 
-use RobinTheHood\Stripe\Classes\Constants;
-
-if (rth_is_module_disabled(Constants::MODULE_PAYMENT_NAME)) {
+if (rth_is_module_disabled(payment_rth_stripe::NAME)) {
     return;
 }
 

@@ -27,7 +27,8 @@ use Stripe\WebhookEndpoint;
 class payment_rth_stripe extends PaymentModule
 {
     public const VERSION = '0.2.0';
-    public const NAME    = Constants::MODULE_PAYMENT_NAME;
+    public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
+
 
     /**
      * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)

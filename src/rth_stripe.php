@@ -12,7 +12,6 @@
  *
  */
 
-use RobinTheHood\Stripe\Classes\Constants;
 use RobinTheHood\Stripe\Classes\Controller\Controller;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RequestFactory;
@@ -67,7 +66,7 @@ if (true === $rthDevMode) {
  * @link // TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
  */
-if (rth_is_module_disabled(Constants::MODULE_PAYMENT_NAME)) {
+if (rth_is_module_disabled('MODULE_PAYMENT_PAYMENT_RTH_STRIPE')) {
     die('Stripe payment modul is not active');
 }
 

@@ -16,9 +16,8 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
-use RobinTheHood\Stripe\Classes\Constants;
+use payment_rth_stripe;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
-use RobinTheHood\Stripe\Classes\Framework\Database;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
@@ -45,7 +44,7 @@ class Controller extends AbstractController
     public function __construct(DIContainer $container)
     {
         parent::__construct();
-        $this->config    = new StripeConfiguration(Constants::MODULE_PAYMENT_NAME);
+        $this->config = new StripeConfiguration(payment_rth_stripe::NAME);
         $this->container = $container;
     }
 
