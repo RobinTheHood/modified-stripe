@@ -32,6 +32,10 @@ Stellen Sie sicher, dass Sie vor der Installation dieses Moduls ein vollständig
 ### Modul Konfiguration
 Im Stripe Zahlungsmodul stehen Ihnen wichtige Konfigurationsmöglichkeiten zur Verfügung, um Ihre Zahlungsabwicklung optimal anzupassen. Hier finden Sie eine Übersicht der verfügbaren Felder und deren Verwendung. Stellen Sie sicher, dass Sie die richtigen Schlüssel im entsprechenden Modus verwenden, um reibungslose und sichere Zahlungen zu gewährleisten.
 
+Um das Stripe Modul verwenden zu können müssen Sie folgende Einstellungen durchführen:
+- Allgemeine Einstellungen
+- Stripe Webhooks Konfigurieren
+
 #### Allgemeine Einstellungen
 
 - **Livemode aktiviert:** Mit diesem Feld können Sie zwischen dem Live-Modus und dem Test-Modus umschalten. Wenn Sie Ihren Shop im Live-Modus betreiben, setzen Sie diesen Wert auf "ja". Im Test-Modus können Sie Ihre Zahlungsabwicklung testen, indem Sie "nein" auswählen.
@@ -53,15 +57,15 @@ Um in den Live Modus wechseln zu könnne, müssen Sie in Ihrem Stripe Account de
 #### Stripe Webhooks Konfigurieren
 Einige Zahlungen, wie beispielsweise SEPA-Lastschrift oder SOFORT Überweisung, erfordern einige Tage, um den endgültigen Zahlungsstatus zu bestätigen. Stripe kann Ihrem Shop nicht unmittelbar mitteilen, ob die Zahlung erfolgreich war. Der Zahlungsstatus bleibt daher offen, bis das Geld auf Ihrem Konto bzw. bei Stripe eingegangen ist. Um sicherzustellen, dass Stripe den Zahlungsstatus automatisch in Ihrem modified Shop aktualisiert, bietet das Stripe Zahlungsmodul die Möglichkeit der Stripe Webhooks an.
 
-Webhooks sind Benachrichtigungen, die von Stripe an Ihren modified Shop gesendet werden, um bestimmte Ereignisse wie erfolgreiche Zahlungen oder Rückerstattungen zu melden. Um Webhooks zu verwenden, müssen Sie einen Endpunkt auf Stripe einrichten. Beachten Sie, dass die genauen Schritte im Stripe-Dashboard leicht variieren können, aber in der Regel folgen sie einem ähnlichen Prozess wie folgt:
+Webhooks sind Benachrichtigungen, die von Stripe an Ihren modified Shop gesendet werden, um bestimmte Ereignisse (Events) wie erfolgreiche Zahlungen oder Rückerstattungen zu melden. Um Webhooks zu verwenden, müssen Sie einen Endpunkt auf Stripe einrichten. Beachten Sie, dass die genauen Schritte im Stripe-Dashboard leicht variieren können, aber in der Regel folgen sie einem ähnlichen Prozess wie folgt:
 
 1. Gehen Sie zu Ihrem Stripe-Dashboard und klicken Sie auf "Entwickler" > "Webhooks".
 2. Klicken Sie auf die Schaltfläche "Endpoint hinzufügen".
-3. Geben Sie die URL für den Webhook-Endpunkt ein: `www.meinshop.de/rth_stripe.php?action=receiveHook`. Ersetzen Sie `www.meinshop.de` mit Ihrer Shop-Url.
-4. Wählen Sie die Ereignisse aus, für die Sie Benachrichtigungen erhalten möchten. In den meisten Fällen möchten Sie zumindest `charge.succeeded` auswählen, um erfolgreiche Zahlungen zu verfolgen.
+3. Geben Sie die URL für den Webhook-Endpunkt ein: `https://www.meinshop.de/rth_stripe.php?action=receiveHook`. Ersetzen Sie `www.meinshop.de` mit Ihrer Shop-Url. Die Beschreibung können Sie leer lasen.
+4. Wählen Sie die Ereignisse (Events) aus, für die Sie Benachrichtigungen erhalten möchten. Dieses Modul benötigt in der aktuellen Version mindestens die Ereignisse (Events) `checkout.session.completed` und `charge.succeeded`, um erfolgreiche Zahlungen zu verfolgen.
 5. Speichern Sie den Webhook-Endpunkt und aktivieren Sie ihn.
 6. Gehen Sie in Ihrem Shop in die Einstellungen zum **Stripe Zahlungsmodul**.
-7. Hinterlegen Sie dort den **Geheimer Webhook Schlüssel**, den Sie auf der Stripe Webseite bei Ihrem neuen Webhook finden. Dieser Schlüssel wird benötigt, damit Ihr modified Shop verifizieren kann, dass die Hook-Anfragen tatsächlich von Stripe kommen.
+7. Hinterlegen Sie dort den **Geheimen Webhook Schlüssel**, den Sie auf der Stripe Webseite bei Ihrem neuen Webhook finden. Dieser Schlüssel wird benötigt, damit Ihr modified Shop verifizieren kann, dass die Hook-Anfragen tatsächlich von Stripe kommen.
 
 ## 🔄 Änderungen und neue Dateien
 Folgende Änderungen und Dateien wurden an Ihrem Shop bei der Installation verändert.
@@ -73,10 +77,10 @@ Bei der Installation werden folgende Tabellen und Spalten hinzugefügt.
 
 # 🌟 Update
 1. Gehen Sie in den MMLC und aktualisieren Sie das Modul.
-2. Melden Sie sich im Adminbereich an.
+2. Melden Sie sich im Adminbereich Ihres Shops an.
 3. Gehen Sie im Menü zu **Module > Zahlungsoptionen**.
 4. Wählen Sie dort das Modul **Stripe Zahlungsmodul** aus.
-5. Klicken rechts auf den Button Update (falls vorhanden).
+5. Klicken Sie rechts auf den Button Update (falls vorhanden).
 
 # ❌ Deinstallation
 1. Melden Sie sich im Adminbereich an.
