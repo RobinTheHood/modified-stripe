@@ -243,32 +243,6 @@ class payment_rth_stripe extends PaymentModule
     }
 
     /**
-     * // TODO: Because we are switching to temporary orders, this method is no longer necessary in this form and
-     * // TODO: can be revised.
-     *
-     * {@inheritdoc}
-     *
-     * Overwrites PaymentModule::process_button()
-     *
-     * This method is called in checkout_confirmation.php to display a button next to the "Buy Now" button. At this
-     * point we save the order in the session, because in the next step rth_stripe.php we no longer have easy access
-     * to the order. We can make life easier for ourselves if we already save the order in the session right now.
-     *
-     * @link https://docs.module-loader.de/module-payment/#process_button
-     */
-    public function process_button(): string
-    {
-        // global $order;
-
-        // $rthOrder = new Order($order);
-
-        // $session = new Session();
-        // $session->setOrder($rthOrder);
-
-        return '';
-    }
-
-    /**
      * {@inheritdoc}
      *
      * Overwrites PaymentModule::payment_action()
@@ -322,22 +296,4 @@ class payment_rth_stripe extends PaymentModule
         // NOTE: CheckoutSession and looking at the payment_status field.
         // NOTE: https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-payment_status
     }
-
-    // private function hasWebhookEndpoint(): bool
-    // {
-    //     $config = new Configuration(self::NAME);
-
-    //     try {
-    //         \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
-    //         $endpoints = WebhookEndpoint::all();
-    //     } catch (Exception $e) {
-    //         return false;
-    //     }
-
-    //     if (!$endpoints['data']) {
-    //         return false;
-    //     }
-
-    //     return true;
-    // }
 }
