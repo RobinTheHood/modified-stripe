@@ -9,7 +9,7 @@
     <!-- Include some rules I want to enforce -->
     <rule ref='Generic.Commenting.DocComment.ShortNotCapital' />
     <rule ref='Generic.Formatting.MultipleStatementAlignment.IncorrectWarning' />
-    <rule ref='Generic.Formatting.MultipleStatementAlignment.NotSameWarning' />
+    <!-- <rule ref='Generic.Formatting.MultipleStatementAlignment.NotSameWarning' /> -->
     <!-- rule ref='PEAR.Functions.FunctionCallSignature.CloseBracketLine' -->
     <!-- rule ref='PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket' -->
     <rule ref='WordPress.Arrays.ArrayIndentation.ItemNotAligned' />
