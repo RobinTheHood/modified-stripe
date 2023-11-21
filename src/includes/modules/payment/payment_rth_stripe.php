@@ -18,15 +18,14 @@
 declare(strict_types=1);
 
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Constants, Repository, StripeConfiguration, StripeService};
-use RobinTheHood\Stripe\Classes\Framework\Database;
+use RobinTheHood\Stripe\Classes\{Order, Session, Repository, StripeConfiguration, StripeService};
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
 {
-    public const VERSION = '0.2.0';
+    public const VERSION = '0.1.0';
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
 
 
@@ -82,16 +81,15 @@ class payment_rth_stripe extends PaymentModule
         $this->addKeys(self::$configurationKeys);
 
         $config = new StripeConfiguration(self::NAME);
-        //return;
         $stripeService = StripeService::createFromConfig($config);
 
-        if ($stripeService->hasWebhookEndpoint()) {
-            $buttonText = 'Stripe Webhook entfernen';
-            $this->addAction('disconnect', $buttonText);
-        } else {
-            $buttonText = 'Stripe Webhook hinzufügen';
-            $this->addAction('connect', $buttonText);
-        }
+        // if ($stripeService->hasWebhookEndpoint()) {
+        //     $buttonText = 'Stripe Webhook entfernen';
+        //     $this->addAction('disconnect', $buttonText);
+        // } else {
+        //     $buttonText = 'Stripe Webhook hinzufügen';
+        //     $this->addAction('connect', $buttonText);
+        // }
 
         $this->container = new DIContainer();
     }
@@ -100,7 +98,7 @@ class payment_rth_stripe extends PaymentModule
      * Show an icon in the module name if version is 2.0.6.0. In newer versions of modified it is new standard to not
      * display an icon anymore.
      */
-    public function getTitle()
+    protected function getTitle(): string
     {
         if (defined('PROJECT_VERSION_NO') && in_array(PROJECT_VERSION_NO, ['2.0.6.0'])) {
             $imgSrc = DIR_WS_CATALOG . 'vendor-mmlc/robinthehood/stripe/assets/img/icon.svg';
@@ -109,35 +107,35 @@ class payment_rth_stripe extends PaymentModule
         return parent::getTitle();
     }
 
-    public function invokeConnect()
-    {
-        // TODO: Register Webhook Endpoint
-        // https://stripe.com/docs/webhooks/go-live
+    // public function invokeConnect()
+    // {
+    //     // TODO: Register Webhook Endpoint
+    //     // https://stripe.com/docs/webhooks/go-live
 
-        $config = new Configuration(self::NAME);
+    //     $config = new Configuration(self::NAME);
 
-        $stripeService = StripeService::createFromConfig($config);
+    //     $stripeService = StripeService::createFromConfig($config);
 
-        if ($stripeService->hasWebhookEndpoint()) {
-            return;
-        }
+    //     if ($stripeService->hasWebhookEndpoint()) {
+    //         return;
+    //     }
 
-        \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
+    //     \Stripe\Stripe::setApiKey($config->apiSandboxSecret);
 
-        $domain = HTTPS_SERVER;
+    //     $domain = HTTPS_SERVER;
 
-        try {
-            $endpoint = WebhookEndpoint::create([
-                'url'            => $domain . '/rth_stripe?action=receiveHook',
-                'enabled_events' => [
-                    'charge.failed',
-                    'charge.succeeded',
-                ],
-            ]);
-        } catch (Exception $e) {
-            $this->addMessage($e->getMessage(), self::MESSAGE_ERROR);
-        }
-    }
+    //     try {
+    //         $endpoint = WebhookEndpoint::create([
+    //             'url'            => $domain . '/rth_stripe?action=receiveHook',
+    //             'enabled_events' => [
+    //                 'charge.failed',
+    //                 'charge.succeeded',
+    //             ],
+    //         ]);
+    //     } catch (Exception $e) {
+    //         $this->addMessage($e->getMessage(), self::MESSAGE_ERROR);
+    //     }
+    // }
 
     public function install(): void
     {
@@ -227,7 +225,7 @@ class payment_rth_stripe extends PaymentModule
     }
 
     /**
-     * //TODOO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
+     * //TODO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
      */
     public function pre_confirmation_check(): void
     {
@@ -259,9 +257,6 @@ class payment_rth_stripe extends PaymentModule
      */
     public function payment_action(): void
     {
-        // Hopefully a temporary modified order obj that modified creates for us and stores in the database.
-        // global $order;
-
         $tempOrderId = $this->getTemporaryOrderId();
         if (!$tempOrderId) {
             trigger_error('No temporary Order created');
