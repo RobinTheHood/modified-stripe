@@ -142,6 +142,7 @@ class Controller extends AbstractController
             $phpSession = $this->container->get(PhpSession::class);
             try {
                 $phpSession->load($phpSessionId, self::RECONSTRUCT_SESSION_TIMEOUT);
+                $_SESSION['rth_stripe_status'] = 'success';
             } catch (Exception $e) {
                 $messageStack = new \messageStack();
                 $messageStack->add_session('shopping_cart', $e->getMessage());
