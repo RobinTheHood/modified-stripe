@@ -16,9 +16,8 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
-use RobinTheHood\Stripe\Classes\Constants;
+use payment_rth_stripe;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
-use RobinTheHood\Stripe\Classes\Framework\Database;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
@@ -26,6 +25,7 @@ use RobinTheHood\Stripe\Classes\Framework\Response;
 use RobinTheHood\Stripe\Classes\Repository;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
+use RobinTheHood\Stripe\Classes\StripeEventHandler;
 use RobinTheHood\Stripe\Classes\StripeService;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Event;
@@ -38,6 +38,17 @@ use Stripe\Stripe;
  */
 class Controller extends AbstractController
 {
+    /**
+     * Gibt die Zeit an, wie lange eine Stripe Checkout Session gültig ist. Minimun 30 Minuten, Maxium 24 Stunden.
+     */
+    private const CHECKOUT_SESSION_TIMOUT = 60 * 30;
+
+    /**
+     * Gibt die Zeit an, wie lange nach einem Stripe Chekout Session Versuch die Shop Session noch rekonstruiert werden
+     * soll.
+     */
+    private const RECONSTRUCT_SESSION_TIMEOUT = 60 * 60;
+
     private StripeConfiguration $config;
 
     private DIContainer $container;
@@ -45,7 +56,7 @@ class Controller extends AbstractController
     public function __construct(DIContainer $container)
     {
         parent::__construct();
-        $this->config    = new StripeConfiguration(Constants::MODULE_PAYMENT_NAME);
+        $this->config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
         $this->container = $container;
     }
 
@@ -71,17 +82,17 @@ class Controller extends AbstractController
          * placed in the shop.
          */
         $phpSession = $this->container->get(PhpSession::class);
-        $sessionId  = $phpSession->save();
+        $phpSessionId  = $phpSession->save();
 
         $order = $phpSession->getOrder();
         if (!$order) {
-            die('Can not create a Stripe session because we have no order Obj');
+            die('Can not create a Stripe session because we have no order object');
         }
 
         Stripe::setApiKey($this->getSecretKey());
 
         /**
-         * TODO: Use reasonable defaults per language.
+         * //TODO: Use reasonable defaults per language.
          */
         $name        = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
         $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
@@ -106,11 +117,11 @@ class Controller extends AbstractController
                 'price_data' => $priceData,
                 'quantity'   => 1,
             ]],
-            'client_reference_id' => $sessionId,
+            'client_reference_id' => $phpSessionId,
             'mode'                => 'payment',
             'success_url'         => $domain . '/rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'          => $domain . '/rth_stripe.php?action=cancel',
-            'expires_at'          => time() + (3600 * 0.5) // Configured to expire after 30 minutes
+            'expires_at'          => time() + (self::CHECKOUT_SESSION_TIMOUT) // Configured to expire after 30 minutes
         ]);
 
         return new RedirectResponse($checkoutSession->url);
@@ -118,18 +129,25 @@ class Controller extends AbstractController
 
     protected function invokeSuccess(): Response
     {
+        global $messageStack;
         require_once DIR_WS_FUNCTIONS . 'sessions.php';
         include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
 
         $stripe = new \Stripe\StripeClient($this->getSecretKey());
 
         try {
-            $session      = $stripe->checkout->sessions->retrieve($_GET['session_id']);
-            $phpSessionId = $session->client_reference_id;
+            $stripeCheckoutSession = $stripe->checkout->sessions->retrieve($_GET['session_id']);
+            $phpSessionId = $stripeCheckoutSession->client_reference_id;
 
             $phpSession = $this->container->get(PhpSession::class);
-            $phpSession->load($phpSessionId);
-            $_SESSION['rth_stripe_status'] = 'success';
+            try {
+                $phpSession->load($phpSessionId, self::RECONSTRUCT_SESSION_TIMEOUT);
+                $_SESSION['rth_stripe_status'] = 'success';
+            } catch (Exception $e) {
+                $messageStack = new \messageStack();
+                $messageStack->add_session('shopping_cart', $e->getMessage());
+                return new RedirectResponse('/shopping_cart.php');
+            }
 
             // TODO: Check if the order was realy paid, if possible
             // TODO: Load the php session if the payment process took too long
@@ -174,58 +192,23 @@ class Controller extends AbstractController
 
         // file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
 
+        $stripeEventHandler = new StripeEventHandler($this->container);
+
         if ('checkout.session.completed' === $event->type) {
-            $this->handleEventCheckoutSessionCompleted($event);
+            $result = $stripeEventHandler->checkoutSessionCompleted($event);
+            if (!$result) {
+                return new Response('', 400);
+            }
+        }
+
+        if ('checkout.session.expired' === $event->type) {
+            $result = $stripeEventHandler->checkoutSessionExpired($event);
+            if (!$result) {
+                return new Response('', 400);
+            }
         }
 
         return new Response('', 200);
-    }
-
-    /**
-     * Handles the Strip WebHook Even checkout.session.completed
-     *
-     * The main task of this method is to check whether the order has been paid and to set the status on the order to
-     * paid.
-     *
-     * @link https://stripe.com/docs/api/events/types#event_types-checkout.session.completed
-     *
-     * @param Event $event A Strip Event
-     */
-    private function handleEventCheckoutSessionCompleted(Event $event): void
-    {
-        $newOrderStatusId = 1; // TODO: Make this configurable via the module settings
-
-        /** @var StripeSession */
-        $session           = $event->data->object;
-        $clientReferenceId = $session->client_reference_id;
-        $phpSessionId      = $clientReferenceId;
-
-        if ('paid' !== $session->payment_status) {
-            return;
-        }
-
-        try {
-            $phpSession = $this->container->get(PhpSession::class);
-            $phpSession->load($phpSessionId);
-        } catch (Exception $e) {
-            error_log('Can not handle stripe event checkout.session.completed - ' . $e->getMessage());
-            die();
-        }
-
-        $order = $phpSession->getOrder();
-
-        if (!$order) {
-            error_log('Can not handle stripe event checkout.session.completed - order is null');
-            die();
-        }
-
-        /** @var Repository */
-        $repo = $this->container->get(Repository::class);
-        $repo->updateOrderStatus($order->getId(), $newOrderStatusId);
-        $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
-
-        // Create a link between the order and the payment
-        $repo->insertRthStripePayment($order->getId(), $session->payment_intent->id);
     }
 
     private function getSecretKey(): string

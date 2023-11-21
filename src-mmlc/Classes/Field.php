@@ -43,7 +43,7 @@ class Field
         ob_start()
         ?>
         <input id="apiSandboxSerect" type="password" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="sk_test_..."/>
-        <input type="checkbox" onchange="const input = document.getElementById('apiSandboxSerect'); if (this.checked) {input.setAttribute('type', 'text')} else {input.setAttribute('type', 'password')}"> anzeigen
+        <input type="checkbox" onchange="const apiSandboxSerectInput = document.getElementById('apiSandboxSerect'); if (this.checked) {apiSandboxSerectInput.setAttribute('type', 'text')} else {apiSandboxSerectInput.setAttribute('type', 'password')}"> anzeigen
         <?php
         $field = ob_get_clean();
 
@@ -78,7 +78,7 @@ class Field
         ob_start()
         ?>
         <input id="apiSerect" type="password" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="sk_live_..."/>
-        <input type="checkbox" onchange="const input = document.getElementById('apiSerect'); if (this.checked) {input.setAttribute('type', 'text')} else {input.setAttribute('type', 'password')}"> anzeigen
+        <input type="checkbox" onchange="const apiSerectInput = document.getElementById('apiSerect'); if (this.checked) {apiSerectInput.setAttribute('type', 'text')} else {apiSerectInput.setAttribute('type', 'password')}"> anzeigen
         <?php
         $field = ob_get_clean();
 
@@ -96,7 +96,7 @@ class Field
         ob_start()
         ?>
         <input id="webhookSerect" type="password" name="configuration[<?= $option ?>]" pattern="<?= $pattern ?>" value="<?= $value ?>" placeholder="whsec_..."/>
-        <input type="checkbox" onchange="const input = document.getElementById('webhookSerect'); if (this.checked) {input.setAttribute('type', 'text')} else {input.setAttribute('type', 'password')}"> anzeigen
+        <input type="checkbox" onchange="const webhookSerectInput = document.getElementById('webhookSerect'); if (this.checked) {webhookSerectInput.setAttribute('type', 'text')} else {webhookSerectInput.setAttribute('type', 'password')}"> anzeigen
         <?php
         $field = ob_get_clean();
 

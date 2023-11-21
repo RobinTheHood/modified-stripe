@@ -12,7 +12,6 @@
  *
  */
 
-use RobinTheHood\Stripe\Classes\Constants;
 use RobinTheHood\Stripe\Classes\Controller\Controller;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RequestFactory;
@@ -32,6 +31,8 @@ require_once DIR_FS_CATALOG . 'includes/extra/functions/composer_autoload.php';
 require_once DIR_FS_CATALOG . 'includes/extra/functions/rth_modified_std_module.php';
 require_once DIR_WS_CLASSES . 'order_total.php';
 require_once DIR_WS_CLASSES . 'order.php';
+require_once DIR_WS_CLASSES . 'message_stack.php';
+require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
 
 $rthDevMode = true;
 
@@ -67,7 +68,7 @@ if (true === $rthDevMode) {
  * @link // TODO Documentation link to StdModule
  * @link https://github.com/RobinTheHood/modified-std-module
  */
-if (rth_is_module_disabled(Constants::MODULE_PAYMENT_NAME)) {
+if (rth_is_module_disabled('MODULE_PAYMENT_PAYMENT_RTH_STRIPE')) {
     die('Stripe payment modul is not active');
 }
 
