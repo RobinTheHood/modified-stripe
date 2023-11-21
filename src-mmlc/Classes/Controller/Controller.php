@@ -25,6 +25,7 @@ use RobinTheHood\Stripe\Classes\Framework\Response;
 use RobinTheHood\Stripe\Classes\Repository;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
+use RobinTheHood\Stripe\Classes\StripeEventHandler;
 use RobinTheHood\Stripe\Classes\StripeService;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Event;
@@ -37,6 +38,17 @@ use Stripe\Stripe;
  */
 class Controller extends AbstractController
 {
+    /**
+     * Gibt die Zeit an, wie lange eine Stripe Checkout Session gültig ist. Minimun 30 Minuten, Maxium 24 Stunden.
+     */
+    private const CHECKOUT_SESSION_TIMOUT = 60 * 30;
+
+    /**
+     * Gibt die Zeit an, wie lange nach einem Stripe Chekout Session Versuch die Shop Session noch rekonstruiert werden
+     * soll.
+     */
+    private const RECONSTRUCT_SESSION_TIMEOUT = 60 * 60;
+
     private StripeConfiguration $config;
 
     private DIContainer $container;
@@ -70,17 +82,17 @@ class Controller extends AbstractController
          * placed in the shop.
          */
         $phpSession = $this->container->get(PhpSession::class);
-        $sessionId  = $phpSession->save();
+        $phpSessionId  = $phpSession->save();
 
         $order = $phpSession->getOrder();
         if (!$order) {
-            die('Can not create a Stripe session because we have no order Obj');
+            die('Can not create a Stripe session because we have no order object');
         }
 
         Stripe::setApiKey($this->getSecretKey());
 
         /**
-         * TODO: Use reasonable defaults per language.
+         * //TODO: Use reasonable defaults per language.
          */
         $name        = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
         $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
@@ -105,11 +117,11 @@ class Controller extends AbstractController
                 'price_data' => $priceData,
                 'quantity'   => 1,
             ]],
-            'client_reference_id' => $sessionId,
+            'client_reference_id' => $phpSessionId,
             'mode'                => 'payment',
             'success_url'         => $domain . '/rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
             'cancel_url'          => $domain . '/rth_stripe.php?action=cancel',
-            'expires_at'          => time() + (3600 * 0.5) // Configured to expire after 30 minutes
+            'expires_at'          => time() + (self::CHECKOUT_SESSION_TIMOUT) // Configured to expire after 30 minutes
         ]);
 
         return new RedirectResponse($checkoutSession->url);
