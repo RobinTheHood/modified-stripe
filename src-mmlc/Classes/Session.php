@@ -78,12 +78,42 @@ class Session
 
     /**
      * The method loads a PHP session from the database.
+     *
+     * @param string $sessionId SessionId from db table rth_stripe_php_session
+     * @param int $expiresAt Age in seconds. Sessions that are older are not loaded. With a timout of 0, the age of the
+     *      session is not taken into account.
+     *
+     * @throws Exception
      */
-    public function load(string $sessionId)
+    public function load(string $sessionId, int $expiresAt = 0): void
+    {
+        $session = $this->getSession($sessionId, $expiresAt);
+        $_SESSION = $session;
+    }
+
+    public function removeAllExpiredSessions(int $expiresAt): void
+    {
+        $phpSessions = $this->repo->getAllExpiredRthStripePhpSessions($expiresAt);
+        foreach ($phpSessions as $phpSession) {
+            $this->repo->deleteRthStripePhpSessionById($phpSession['id']);
+        }
+    }
+
+    /**
+     * @param string $sessionId SessionId from db table rth_stripe_php_session
+     * @param int $expiresAt Age in seconds. Sessions that are older are not loaded. With a timout of 0, the age of the
+     *      session is not taken into account.
+     */
+    private function getSession(string $sessionId, int $expiresAt = 0): array
     {
         $phpSession = $this->repo->getRthStripePhpSessionById($sessionId);
         if (!$phpSession) {
             throw new Exception("Can not find PhpSession with id: $sessionId");
+        }
+
+        $sessionAge = $this->calcAge($phpSession['created']);
+        if (0 !== $expiresAt && $sessionAge > $expiresAt) {
+            throw new Exception("PhpSession $sessionId has expired. Session age is: $sessionAge");
         }
 
         if (!$phpSession['data']) {
@@ -91,17 +121,36 @@ class Session
         }
 
         $sessionData = base64_decode($phpSession['data']);
-        $session     = unserialize($sessionData);
+        $session = unserialize($sessionData);
 
         if (!$session) {
             throw new Exception("Can not unserialize PhpSession with id: $sessionId");
         }
 
-        $_SESSION = $session;
+        return $session;
     }
 
     private function createSessionId(): string
     {
         return 'sid_' . uniqid();
+    }
+
+
+    /**
+     * Calculates age in seconds
+     *
+     * @param string $datetime DB Datetime Format
+     *
+     * @return int age in seconds
+     */
+    private function calcAge(string $datetime): int
+    {
+        $timeStamp = strtotime($datetime);
+        if (false === $timeStamp) {
+            throw new Exception("Can not convent $datetime to unix time stamp");
+        }
+        $currentTimeStamp = time();
+        $ageInSec = $currentTimeStamp - $timeStamp;
+        return $ageInSec;
     }
 }
