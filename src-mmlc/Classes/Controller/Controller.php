@@ -44,7 +44,7 @@ class Controller extends AbstractController
     public function __construct(DIContainer $container)
     {
         parent::__construct();
-        $this->config = new StripeConfiguration(payment_rth_stripe::NAME);
+        $this->config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
         $this->container = $container;
     }
 
