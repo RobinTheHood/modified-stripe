@@ -206,7 +206,10 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
 
     /**
      * Checks whether it is a valid order ID.
+     *
+     * @param mixed $tempOrderId
      */
+    protected function isValidOrderId($tempOrderId): bool
     {
         if (!$tempOrderId) {
             return false;
