@@ -172,58 +172,23 @@ class Controller extends AbstractController
 
         // file_put_contents('stripe_webhook_log.txt', $payload, FILE_APPEND);
 
+        $stripeEventHandler = new StripeEventHandler($this->container);
+
         if ('checkout.session.completed' === $event->type) {
-            $this->handleEventCheckoutSessionCompleted($event);
+            $result = $stripeEventHandler->checkoutSessionCompleted($event);
+            if (!$result) {
+                return new Response('', 400);
+            }
+        }
+
+        if ('checkout.session.expired' === $event->type) {
+            $result = $stripeEventHandler->checkoutSessionExpired($event);
+            if (!$result) {
+                return new Response('', 400);
+            }
         }
 
         return new Response('', 200);
-    }
-
-    /**
-     * Handles the Strip WebHook Even checkout.session.completed
-     *
-     * The main task of this method is to check whether the order has been paid and to set the status on the order to
-     * paid.
-     *
-     * @link https://stripe.com/docs/api/events/types#event_types-checkout.session.completed
-     *
-     * @param Event $event A Strip Event
-     */
-    private function handleEventCheckoutSessionCompleted(Event $event): void
-    {
-        $newOrderStatusId = 1; // TODO: Make this configurable via the module settings
-
-        /** @var StripeSession */
-        $session           = $event->data->object;
-        $clientReferenceId = $session->client_reference_id;
-        $phpSessionId      = $clientReferenceId;
-
-        if ('paid' !== $session->payment_status) {
-            return;
-        }
-
-        try {
-            $phpSession = $this->container->get(PhpSession::class);
-            $phpSession->load($phpSessionId);
-        } catch (Exception $e) {
-            error_log('Can not handle stripe event checkout.session.completed - ' . $e->getMessage());
-            die();
-        }
-
-        $order = $phpSession->getOrder();
-
-        if (!$order) {
-            error_log('Can not handle stripe event checkout.session.completed - order is null');
-            die();
-        }
-
-        /** @var Repository */
-        $repo = $this->container->get(Repository::class);
-        $repo->updateOrderStatus($order->getId(), $newOrderStatusId);
-        $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
-
-        // Create a link between the order and the payment
-        $repo->insertRthStripePayment($order->getId(), $session->payment_intent->id);
     }
 
     private function getSecretKey(): string
