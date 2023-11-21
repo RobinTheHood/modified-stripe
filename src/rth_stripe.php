@@ -31,6 +31,8 @@ require_once DIR_FS_CATALOG . 'includes/extra/functions/composer_autoload.php';
 require_once DIR_FS_CATALOG . 'includes/extra/functions/rth_modified_std_module.php';
 require_once DIR_WS_CLASSES . 'order_total.php';
 require_once DIR_WS_CLASSES . 'order.php';
+require_once DIR_WS_CLASSES . 'message_stack.php';
+require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
 
 $rthDevMode = true;
 

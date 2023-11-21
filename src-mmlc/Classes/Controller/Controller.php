@@ -117,17 +117,24 @@ class Controller extends AbstractController
 
     protected function invokeSuccess(): Response
     {
+        global $messageStack;
         require_once DIR_WS_FUNCTIONS . 'sessions.php';
         include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
 
         $stripe = new \Stripe\StripeClient($this->getSecretKey());
 
         try {
-            $session      = $stripe->checkout->sessions->retrieve($_GET['session_id']);
-            $phpSessionId = $session->client_reference_id;
+            $stripeCheckoutSession = $stripe->checkout->sessions->retrieve($_GET['session_id']);
+            $phpSessionId = $stripeCheckoutSession->client_reference_id;
 
             $phpSession = $this->container->get(PhpSession::class);
-            $phpSession->load($phpSessionId);
+            try {
+                $phpSession->load($phpSessionId, self::RECONSTRUCT_SESSION_TIMEOUT);
+            } catch (Exception $e) {
+                $messageStack = new \messageStack();
+                $messageStack->add_session('shopping_cart', $e->getMessage());
+                return new RedirectResponse('/shopping_cart.php');
+            }
 
             // TODO: Check if the order was realy paid, if possible
             // TODO: Load the php session if the payment process took too long
