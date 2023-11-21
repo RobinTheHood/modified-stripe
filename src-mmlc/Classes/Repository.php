@@ -68,6 +68,15 @@ class Repository
         return $row;
     }
 
+    public function getAllExpiredRthStripePhpSessions(int $expiresAt): array
+    {
+        $query = $this->db->query(
+            "SELECT * FROM rth_stripe_php_session WHERE created < NOW() - INTERVAL $expiresAt SECOND;"
+        );
+
+        return $this->db->fetchAll($query);
+    }
+
     public function insertRthStripePhpSession(string $id, string $data)
     {
         $this->db->query(
@@ -76,6 +85,13 @@ class Repository
             ) VALUES (
                 '$id', '$data', NOW()
             )"
+        );
+    }
+
+    public function deleteRthStripePhpSessionById(string $id): void
+    {
+        $this->db->query(
+            "DELETE FROM rth_stripe_php_session WHERE id='$id'"
         );
     }
 
