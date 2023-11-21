@@ -34,8 +34,17 @@ class Database
         return $query;
     }
 
-    public function fetch($query)
+    public function fetch($query): ?array
     {
         return xtc_db_fetch_array($query);
+    }
+
+    public function fetchAll($query): array
+    {
+        $rows = [];
+        while ($row = $this->fetch($query)) {
+            $rows[] = $row;
+        }
+        return $rows;
     }
 }
