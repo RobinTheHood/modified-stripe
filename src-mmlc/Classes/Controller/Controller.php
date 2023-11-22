@@ -22,6 +22,7 @@ use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
+use RobinTheHood\Stripe\Classes\Framework\SplashMessage;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use RobinTheHood\Stripe\Classes\StripeEventHandler;
@@ -127,8 +128,6 @@ class Controller extends AbstractController
 
     protected function invokeSuccess(): Response
     {
-        global $messageStack;
-
         $stripe = new \Stripe\StripeClient($this->getSecretKey());
 
         try {
@@ -140,8 +139,8 @@ class Controller extends AbstractController
                 $phpSession->load($phpSessionId, self::RECONSTRUCT_SESSION_TIMEOUT);
                 $_SESSION['rth_stripe_status'] = 'success';
             } catch (Exception $e) {
-                $messageStack = new \messageStack();
-                $messageStack->add_session('shopping_cart', $e->getMessage());
+                $splashMessage = SplashMessage::getInstance(); // TODO: Move to DIContainer
+                $splashMessage->error('shopping_cart', $e->getMessage());
                 return new RedirectResponse('/shopping_cart.php');
             }
 
