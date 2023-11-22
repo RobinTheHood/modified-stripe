@@ -22,8 +22,8 @@ namespace RobinTheHood\Stripe\Classes\Framework;
  * to database access within a separate class.
  *
  * Dependencies:
- *      DIR_WS_INCLUDES/configuration.php
- *      DIR_FS_INC/db_functions_mysql.inc.php or DIR_FS_INC/db_functions_mysqli.inc.php
+ *      DIR_WS_INCLUDES . 'configuration.php'
+ *      DIR_FS_INC . 'db_functions_mysql.inc.php' or DIR_FS_INC . 'db_functions_mysqli.inc.php'
  *      xtc_db_connect()
  */
 class Database
