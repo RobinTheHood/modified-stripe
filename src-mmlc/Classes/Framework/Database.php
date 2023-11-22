@@ -20,6 +20,11 @@ namespace RobinTheHood\Stripe\Classes\Framework;
  * anywhere within the software. However, in software architecture, it is generally considered good practice to
  * minimize the use of global functions. To adhere to this principle, we have encapsulated the functionality related
  * to database access within a separate class.
+ *
+ * Dependencies:
+ *      DIR_WS_INCLUDES/configuration.php
+ *      DIR_FS_INC/db_functions_mysql.inc.php or DIR_FS_INC/db_functions_mysqli.inc.php
+ *      xtc_db_connect()
  */
 class Database
 {
