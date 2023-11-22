@@ -24,6 +24,9 @@ class StripeEventHandler
 {
     private const RECONSTRUCT_SESSION_TIMEOUT = 60 * 60;
 
+    // TODO: Make this configurable via the module settings
+    private const TEMP_ORDER_STATUS_ID = 1;
+
     private DIContainer $container;
 
     public function __construct(DIContainer $container)
@@ -43,8 +46,6 @@ class StripeEventHandler
      */
     public function checkoutSessionCompleted(Event $event): bool
     {
-        $newOrderStatusId = 1; // TODO: Make this configurable via the module settings
-
         /** @var StripeSession */
         $session = $event->data->object;
         $clientReferenceId = $session->client_reference_id;
@@ -73,8 +74,8 @@ class StripeEventHandler
 
         /** @var Repository */
         $repo = $this->container->get(Repository::class);
-        $repo->updateOrderStatus($order->getId(), $newOrderStatusId);
-        $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
+        $repo->updateOrderStatus($order->getId(), self::TEMP_ORDER_STATUS_ID);
+        $repo->insertOrderStatusHistory($order->getId(), self::TEMP_ORDER_STATUS_ID);
 
         // Create a link between the order and the payment
         $repo->insertRthStripePayment($order->getId(), $paymentIntentId);
