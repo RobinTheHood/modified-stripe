@@ -13,15 +13,21 @@
 
 declare(strict_types=1);
 
-namespace RobinTheHood\Stripe\Classes;
+namespace RobinTheHood\Stripe\Classes\Framework;
 
 // modified class order. We do this, because Order with a capital O looks nicer than order with small o
 use order as ModifiedOrder;
+use RuntimeException;
 
 /**
  * We wrap the modified Order in our own Order object so we can write Order with a capital O, it just looks nicer.
  * In addition, we can store additional information in our order object if required.
  * And we can access the required data OOP like.
+ *
+ * Dependencies:
+ *      DIR_WS_CLASSES . 'order_total.php';
+ *      DIR_WS_CLASSES . 'order.php';
+ *      DIR_FS_INC . 'xtc_remove_order.inc.php';
  */
 class Order
 {
@@ -44,6 +50,42 @@ class Order
         }
 
         $this->modifiedOrder = $modifiedOrder;
+    }
+
+    /**
+     * Deletes an order based on the order id
+     *
+     * @param bool $restockOrder Add the inventory from the order back to the products
+     * @param bool $reactiveProduct Activate the product if it has been deactivated
+     */
+    public static function removeOrder(
+        int $orderId,
+        bool $restockOrder = true,
+        bool $reactiveProduct = true
+    ): void {
+        if (!self::isValidOrderId($orderId)) {
+            throw new RuntimeException("Can not remove order. $orderId is not a valid order id");
+        }
+        xtc_remove_order($orderId, $restockOrder, $reactiveProduct);
+    }
+
+
+    /**
+     * Checks whether it is a valid order ID.
+     *
+     * @param mixed $orderId
+     */
+    public static function isValidOrderId($orderId): bool
+    {
+        if (!$orderId) {
+            return false;
+        }
+
+        if (!is_numeric($orderId)) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getId(): int

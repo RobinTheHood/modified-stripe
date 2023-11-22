@@ -207,38 +207,24 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
     /**
      * Checks whether it is a valid order ID.
      *
-     * @param mixed $tempOrderId
+     * @param mixed $orderId
      */
-    protected function isValidOrderId($tempOrderId): bool
+    protected function isValidOrderId($orderId): bool
     {
-        if (!$tempOrderId) {
-            return false;
-        }
-
-        if (!is_numeric($tempOrderId)) {
-            return false;
-        }
-
-        return true;
+        return Order::isValidOrderId($orderId);
     }
 
     /**
-     * Deletes an temporary order based on the temporary order id
+     * Deletes an order based on the order id
      *
      * @param bool $restockOrder Add the inventory from the order back to the products
      * @param bool $reactiveProduct Activate the product if it has been deactivated
      */
-    protected function removeTemporaryOrder(
-        int $tempOrderId,
+    protected function removeOrder(
+        int $orderId,
         bool $restockOrder = true,
         bool $reactiveProduct = true
     ): void {
-        if (!$this->isValidOrderId($tempOrderId)) {
-            throw new RuntimeException("Can not remove temporary order. $tempOrderId is not a valid order id");
-        }
-
-        require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
-
-        xtc_remove_order($tempOrderId, $restockOrder, $reactiveProduct);
+        Order::removeOrder($orderId, $restockOrder, $reactiveProduct);
     }
 }

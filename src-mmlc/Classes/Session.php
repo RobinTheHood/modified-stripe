@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
+use RobinTheHood\Stripe\Classes\Framework\Order;
 
 /**
  * We need to save the current PHP session, as it may have already expired if the customer takes a long time

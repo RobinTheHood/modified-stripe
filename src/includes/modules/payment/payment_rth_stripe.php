@@ -17,11 +17,10 @@
 
 declare(strict_types=1);
 
-use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\{Order, Session, Repository, StripeConfiguration, StripeService};
+use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfiguration, StripeService};
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
-use Stripe\WebhookEndpoint;
 
 class payment_rth_stripe extends PaymentModule
 {
@@ -237,7 +236,7 @@ class payment_rth_stripe extends PaymentModule
             return;
         }
 
-        $this->removeTemporaryOrder($tempOrderId);
+        $this->removeOrder($tempOrderId);
         $this->setTemporaryOrderId(false);
         xtc_redirect('checkout_confirmation.php');
     }
