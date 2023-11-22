@@ -18,8 +18,11 @@ namespace RobinTheHood\Stripe\Classes\Framework;
 class Constant
 {
     /**
-     * @var string HTTPS_SERVER defined in inlcudes/configuration.php
+     * @return string HTTPS_SERVER defined in inlcudes/configuration.php
      *      Example: https://example.com
      */
-    public const HTTPS_SERVER = defined('HTTPS_SERVER') ? constant('HTTPS_SERVER') : '';
+    public static function getHttpsServer(): string
+    {
+        return defined('HTTPS_SERVER') ? constant('HTTPS_SERVER') : '';
+    }
 }

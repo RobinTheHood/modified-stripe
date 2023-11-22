@@ -72,7 +72,7 @@ class Controller extends AbstractController
      */
     protected function invokeCheckout(): Response
     {
-        $domain = Constant::HTTPS_SERVER;
+        $domain = Constant::getHttpsServer();
 
         /**
          * We need to save the current PHP session, as it may have already expired if the customer takes a long time
