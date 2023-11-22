@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="3"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="src-mmlc" />
+        <ignoreFiles>
+            <directory name="src-mmlc/vendor" />
+        </ignoreFiles>
+    </projectFiles>
+
+    <extraFiles>
+        <directory name="../modified-std-module" />
+        <directory name="../../../../inc" />
+        <directory name="../../../../includes/classes" />
+    </extraFiles>
+
+    <stubs>
+        <file name="../../../../inc/xtc_remove_order.inc.php" />
+        <file name="../../../../inc/db_functions_mysqli.inc.php" />
+        <file name="../../../../inc/parse_multi_language_value.inc.php" />
+        <file name="../../../../inc/xtc_image.inc.php" />
+        <file name="../../../../admin/includes/functions/general.php" />
+    </stubs>
+
+    <fileExtensions>
+        <extension name=".php" />
+        <extension name=".inc.php" />
+    </fileExtensions>
+</psalm>
