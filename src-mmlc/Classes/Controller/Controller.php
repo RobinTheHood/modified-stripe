@@ -128,8 +128,6 @@ class Controller extends AbstractController
     protected function invokeSuccess(): Response
     {
         global $messageStack;
-        require_once DIR_WS_FUNCTIONS . 'sessions.php';
-        include_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
 
         $stripe = new \Stripe\StripeClient($this->getSecretKey());
 
