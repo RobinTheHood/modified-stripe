@@ -16,19 +16,16 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
-use payment_rth_stripe;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
-use RobinTheHood\Stripe\Classes\Repository;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use RobinTheHood\Stripe\Classes\StripeEventHandler;
 use RobinTheHood\Stripe\Classes\StripeService;
 use Stripe\Checkout\Session as StripeSession;
-use Stripe\Event;
 use Stripe\Stripe;
 
 /**
