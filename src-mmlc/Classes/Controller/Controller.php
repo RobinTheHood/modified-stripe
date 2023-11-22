@@ -17,6 +17,7 @@ namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
+use RobinTheHood\Stripe\Classes\Framework\Constant;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
@@ -71,7 +72,7 @@ class Controller extends AbstractController
      */
     protected function invokeCheckout(): Response
     {
-        $domain = HTTPS_SERVER;
+        $domain = Constant::HTTPS_SERVER;
 
         /**
          * We need to save the current PHP session, as it may have already expired if the customer takes a long time
