@@ -17,6 +17,7 @@ namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use Stripe\Event;
 
@@ -109,9 +110,7 @@ class StripeEventHandler
             return false;
         }
 
-        $restockOrder = true;
-        $reactiveProduct = true;
-        xtc_remove_order($order->getId(), $restockOrder, $reactiveProduct);
+        Order::removeOrder($order->getId(), true, true);
 
         return true;
     }
