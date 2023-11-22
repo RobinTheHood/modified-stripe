@@ -123,6 +123,12 @@ class Controller extends AbstractController
             'expires_at'          => time() + (self::CHECKOUT_SESSION_TIMOUT) // Configured to expire after 30 minutes
         ]);
 
+        if (!$checkoutSession->url) {
+            $splashMessage = SplashMessage::getInstance(); // TODO: Move to DIContainer
+            $splashMessage->error('shopping_cart', 'Can not create Stripe Checkout Session.');
+            return new RedirectResponse('/shopping_cart.php');
+        }
+
         return new RedirectResponse($checkoutSession->url);
     }
 
