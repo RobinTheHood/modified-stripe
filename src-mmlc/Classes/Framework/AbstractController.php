@@ -41,6 +41,7 @@ abstract class AbstractController
 
         $invokeMethod = 'invoke' . ucfirst($action);
 
+        $response = new Response('', 404);
         foreach ($this->controllers as $controller) {
             $controller->preInvoke($request);
             if (method_exists($controller, $invokeMethod)) {
