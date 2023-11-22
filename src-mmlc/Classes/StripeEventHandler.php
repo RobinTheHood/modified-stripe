@@ -49,6 +49,8 @@ class StripeEventHandler
         $session = $event->data->object;
         $clientReferenceId = $session->client_reference_id;
         $paymentIntentId = $session->payment_intent;
+        $phpSessionId = $clientReferenceId;
+
 
         if ('paid' !== $session->payment_status) {
             return false;
@@ -75,7 +77,7 @@ class StripeEventHandler
         $repo->insertOrderStatusHistory($order->getId(), $newOrderStatusId);
 
         // Create a link between the order and the payment
-        $repo->insertRthStripePayment($order->getId(), $session->payment_intent);
+        $repo->insertRthStripePayment($order->getId(), $paymentIntentId);
 
         $phpSession->removeAllExpiredSessions(self::RECONSTRUCT_SESSION_TIMEOUT);
         return true;
