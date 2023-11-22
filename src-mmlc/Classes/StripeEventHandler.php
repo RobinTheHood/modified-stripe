@@ -46,9 +46,9 @@ class StripeEventHandler
         $newOrderStatusId = 1; // TODO: Make this configurable via the module settings
 
         /** @var StripeSession */
-        $session           = $event->data->object;
+        $session = $event->data->object;
         $clientReferenceId = $session->client_reference_id;
-        $phpSessionId      = $clientReferenceId;
+        $paymentIntentId = $session->payment_intent;
 
         if ('paid' !== $session->payment_status) {
             return false;
@@ -83,10 +83,9 @@ class StripeEventHandler
 
     public function checkoutSessionExpired(Event $event): bool
     {
-        /** @var StripeSession */
-        $session           = $event->data->object;
+        $session = $event->data->object;
         $clientReferenceId = $session->client_reference_id;
-        $phpSessionId      = $clientReferenceId;
+        $phpSessionId = $clientReferenceId;
 
         if ('expired' !== $session->status) {
             return false;

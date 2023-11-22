@@ -31,7 +31,8 @@ use Exception;
  */
 class Session
 {
-    private const SESSION_PREFIX      = 'rth_stripe';
+    private const SESSION_PREFIX = 'rth_stripe';
+
     private const SESSION_INDEX_ORDER = 'order';
 
     private Repository $repo;
