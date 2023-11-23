@@ -41,9 +41,9 @@ class Order
     {
         $this->modifiedOrderId = $modifiedOrderId;
 
-        if (!$modifiedOrder) {
-            throw new OrderException('Can not create Order. No $modifiedOrder is empty');
-        }
+        // if (!$modifiedOrder) {
+        //     throw new OrderException('Can not create Order. No $modifiedOrder is empty');
+        // }
 
         if (!($modifiedOrder instanceof ModifiedOrder)) {
             throw new OrderException('Can not create Order. $modifiedOrder is not instance of ModifiedOrder');

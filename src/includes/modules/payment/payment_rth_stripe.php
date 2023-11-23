@@ -268,6 +268,7 @@ class payment_rth_stripe extends PaymentModule
         $modifiedOrder = $this->getModifiedOrder();
         if (!$modifiedOrder) {
             // TODO: Handle error
+            // TODO: Maybe we can redirect to shipping_card with error message
         }
 
         $rthOrder = new Order($tempOrderId, $modifiedOrder);

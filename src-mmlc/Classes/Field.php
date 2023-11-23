@@ -107,7 +107,7 @@ class Field
 
     public static function checkoutTitleDesc(string $value, string $option): string
     {
-        require_once 'includes/functions/general.php';
+        //require_once 'includes/functions/general.php';
 
         $languages = xtc_get_languages();
 
