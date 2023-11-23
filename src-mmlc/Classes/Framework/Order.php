@@ -70,7 +70,9 @@ class Order
         if (!self::isValidOrderId($orderId)) {
             throw new RuntimeException("Can not remove order. $orderId is not a valid order id");
         }
-        xtc_remove_order($orderId, $restockOrder, $reactiveProduct);
+
+        $restockOrderParamValue = $restockOrder ? 'on' : false;
+        xtc_remove_order($orderId, $restockOrderParamValue, $reactiveProduct);
     }
 
 
