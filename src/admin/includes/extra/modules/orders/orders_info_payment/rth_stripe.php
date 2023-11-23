@@ -1,6 +1,6 @@
 <?php
 
-if (rth_is_module_disabled(payment_rth_stripe::NAME)) {
+if (rth_is_module_disabled('MODULE_PAYMENT_PAYMENT_RTH_STRIPE')) {
     return;
 }
 
