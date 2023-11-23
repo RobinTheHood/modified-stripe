@@ -47,7 +47,6 @@ class StripeEventHandler
      */
     public function checkoutSessionCompleted(Event $event): bool
     {
-        /** @var StripeSession */
         $session = $event->data->object;
         $clientReferenceId = $session->client_reference_id;
         $paymentIntentId = $session->payment_intent;
@@ -59,6 +58,7 @@ class StripeEventHandler
         }
 
         try {
+            /** @var PhpSession $phpSession */
             $phpSession = $this->container->get(PhpSession::class);
             $phpSession->load($phpSessionId);
         } catch (Exception $e) {
@@ -73,7 +73,7 @@ class StripeEventHandler
             return false;
         }
 
-        /** @var Repository */
+        /** @var Repository $repo */
         $repo = $this->container->get(Repository::class);
         $repo->updateOrderStatus($order->getId(), self::TEMP_ORDER_STATUS_ID);
         $repo->insertOrderStatusHistory($order->getId(), self::TEMP_ORDER_STATUS_ID);
