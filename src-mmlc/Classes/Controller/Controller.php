@@ -92,7 +92,7 @@ class Controller extends AbstractController
         /**
          * //TODO: Use reasonable defaults per language.
          */
-        $name        = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
+        $name = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
         $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
 
         $priceData = [
