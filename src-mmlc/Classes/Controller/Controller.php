@@ -132,12 +132,13 @@ class Controller extends AbstractController
         return new RedirectResponse($checkoutSession->url);
     }
 
-    protected function invokeSuccess(): Response
+    protected function invokeSuccess(Request $request): Response
     {
         $stripe = new \Stripe\StripeClient($this->getSecretKey());
 
         try {
-            $stripeCheckoutSession = $stripe->checkout->sessions->retrieve($_GET['session_id']);
+            $stripeSessionId = $request->get('session_id');
+            $stripeCheckoutSession = $stripe->checkout->sessions->retrieve($stripeSessionId);
             $phpSessionId = $stripeCheckoutSession->client_reference_id;
 
             $phpSession = $this->container->get(PhpSession::class);
