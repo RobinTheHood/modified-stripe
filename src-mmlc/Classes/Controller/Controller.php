@@ -38,13 +38,12 @@ use Stripe\Stripe;
 class Controller extends AbstractController
 {
     /**
-     * Gibt die Zeit an, wie lange eine Stripe Checkout Session gültig ist. Minimun 30 Minuten, Maxium 24 Stunden.
+     * Specifies the time for how long a Stripe checkout session is valid. Minimum 30 minutes, maximum 24 hours.
      */
     private const CHECKOUT_SESSION_TIMOUT = 60 * 30;
 
     /**
-     * Gibt die Zeit an, wie lange nach einem Stripe Chekout Session Versuch die Shop Session noch rekonstruiert werden
-     * soll.
+     * Specifies the time for how long the shop session should be reconstructed after a Stripe checkout session attempt.
      */
     private const RECONSTRUCT_SESSION_TIMEOUT = 60 * 60;
 
