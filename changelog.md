@@ -1,13 +1,12 @@
-# Änderungsprotokoll
-Das Format basiert auf [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) und vewendet [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+# Changelog
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-Unveröffentlichte Features und Fixes können auf GitHub eingesehen werden. Klicke hierfür auf [Unreleased].
+Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
-## [0.1.0] - ???
-
+## [0.1.0] - 23-11-2023
 ### Added
-- Initiale Version.
+- initial version
 
 [Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.1.0...HEAD
 [0.1.0]: https://github.com/RobinTheHood/modified-stripe/releases/tag/0.1.0
