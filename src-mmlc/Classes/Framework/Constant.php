@@ -18,11 +18,25 @@ namespace RobinTheHood\Stripe\Classes\Framework;
 class Constant
 {
     /**
-     * @return string HTTPS_SERVER defined in inlcudes/configuration.php
+     * @return string HTTPS_SERVER defined in inlcudes/configure.php
      *      Example: https://example.com
      */
     public static function getHttpsServer(): string
     {
-        return defined('HTTPS_SERVER') ? constant('HTTPS_SERVER') : '';
+        return self::getValue('HTTPS_SERVER');
+    }
+
+    /**
+     * @return string HTTPS_SERVER defined in inlcudes/paths.php
+     *      Example: /lang
+     */
+    public static function getDirWsLanguages(): string
+    {
+        return self::getValue('DIR_WS_LANGUAGES');
+    }
+
+    private static function getValue(string $name): string
+    {
+        return defined($name) ? constant($name) : '';
     }
 }

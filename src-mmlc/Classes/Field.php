@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes;
 
+use RobinTheHood\Stripe\Classes\Framework\Constant;
+
 /**
  * This class is used to render individual input fields in the payment_rth_stripe class, which the user sees in
  * the shop admin, where he can make the settings for the strip payment module.
@@ -116,8 +118,8 @@ class Field
             <ul class="navigation">
                 <?php foreach ($languages as $language) { ?>
                     <li>
-                            <?= xtc_image(DIR_WS_LANGUAGES . $language['directory'] . '/admin/images/' . $language['image'], $language['name']); ?>
-                            <?= $language['name'] ?>
+                        <?= xtc_image(Constant::getDirWsLanguages() . $language['directory'] . '/admin/images/' . $language['image'], $language['name']); ?>
+                        <?= $language['name'] ?>
                     </li>
                 <?php } ?>
             </ul>
