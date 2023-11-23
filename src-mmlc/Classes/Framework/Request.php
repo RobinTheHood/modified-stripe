@@ -69,17 +69,17 @@ class Request
 
     public function get($key)
     {
-        return $this->query[$key];
+        return $this->query[$key] ?? '';
     }
 
     public function post($key)
     {
-        return $this->request[$key];
+        return $this->request[$key] ?? '';
     }
 
     public function getServer($key)
     {
-        return $this->server[$key];
+        return $this->server[$key] ?? '';
     }
 
     public function getContent()
