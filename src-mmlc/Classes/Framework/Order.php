@@ -19,6 +19,10 @@ namespace RobinTheHood\Stripe\Classes\Framework;
 use order as ModifiedOrder;
 use RuntimeException;
 
+require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
+require_once DIR_WS_CLASSES . 'order.php';
+require_once DIR_WS_CLASSES . 'order_total.php';
+
 /**
  * We wrap the modified Order in our own Order object so we can write Order with a capital O, it just looks nicer.
  * In addition, we can store additional information in our order object if required.
