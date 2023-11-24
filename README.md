@@ -5,6 +5,9 @@
 
 🛠 This module is under development and not ready for use. You can make a contribution if you like.
 
+
+![Stripe Module in Action](docs/modifed-stripe-purchase.gif)
+
 ## Installation
 You can install this module with the [Modified Module Loader Client (MMLC)](http://module-loader.de).
 
