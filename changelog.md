@@ -6,6 +6,8 @@ Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unr
 
 ### Added
 - modified compatibility `3.0.0`
+- `checkout.session.expired` to install.md
+
 ## [0.1.1] - 23-11-2023
 
 ### Added

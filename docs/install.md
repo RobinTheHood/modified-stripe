@@ -62,7 +62,7 @@ Webhooks sind Benachrichtigungen, die von Stripe an Ihren modified Shop gesendet
 1. Gehen Sie zu Ihrem Stripe-Dashboard und klicken Sie auf "Entwickler" > "Webhooks".
 2. Klicken Sie auf die Schaltfläche "Endpoint hinzufügen".
 3. Geben Sie die URL für den Webhook-Endpunkt ein: `https://www.meinshop.de/rth_stripe.php?action=receiveHook`. Ersetzen Sie `www.meinshop.de` mit Ihrer Shop-Url. Die Beschreibung können Sie leer lasen.
-4. Wählen Sie die Ereignisse (Events) aus, für die Sie Benachrichtigungen erhalten möchten. Dieses Modul benötigt in der aktuellen Version mindestens die Ereignisse (Events) `checkout.session.completed` und `charge.succeeded`, um erfolgreiche Zahlungen zu verfolgen.
+4. Wählen Sie die Ereignisse (Events) aus, für die Sie Benachrichtigungen erhalten möchten. Dieses Modul benötigt in der aktuellen Version mindestens die Ereignisse (Events) `checkout.session.completed`, `checkout.session.expired` und `charge.succeeded`, um erfolgreiche Zahlungen zu verfolgen.
 5. Speichern Sie den Webhook-Endpunkt und aktivieren Sie ihn.
 6. Gehen Sie in Ihrem Shop in die Einstellungen zum **Stripe Zahlungsmodul**.
 7. Hinterlegen Sie dort den **Geheimen Webhook Schlüssel**, den Sie auf der Stripe Webseite bei Ihrem neuen Webhook finden. Dieser Schlüssel wird benötigt, damit Ihr modified Shop verifizieren kann, dass die Hook-Anfragen tatsächlich von Stripe kommen.
