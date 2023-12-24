@@ -24,9 +24,14 @@ use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 
 class payment_rth_stripe extends PaymentModule
 {
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.3.0';
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
 
+    // StatusId 1 is a default modified status 'Pending'
+    public const DEFAULT_ORDER_STATUS_PENDING = 1;
+
+    // StatusId 2 is a default modified status 'Processing'
+    public const DEFAULT_ORDER_STATUS_PAID = 2;
 
     /**
      * Redirect URL after click on the "Buy Button" on step 3 (checkout_confirmation.php)
@@ -44,12 +49,12 @@ class payment_rth_stripe extends PaymentModule
     public $tmpOrders = true;
 
     /**
-     * // TODO: Make this configurable via the module settings
      * If $tmpOrders is true, checkout_process.php creates a temp Order with statusId $tmpStatus
+     * This value is overwritten in the constructor.
      *
      * @var int $tmpStatus
      */
-    public $tmpStatus = 6; // StatusId 6 is a default modified status 'pending payment'
+    public $tmpStatus = self::DEFAULT_ORDER_STATUS_PENDING;
 
     /**
      * Configuration keys which are automatically added/removed on
@@ -69,6 +74,8 @@ class payment_rth_stripe extends PaymentModule
         'API_LIVE_ENDPOINT_SECRET',
         'CHECKOUT_TITLE',
         'CHECKOUT_DESC',
+        'ORDER_STATUS_PENDING',
+        'ORDER_STATUS_PAID'
     ];
 
     private DIContainer $container;
@@ -89,6 +96,12 @@ class payment_rth_stripe extends PaymentModule
         //     $buttonText = 'Stripe Webhook hinzufügen';
         //     $this->addAction('connect', $buttonText);
         // }
+
+        // At the moment, $config will throw an exception, if a configuration value not exists
+        try {
+            $this->tmpStatus = (int) $config->orderStatusPending;
+        } catch (Exception $e) {
+        }
 
         $this->container = new DIContainer();
     }
@@ -164,6 +177,9 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('CHECKOUT_TITLE', 'DE::Einkauf bei SHOPNAME||EN::Purchase at SHOPNAME', 6, 1, $setFunctionFieldcheckoutTitleDesc);
         $this->addConfiguration('CHECKOUT_DESC', 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order', 6, 1, $setFunctionFieldcheckoutTitleDesc);
 
+        $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, 6, 1);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, 6, 1);
+
         /** @var Repository **/
         $repo = $this->container->get(Repository::class);
         $repo->createRthStripePhpSession();
@@ -185,6 +201,19 @@ class payment_rth_stripe extends PaymentModule
 
         if (!$currentVersion) {
             $this->setVersion(self::VERSION);
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.1.0' === $currentVersion) {
+            $this->setVersion('0.2.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.2.0' === $currentVersion) {
+            $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, 6, 1);
+            $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, 6, 1);
+
+            $this->setVersion('0.3.0');
             return self::UPDATE_SUCCESS;
         }
 

@@ -25,14 +25,20 @@ class StripeEventHandler
 {
     private const RECONSTRUCT_SESSION_TIMEOUT = 60 * 60;
 
-    // TODO: Make this configurable via the module settings
-    private const TEMP_ORDER_STATUS_ID = 1;
+    /** @var int */
+    private $orderStatusPaid = 2;
 
     private DIContainer $container;
 
     public function __construct(DIContainer $container)
     {
         $this->container = $container;
+
+        try {
+            $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+            $this->orderStatusPaid = $config->orderStatusPending;
+        } catch (Exception $e) {
+        }
     }
 
     /**
@@ -75,8 +81,8 @@ class StripeEventHandler
 
         /** @var Repository $repo */
         $repo = $this->container->get(Repository::class);
-        $repo->updateOrderStatus($order->getId(), self::TEMP_ORDER_STATUS_ID);
-        $repo->insertOrderStatusHistory($order->getId(), self::TEMP_ORDER_STATUS_ID);
+        $repo->updateOrderStatus($order->getId(), $this->orderStatusPaid);
+        $repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid);
 
         // Create a link between the order and the payment
         $repo->insertRthStripePayment($order->getId(), $paymentIntentId);

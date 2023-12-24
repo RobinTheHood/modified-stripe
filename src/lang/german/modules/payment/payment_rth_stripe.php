@@ -44,3 +44,9 @@ define($prefix . 'CHECKOUT_TITLE_TITLE', 'Checkout Titel');
 define($prefix . 'CHECKOUT_TITLE_DESC', 'Text der im Stripe Checkout als Titel verwendet werden soll.');
 define($prefix . 'CHECKOUT_DESC_TITLE', 'Checkout Beschreibung');
 define($prefix . 'CHECKOUT_DESC_DESC', 'Text der im Stripe Checkout als Beschreibung verwendet werden soll.');
+
+define($prefix . 'ORDER_STATUS_PENDING_TITLE', 'Bestellstatus für ausstehende Bezahlung');
+define($prefix . 'ORDER_STATUS_PENDING_DESC', 'Einige Zahlungsarten werden von Stripe zeitversetzt als bezahlt erfasst. Welcher Bestellstatus soll die Bestellung in der zwischenzeit erhalten?');
+
+define($prefix . 'ORDER_STATUS_PAID_TITLE', 'Bestellstatus für erfolgreiche Bezahlung');
+define($prefix . 'ORDER_STATUS_PAID_DESC', 'Welcher Bestellstatus soll die Bestellung erhalten, nach dem Stripe die Zahlung als erfolgreich prüfen konnte?');
