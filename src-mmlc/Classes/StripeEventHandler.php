@@ -36,7 +36,7 @@ class StripeEventHandler
 
         try {
             $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
-            $this->orderStatusPaid = $config->orderStatusPending;
+            $this->orderStatusPaid = (int) $config->orderStatusPaid;
         } catch (Exception $e) {
         }
     }
