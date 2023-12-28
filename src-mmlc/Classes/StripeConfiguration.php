@@ -61,4 +61,22 @@ class StripeConfiguration extends Configuration
             return '';
         }
     }
+
+    public function getOrderStatusPending(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusPending;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
+    public function getOrderStatusPaid(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusPaid;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
 }

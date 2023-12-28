@@ -88,6 +88,7 @@ class payment_rth_stripe extends PaymentModule
 
         $config = new StripeConfiguration(self::NAME);
         $stripeService = StripeService::createFromConfig($config);
+        $this->tmpStatus = $config->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
 
         // if ($stripeService->hasWebhookEndpoint()) {
         //     $buttonText = 'Stripe Webhook entfernen';
@@ -97,10 +98,6 @@ class payment_rth_stripe extends PaymentModule
         //     $this->addAction('connect', $buttonText);
         // }
 
-        // At the moment, $config will throw an exception, if a configuration value not exists
-        try {
-            $this->tmpStatus = (int) $config->orderStatusPending;
-        } catch (Exception $e) {
         }
 
         $this->container = new DIContainer();
