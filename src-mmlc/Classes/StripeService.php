@@ -62,6 +62,17 @@ class StripeService
         $this->endpointSecret = $endpointSecret;
     }
 
+    public function hasValidSecret(): bool
+    {
+        \Stripe\Stripe::setApiKey($this->secret);
+        try {
+            $account = \Stripe\Account::retrieve();
+            return true;
+        } catch (\Stripe\Exception\AuthenticationException $e) {
+            return false;
+        }
+    }
+
     public function receiveEvent(string $payload, string $sigHeader): Event
     {
         \Stripe\Stripe::setApiKey($this->secret);
@@ -87,5 +98,19 @@ class StripeService
         }
 
         return true;
+    }
+
+    /**
+     * @link https://stripe.com/docs/webhooks/go-live
+     */
+    public function addWebhookEndpoint(string $url, array $events, string $description = '')
+    {
+        \Stripe\Stripe::setApiKey($this->secret);
+
+        $endpoint = WebhookEndpoint::create([
+            'url'            => $url,
+            'enabled_events' => $events,
+            'description'    => $description
+        ]);
     }
 }
