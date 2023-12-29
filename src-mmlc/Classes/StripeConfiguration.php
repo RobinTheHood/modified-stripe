@@ -17,6 +17,7 @@ namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
+use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 
 /**
  * This class makes it easy to access the modified user configuration of the Stripe module. Unlike the pure
@@ -78,5 +79,12 @@ class StripeConfiguration extends Configuration
         } catch (Exception $e) {
             return $default;
         }
+    }
+
+    public function setWebhookSerect(string $secret): void
+    {
+        $container = new DIContainer();
+        $repo = $container->get(Repository::class);
+        $repo->updateConfigurationValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
     }
 }
