@@ -102,8 +102,9 @@ class StripeService
 
     /**
      * @link https://stripe.com/docs/webhooks/go-live
+     * @link https://stripe.com/docs/api/webhook_endpoints/create
      */
-    public function addWebhookEndpoint(string $url, array $events, string $description = '')
+    public function addWebhookEndpoint(string $url, array $events, string $description = ''): WebhookEndpoint
     {
         \Stripe\Stripe::setApiKey($this->secret);
 
@@ -115,5 +116,7 @@ class StripeService
                 'module' => 'robinthehood/stripe'
             ]
         ]);
+
+        return $endpoint;
     }
 }
