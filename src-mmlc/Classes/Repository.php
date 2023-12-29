@@ -123,4 +123,13 @@ class Repository
             )"
         );
     }
+
+    public function updateConfigurationValue(string $configurationKey, string $configurationValue): void
+    {
+        $table = TABLE_CONFIGURATION;
+        $this->db->query(
+            "UPDATE $table SET configuration_value = '$configurationValue'
+                WHERE configuration_key = '$configurationKey';"
+        );
+    }
 }
