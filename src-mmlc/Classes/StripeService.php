@@ -110,7 +110,10 @@ class StripeService
         $endpoint = WebhookEndpoint::create([
             'url'            => $url,
             'enabled_events' => $events,
-            'description'    => $description
+            'description'    => $description,
+            'metadata'       => [
+                'module' => 'robinthehood/stripe'
+            ]
         ]);
     }
 }
