@@ -97,7 +97,14 @@ class StripeService
             return false;
         }
 
-        return true;
+        foreach ($endpoints['data'] as $endpoint) {
+            if ($this->checkWebhookEndpoint($endpoint)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private function checkWebhookEndpoint(WebhookEndpoint $endpoint): bool
     {
