@@ -98,6 +98,15 @@ class StripeService
         }
 
         return true;
+
+    private function checkWebhookEndpoint(WebhookEndpoint $endpoint): bool
+    {
+        $metadata = $endpoint['metadata'] ?? [];
+        $module = $metadata['module'] ?? '';
+        if ('robinthehood/stripe' === $module) {
+            return true;
+        }
+        return false;
     }
 
     /**
