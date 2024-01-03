@@ -77,7 +77,7 @@ class Repository
         return $this->db->fetchAll($query);
     }
 
-    public function insertRthStripePhpSession(string $id, string $data)
+    public function insertRthStripePhpSession(string $id, string $data): void
     {
         $this->db->query(
             "INSERT INTO rth_stripe_php_session (
@@ -102,7 +102,7 @@ class Repository
         );
     }
 
-    public function insertOrderStatusHistory(int $orderId, int $statusId, string $comment = '')
+    public function insertOrderStatusHistory(int $orderId, int $statusId, string $comment = ''): void
     {
         $this->db->query(
             "INSERT INTO orders_status_history (

@@ -79,10 +79,18 @@ class StripeEventHandler
             return false;
         }
 
+        $messageData = [
+            "id"       => $event->id,
+            "object"   => $event->object,
+            "created"  => $event->created,
+            "livemode" => $event->livemode,
+            "type"     => $event->type
+        ];
+
         /** @var Repository $repo */
         $repo = $this->container->get(Repository::class);
         $repo->updateOrderStatus($order->getId(), $this->orderStatusPaid);
-        $repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid);
+        $repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid, json_encode($messageData, JSON_PRETTY_PRINT));
 
         // Create a link between the order and the payment
         $repo->insertRthStripePayment($order->getId(), $paymentIntentId);
