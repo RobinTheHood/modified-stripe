@@ -4,6 +4,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.4.0] - 2024-01-03
+You have to update the module via MMLC and under Admin > Modules > Payment Methods
+
+### Added
+- A button has been added that allows you to automatically register the appropriate WebHook with Stripe. [(#51)](https://github.com/RobinTheHood/modified-stripe/pull/51)
+- Changes to order status through Stripe events are now logged in the order history. [(#52)](https://github.com/RobinTheHood/modified-stripe/pull/52)
+
+### Fixed
+- An error has been fixed that can occur if the module tries to transmit an amount with decimal places to Stripe during the ordering process. [(#54)](https://github.com/RobinTheHood/modified-stripe/pull/54)
+
 ## [0.3.0] - 2023-12-28
 You have to update the module via MMLC and under Admin > Modules > Payment Methods
 
@@ -30,6 +40,7 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 - initial version
 
 [Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.3.0...HEAD
+[0.4.0]: https://github.com/RobinTheHood/modified-std-module/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/RobinTheHood/modified-std-module/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/RobinTheHood/modified-std-module/compare/0.1.1...0.2.0
 [0.1.1]: https://github.com/RobinTheHood/modified-std-module/compare/0.1.0...0.1.1
