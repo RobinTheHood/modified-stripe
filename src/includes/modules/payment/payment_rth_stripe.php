@@ -99,7 +99,7 @@ class payment_rth_stripe extends PaymentModule
     private function addActions()
     {
         $currentPage = $_SERVER['PHP_SELF'];
-        $targetPage = 'admin/modules.php';
+        $targetPage = 'modules.php';
 
         if (substr($currentPage, -strlen($targetPage)) !== $targetPage) {
             return;
