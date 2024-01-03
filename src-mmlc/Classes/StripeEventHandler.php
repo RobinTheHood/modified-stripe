@@ -25,6 +25,9 @@ class StripeEventHandler
 {
     private const RECONSTRUCT_SESSION_TIMEOUT = 60 * 60;
 
+    // StatusId 2 is a default modified status 'Processing'
+    private const DEFAULT_ORDER_STATUS_PAID = 2;
+
     /** @var int */
     private $orderStatusPaid = 2;
 
@@ -34,11 +37,8 @@ class StripeEventHandler
     {
         $this->container = $container;
 
-        try {
-            $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
-            $this->orderStatusPaid = (int) $config->orderStatusPaid;
-        } catch (Exception $e) {
-        }
+        $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+        $this->orderStatusPaid = $config->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
     }
 
     /**

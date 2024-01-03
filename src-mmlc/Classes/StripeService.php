@@ -62,6 +62,17 @@ class StripeService
         $this->endpointSecret = $endpointSecret;
     }
 
+    public function hasValidSecret(): bool
+    {
+        \Stripe\Stripe::setApiKey($this->secret);
+        try {
+            $account = \Stripe\Account::retrieve();
+            return true;
+        } catch (\Stripe\Exception\AuthenticationException $e) {
+            return false;
+        }
+    }
+
     public function receiveEvent(string $payload, string $sigHeader): Event
     {
         \Stripe\Stripe::setApiKey($this->secret);
@@ -86,6 +97,42 @@ class StripeService
             return false;
         }
 
-        return true;
+        foreach ($endpoints['data'] as $endpoint) {
+            if ($this->checkWebhookEndpoint($endpoint)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function checkWebhookEndpoint(WebhookEndpoint $endpoint): bool
+    {
+        $metadata = $endpoint['metadata'] ?? [];
+        $module = $metadata['module'] ?? '';
+        if ('robinthehood/stripe' === $module) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @link https://stripe.com/docs/webhooks/go-live
+     * @link https://stripe.com/docs/api/webhook_endpoints/create
+     */
+    public function addWebhookEndpoint(string $url, array $events, string $description = ''): WebhookEndpoint
+    {
+        \Stripe\Stripe::setApiKey($this->secret);
+
+        $endpoint = WebhookEndpoint::create([
+            'url'            => $url,
+            'enabled_events' => $events,
+            'description'    => $description,
+            'metadata'       => [
+                'module' => 'robinthehood/stripe'
+            ]
+        ]);
+
+        return $endpoint;
     }
 }
