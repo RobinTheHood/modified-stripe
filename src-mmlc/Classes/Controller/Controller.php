@@ -94,16 +94,16 @@ class Controller extends AbstractController
          */
         $name = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
         $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
+        $priceCent = (int) round($order->getTotal() * 100);
 
         $priceData = [
             'currency'     => 'eur',
-            'unit_amount'  => $order->getTotal() * 100, // Value in Cent
+            'unit_amount'  => $priceCent, // Value in Cent
             'product_data' => [
                 'name'        => $name,
                 'description' => $description,
             ]
         ];
-
 
         /**
          * Creates a Stripe checkout session object. Don't confuse it with a PHP session. Both use the same name.
