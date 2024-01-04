@@ -72,7 +72,7 @@ class Controller extends AbstractController
      */
     protected function invokeCheckout(): Response
     {
-        $domain = Constant::getHttpsServer();
+        $domain = $this->getDomain();
 
         /**
          * We need to save the current PHP session, as it may have already expired if the customer takes a long time
@@ -117,15 +117,15 @@ class Controller extends AbstractController
             ]],
             'client_reference_id' => $phpSessionId,
             'mode'                => 'payment',
-            'success_url'         => $domain . '/rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url'          => $domain . '/rth_stripe.php?action=cancel',
+            'success_url'         => $domain . 'rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url'          => $domain . 'rth_stripe.php?action=cancel',
             'expires_at'          => time() + (self::CHECKOUT_SESSION_TIMOUT) // Configured to expire after 30 minutes
         ]);
 
         if (!$checkoutSession->url) {
             $splashMessage = SplashMessage::getInstance(); // TODO: Move to DIContainer
             $splashMessage->error('shopping_cart', 'Can not create Stripe Checkout Session.');
-            return new RedirectResponse('/shopping_cart.php');
+            return new RedirectResponse($domain . 'shopping_cart.php');
         }
 
         return new RedirectResponse($checkoutSession->url);
