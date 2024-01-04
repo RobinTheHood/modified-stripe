@@ -96,7 +96,22 @@ class payment_rth_stripe extends PaymentModule
         $this->container = new DIContainer();
     }
 
-    private function addActions()
+    private function getDomain(): string
+    {
+        return HTTP_SERVER . DIR_WS_CATALOG;
+    }
+
+    private function getFromActionUrl(): string
+    {
+        return $this->getDomain() . 'rth_stripe.php?action=checkout';
+    }
+
+    private function getWebhookUrl(): string
+    {
+        return $this->getDomain() . 'rth_stripe.php?action=receiveHook';
+    }
+
+    private function addActions(): void
     {
         $currentPage = $_SERVER['PHP_SELF'];
         $targetPage = 'modules.php';
