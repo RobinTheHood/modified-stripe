@@ -41,7 +41,7 @@ class payment_rth_stripe extends PaymentModule
      *
      * @var string $form_action_url RobinTheHood\Stripe\Classes\Controller\Controller::invokeCheckout()
      */
-    public $form_action_url = '/rth_stripe.php?action=checkout';
+    public $form_action_url = '';
 
     /**
      * If $tmpOrders is true, checkout_process.php creates a temp Order.
@@ -96,21 +96,6 @@ class payment_rth_stripe extends PaymentModule
         $this->addActions();
 
         $this->container = new DIContainer();
-    }
-
-    private function getDomain(): string
-    {
-        return HTTP_SERVER . DIR_WS_CATALOG;
-    }
-
-    private function getFromActionUrl(): string
-    {
-        return $this->getDomain() . 'rth_stripe.php?action=checkout';
-    }
-
-    private function getWebhookUrl(): string
-    {
-        return $this->getDomain() . 'rth_stripe.php?action=receiveHook';
     }
 
     private function addActions(): void
