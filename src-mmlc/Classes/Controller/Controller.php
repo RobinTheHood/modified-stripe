@@ -220,4 +220,9 @@ class Controller extends AbstractController
             return $this->config->getApiSandboxSecret();
         }
     }
+
+    private function getDomain(): string
+    {
+        return Constant::getHttpsServer() . Constant::getDirWsCatalog();
+    }
 }
