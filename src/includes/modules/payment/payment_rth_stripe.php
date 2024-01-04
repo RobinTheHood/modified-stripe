@@ -124,29 +124,6 @@ class payment_rth_stripe extends PaymentModule
         $this->addAction('connect', $buttonText);
     }
 
-    // private function addActions()
-    // {
-    //     $currentPage = $_SERVER['PHP_SELF'];
-    //     $targetPage = 'admin/modules.php';
-
-    //     if (substr($currentPage, -strlen($targetPage)) !== $targetPage) {
-    //         return;
-    //     }
-
-    //     $config = new StripeConfiguration(self::NAME);
-    //     $stripeService = StripeService::createFromConfig($config);
-
-    //     if (!$stripeService->hasValidSecret()) {
-    //         if ($stripeService->hasWebhookEndpoint()) {
-    //             $buttonText = 'Stripe Webhook entfernen';
-    //             $this->addAction('disconnect', $buttonText);
-    //         } else {
-    //             $buttonText = 'Stripe Webhook hinzufügen';
-    //             $this->addAction('connect', $buttonText);
-    //         }
-    //     }
-    // }
-
     /**
      * Show an icon in the module name if version is 2.0.6.0. In newer versions of modified it is new standard to not
      * display an icon anymore.
