@@ -17,7 +17,7 @@
 
 declare(strict_types=1);
 
-use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfiguration, StripeService};
+use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfiguration, StripeService, Url};
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
@@ -88,7 +88,7 @@ class payment_rth_stripe extends PaymentModule
         $this->checkForUpdate(true);
         $this->addKeys(self::$configurationKeys);
 
-        $this->form_action_url = $this->getFromActionUrl();
+        $this->form_action_url = Url::create()->getFormActionUrl();
 
         $config = new StripeConfiguration(self::NAME);
         $this->tmpStatus = $config->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
@@ -159,11 +159,9 @@ class payment_rth_stripe extends PaymentModule
             return;
         }
 
-        $webhookUrl = $this->getWebhookUrl();
-
         try {
             $endpoint = $stripeService->addWebhookEndpoint(
-                $$webhookUrl,
+                Url::create()->getStripeWebhook(),
                 ['checkout.session.completed', 'checkout.session.expired', 'charge.succeeded'],
                 'Webhook Endpoint for modified module robinthehood/stripe'
             );
@@ -295,7 +293,7 @@ class payment_rth_stripe extends PaymentModule
 
         $this->removeOrder($tempOrderId);
         $this->setTemporaryOrderId(false);
-        xtc_redirect($this->getDomain() . 'checkout_confirmation.php');
+        xtc_redirect(Url::create()->getCheckoutConfirmation());
     }
 
     /**
