@@ -7,6 +7,7 @@
     <rule ref="PSR12" />
 
     <!-- Include some rules I want to enforce -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
     <rule ref="Generic.Commenting.DocComment.ShortNotCapital" />
     <rule ref="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning" />
     <rule ref="Generic.Formatting.MultipleStatementAlignment.NotSameWarning" />
@@ -20,7 +21,6 @@
     <rule ref="WordPress.Arrays.ArrayIndentation.ItemNotAligned" />
     <rule ref="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned" />
     <rule ref="WordPress.PHP.YodaConditions.NotYoda" />
-    <rule ref="Generic.Arrays.DisallowLongArraySyntax" />
 
     <!-- Exclude some rules -->
     <rule ref="PSR12">
