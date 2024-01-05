@@ -17,6 +17,9 @@ namespace RobinTheHood\Stripe\Classes;
 
 use RobinTheHood\Stripe\Classes\Framework\Constant;
 
+/**
+ * With this class we can globally adjust the required URLs throughout the module if necessary.
+ */
 class Url
 {
     public static function create(): Url

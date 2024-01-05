@@ -160,6 +160,11 @@ class payment_rth_stripe extends PaymentModule
         }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites StdModule::install()
+     */
     public function install(): void
     {
         parent::install();
@@ -197,6 +202,11 @@ class payment_rth_stripe extends PaymentModule
         $repo->createRthStripePayment();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites StdModule::remove()
+     */
     public function remove(): void
     {
         parent::remove();
@@ -206,6 +216,11 @@ class payment_rth_stripe extends PaymentModule
         // }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites StdModule::updateSteps()
+     */
     protected function updateSteps(): int
     {
         $currentVersion = $this->getVersion();
@@ -264,6 +279,10 @@ class payment_rth_stripe extends PaymentModule
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * Overwrites PaymentModule::pre_confirmation_check()
+     *
      * //TODO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
      */
     public function pre_confirmation_check(): void
@@ -322,6 +341,11 @@ class payment_rth_stripe extends PaymentModule
         xtc_redirect($this->form_action_url);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites PaymentModule::before_process()
+     */
     public function before_process(): void
     {
         // If an error occurs on checkout_process.php, it may happen that a temporary order was created without that we
@@ -331,6 +355,11 @@ class payment_rth_stripe extends PaymentModule
         }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites PaymentModule::after_process()
+     */
     public function after_process(): void
     {
         global $order;

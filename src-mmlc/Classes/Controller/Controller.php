@@ -92,6 +92,8 @@ class Controller extends AbstractController
          */
         $name = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
         $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
+
+        // Stripe only accepts values in the smallest unit (e.g. cents) without decimal places
         $priceCent = (int) round($order->getTotal() * 100);
 
         $priceData = [
