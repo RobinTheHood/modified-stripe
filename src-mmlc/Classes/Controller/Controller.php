@@ -95,9 +95,10 @@ class Controller extends AbstractController
 
         // Stripe only accepts values in the smallest unit (e.g. cents) without decimal places
         $priceCent = (int) round($order->getTotal() * 100);
+        $currency = strtolower($order->getCurrency());
 
         $priceData = [
-            'currency'     => 'eur',
+            'currency'     => $currency, // ISO 3 letter in lower case
             'unit_amount'  => $priceCent, // Value in Cent
             'product_data' => [
                 'name'        => $name,

@@ -103,4 +103,9 @@ class Order
     {
         return $this->modifiedOrder->info['total'];
     }
+
+    public function getCurrency(): string
+    {
+        return $this->modifiedOrder->info['currency'];
+    }
 }
