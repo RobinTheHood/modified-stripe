@@ -24,7 +24,7 @@ use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 
 class payment_rth_stripe extends PaymentModule
 {
-    public const VERSION = '0.4.0';
+    public const VERSION = '0.4.1';
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
 
     // StatusId 1 is a default modified status 'Pending'
@@ -243,8 +243,13 @@ class payment_rth_stripe extends PaymentModule
             return self::UPDATE_SUCCESS;
         }
 
-        if (version_compare($this->getVersion(), self::VERSION, '<')) {
-            $this->setVersion(self::VERSION);
+        if ('0.3.0' === $currentVersion) {
+            $this->setVersion('0.4.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.4.0' === $currentVersion) {
+            $this->setVersion('0.4.1');
             return self::UPDATE_SUCCESS;
         }
 
