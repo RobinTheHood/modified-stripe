@@ -95,9 +95,10 @@ class Controller extends AbstractController
         $name = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
         $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
         $priceCent = (int) round($order->getTotal() * 100);
+        $currency = strtolower($order->getCurrency());
 
         $priceData = [
-            'currency'     => 'eur',
+            'currency'     => $currency, // ISO 3 letter in lower case
             'unit_amount'  => $priceCent, // Value in Cent
             'product_data' => [
                 'name'        => $name,
