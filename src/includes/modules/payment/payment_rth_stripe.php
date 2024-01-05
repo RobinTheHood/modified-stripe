@@ -17,14 +17,14 @@
 
 declare(strict_types=1);
 
-use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfiguration, StripeService};
+use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfiguration, StripeService, Url};
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 
 class payment_rth_stripe extends PaymentModule
 {
-    public const VERSION = '0.4.0';
+    public const VERSION = '0.4.1';
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
 
     // StatusId 1 is a default modified status 'Pending'
@@ -41,7 +41,7 @@ class payment_rth_stripe extends PaymentModule
      *
      * @var string $form_action_url RobinTheHood\Stripe\Classes\Controller\Controller::invokeCheckout()
      */
-    public $form_action_url = '/rth_stripe.php?action=checkout';
+    public $form_action_url = '';
 
     /**
      * If $tmpOrders is true, checkout_process.php creates a temp Order.
@@ -88,6 +88,8 @@ class payment_rth_stripe extends PaymentModule
         $this->checkForUpdate(true);
         $this->addKeys(self::$configurationKeys);
 
+        $this->form_action_url = Url::create()->getFormActionUrl();
+
         $config = new StripeConfiguration(self::NAME);
         $this->tmpStatus = $config->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
 
@@ -96,7 +98,7 @@ class payment_rth_stripe extends PaymentModule
         $this->container = new DIContainer();
     }
 
-    private function addActions()
+    private function addActions(): void
     {
         $currentPage = $_SERVER['PHP_SELF'];
         $targetPage = 'modules.php';
@@ -108,29 +110,6 @@ class payment_rth_stripe extends PaymentModule
         $buttonText = 'Stripe Webhook hinzufügen';
         $this->addAction('connect', $buttonText);
     }
-
-    // private function addActions()
-    // {
-    //     $currentPage = $_SERVER['PHP_SELF'];
-    //     $targetPage = 'admin/modules.php';
-
-    //     if (substr($currentPage, -strlen($targetPage)) !== $targetPage) {
-    //         return;
-    //     }
-
-    //     $config = new StripeConfiguration(self::NAME);
-    //     $stripeService = StripeService::createFromConfig($config);
-
-    //     if (!$stripeService->hasValidSecret()) {
-    //         if ($stripeService->hasWebhookEndpoint()) {
-    //             $buttonText = 'Stripe Webhook entfernen';
-    //             $this->addAction('disconnect', $buttonText);
-    //         } else {
-    //             $buttonText = 'Stripe Webhook hinzufügen';
-    //             $this->addAction('connect', $buttonText);
-    //         }
-    //     }
-    // }
 
     /**
      * Show an icon in the module name if version is 2.0.6.0. In newer versions of modified it is new standard to not
@@ -165,11 +144,9 @@ class payment_rth_stripe extends PaymentModule
             return;
         }
 
-        $url = HTTPS_SERVER . '/rth_stripe.php?action=receiveHook';
-
         try {
             $endpoint = $stripeService->addWebhookEndpoint(
-                $url,
+                Url::create()->getStripeWebhook(),
                 ['checkout.session.completed', 'checkout.session.expired', 'charge.succeeded'],
                 'Webhook Endpoint for modified module robinthehood/stripe'
             );
@@ -183,6 +160,11 @@ class payment_rth_stripe extends PaymentModule
         }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites StdModule::install()
+     */
     public function install(): void
     {
         parent::install();
@@ -220,6 +202,11 @@ class payment_rth_stripe extends PaymentModule
         $repo->createRthStripePayment();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites StdModule::remove()
+     */
     public function remove(): void
     {
         parent::remove();
@@ -229,6 +216,11 @@ class payment_rth_stripe extends PaymentModule
         // }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites StdModule::updateSteps()
+     */
     protected function updateSteps(): int
     {
         $currentVersion = $this->getVersion();
@@ -251,8 +243,13 @@ class payment_rth_stripe extends PaymentModule
             return self::UPDATE_SUCCESS;
         }
 
-        if (version_compare($this->getVersion(), self::VERSION, '<')) {
-            $this->setVersion(self::VERSION);
+        if ('0.3.0' === $currentVersion) {
+            $this->setVersion('0.4.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.4.0' === $currentVersion) {
+            $this->setVersion('0.4.1');
             return self::UPDATE_SUCCESS;
         }
 
@@ -287,6 +284,10 @@ class payment_rth_stripe extends PaymentModule
     }
 
     /**
+     * {@inheritdoc}
+     *
+     * Overwrites PaymentModule::pre_confirmation_check()
+     *
      * //TODO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
      */
     public function pre_confirmation_check(): void
@@ -301,7 +302,7 @@ class payment_rth_stripe extends PaymentModule
 
         $this->removeOrder($tempOrderId);
         $this->setTemporaryOrderId(false);
-        xtc_redirect('checkout_confirmation.php');
+        xtc_redirect(Url::create()->getCheckoutConfirmation());
     }
 
     /**
@@ -345,6 +346,11 @@ class payment_rth_stripe extends PaymentModule
         xtc_redirect($this->form_action_url);
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites PaymentModule::before_process()
+     */
     public function before_process(): void
     {
         // If an error occurs on checkout_process.php, it may happen that a temporary order was created without that we
@@ -354,6 +360,11 @@ class payment_rth_stripe extends PaymentModule
         }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * Overwrites PaymentModule::after_process()
+     */
     public function after_process(): void
     {
         global $order;

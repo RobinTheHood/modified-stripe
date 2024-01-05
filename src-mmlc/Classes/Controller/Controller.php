@@ -17,7 +17,6 @@ namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
-use RobinTheHood\Stripe\Classes\Framework\Constant;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
@@ -27,6 +26,7 @@ use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use RobinTheHood\Stripe\Classes\StripeEventHandler;
 use RobinTheHood\Stripe\Classes\StripeService;
+use RobinTheHood\Stripe\Classes\Url;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Stripe;
 
@@ -72,8 +72,6 @@ class Controller extends AbstractController
      */
     protected function invokeCheckout(): Response
     {
-        $domain = Constant::getHttpsServer();
-
         /**
          * We need to save the current PHP session, as it may have already expired if the customer takes a long time
          * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
@@ -94,6 +92,8 @@ class Controller extends AbstractController
          */
         $name = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
         $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
+
+        // Stripe only accepts values in the smallest unit (e.g. cents) without decimal places
         $priceCent = (int) round($order->getTotal() * 100);
 
         $priceData = [
@@ -117,15 +117,15 @@ class Controller extends AbstractController
             ]],
             'client_reference_id' => $phpSessionId,
             'mode'                => 'payment',
-            'success_url'         => $domain . '/rth_stripe.php?action=success&session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url'          => $domain . '/rth_stripe.php?action=cancel',
+            'success_url'         => Url::create()->getStripeSuccess(),
+            'cancel_url'          => Url::create()->getStripeCancel(),
             'expires_at'          => time() + (self::CHECKOUT_SESSION_TIMOUT) // Configured to expire after 30 minutes
         ]);
 
         if (!$checkoutSession->url) {
             $splashMessage = SplashMessage::getInstance(); // TODO: Move to DIContainer
             $splashMessage->error('shopping_cart', 'Can not create Stripe Checkout Session.');
-            return new RedirectResponse('/shopping_cart.php');
+            return new RedirectResponse(Url::create()->getShoppingCart());
         }
 
         return new RedirectResponse($checkoutSession->url);
@@ -147,13 +147,13 @@ class Controller extends AbstractController
             } catch (Exception $e) {
                 $splashMessage = SplashMessage::getInstance(); // TODO: Move to DIContainer
                 $splashMessage->error('shopping_cart', $e->getMessage());
-                return new RedirectResponse('/shopping_cart.php');
+                return new RedirectResponse(Url::create()->getShoppingCart());
             }
 
             // TODO: Check if the order was realy paid, if possible
             // TODO: Load the php session if the payment process took too long
 
-            return new RedirectResponse('/checkout_process.php');
+            return new RedirectResponse(Url::create()->getCheckoutProcess());
         } catch (Exception $e) {
             return new Response(json_encode(['error' => $e->getMessage()]), 500);
         }
@@ -166,7 +166,7 @@ class Controller extends AbstractController
      */
     public function invokeCancel(): Response
     {
-        return new RedirectResponse('/checkout_confirmation.php');
+        return new RedirectResponse(Url::create()->getCheckoutConfirmation());
     }
 
     /**
