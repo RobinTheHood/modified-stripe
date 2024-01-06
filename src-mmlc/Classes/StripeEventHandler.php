@@ -38,6 +38,7 @@ class StripeEventHandler
         $this->container = $container;
 
         $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+
         $this->orderStatusPaid = $config->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
     }
 
@@ -53,10 +54,10 @@ class StripeEventHandler
      */
     public function checkoutSessionCompleted(Event $event): bool
     {
-        $session = $event->data->object;
+        $session           = $event->data->object;
         $clientReferenceId = $session->client_reference_id;
-        $paymentIntentId = $session->payment_intent;
-        $phpSessionId = $clientReferenceId;
+        $paymentIntentId   = $session->payment_intent;
+        $phpSessionId      = $clientReferenceId;
 
 
         if ('paid' !== $session->payment_status) {
@@ -84,7 +85,7 @@ class StripeEventHandler
             "object"   => $event->object,
             "created"  => $event->created,
             "livemode" => $event->livemode,
-            "type"     => $event->type
+            "type"     => $event->type,
         ];
 
         /** @var Repository $repo */
@@ -101,9 +102,9 @@ class StripeEventHandler
 
     public function checkoutSessionExpired(Event $event): bool
     {
-        $session = $event->data->object;
+        $session           = $event->data->object;
         $clientReferenceId = $session->client_reference_id;
-        $phpSessionId = $clientReferenceId;
+        $phpSessionId      = $clientReferenceId;
 
         if ('expired' !== $session->status) {
             return false;

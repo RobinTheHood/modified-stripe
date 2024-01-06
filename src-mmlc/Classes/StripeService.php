@@ -109,10 +109,12 @@ class StripeService
     private function checkWebhookEndpoint(WebhookEndpoint $endpoint): bool
     {
         $metadata = $endpoint['metadata'] ?? [];
-        $module = $metadata['module'] ?? '';
+        $module   = $metadata['module'] ?? '';
+
         if ('robinthehood/stripe' === $module) {
             return true;
         }
+
         return false;
     }
 
@@ -124,14 +126,16 @@ class StripeService
     {
         \Stripe\Stripe::setApiKey($this->secret);
 
-        $endpoint = WebhookEndpoint::create([
-            'url'            => $url,
-            'enabled_events' => $events,
-            'description'    => $description,
-            'metadata'       => [
-                'module' => 'robinthehood/stripe'
-            ]
-        ]);
+        $endpoint = WebhookEndpoint::create(
+            [
+                'url'            => $url,
+                'enabled_events' => $events,
+                'description'    => $description,
+                'metadata'       => [
+                    'module' => 'robinthehood/stripe',
+                ],
+            ],
+        );
 
         return $endpoint;
     }

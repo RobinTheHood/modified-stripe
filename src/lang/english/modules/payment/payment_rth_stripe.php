@@ -14,7 +14,7 @@
  */
 
 $webhookEndpoint = HTTPS_SERVER . DIR_WS_CATALOG . 'rth_stripe.php?action=receiveHook';
-$prefix = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE_';
+$prefix          = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE_';
 
 define($prefix . 'TITLE', 'Stripe Payment Module © by <a href="https://github.com/RobinTheHood/modified-stripe" target="_blank" style="font-weight: bold">RobinTheHood, grandeljay</a>');
 define($prefix . 'LONG_DESCRIPTION', 'A modified-shop module that enables payments via Stripe');

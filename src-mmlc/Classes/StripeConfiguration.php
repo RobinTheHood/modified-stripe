@@ -84,6 +84,7 @@ class StripeConfiguration extends Configuration
     public function setWebhookSerect(string $secret): void
     {
         $container = new DIContainer();
+
         $repo = $container->get(Repository::class);
         $repo->updateConfigurationValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
     }

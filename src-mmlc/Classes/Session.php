@@ -89,7 +89,7 @@ class Session
      */
     public function load(string $sessionId, int $expiresAt = 0): void
     {
-        $session = $this->getSession($sessionId, $expiresAt);
+        $session  = $this->getSession($sessionId, $expiresAt);
         $_SESSION = $session;
     }
 
@@ -123,7 +123,7 @@ class Session
         }
 
         $sessionData = base64_decode($phpSession['data']);
-        $session = unserialize($sessionData);
+        $session     = unserialize($sessionData);
 
         if (!$session) {
             throw new Exception("Can not unserialize PhpSession with id: $sessionId");
@@ -152,7 +152,7 @@ class Session
             throw new Exception("Can not convent $datetime to unix time stamp");
         }
         $currentTimeStamp = time();
-        $ageInSec = $currentTimeStamp - $timeStamp;
+        $ageInSec         = $currentTimeStamp - $timeStamp;
         return $ageInSec;
     }
 }

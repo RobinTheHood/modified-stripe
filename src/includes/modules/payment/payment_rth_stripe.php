@@ -77,7 +77,7 @@ class payment_rth_stripe extends PaymentModule
         'CHECKOUT_TITLE',
         'CHECKOUT_DESC',
         'ORDER_STATUS_PENDING',
-        'ORDER_STATUS_PAID'
+        'ORDER_STATUS_PAID',
     ];
 
     private DIContainer $container;
@@ -90,7 +90,7 @@ class payment_rth_stripe extends PaymentModule
 
         $this->form_action_url = Url::create()->getFormActionUrl();
 
-        $config = new StripeConfiguration(self::NAME);
+        $config          = new StripeConfiguration(self::NAME);
         $this->tmpStatus = $config->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
 
         $this->addActions();
@@ -101,7 +101,7 @@ class payment_rth_stripe extends PaymentModule
     private function addActions(): void
     {
         $currentPage = $_SERVER['PHP_SELF'];
-        $targetPage = 'modules.php';
+        $targetPage  = 'modules.php';
 
         if (substr($currentPage, -strlen($targetPage)) !== $targetPage) {
             return;
@@ -131,7 +131,7 @@ class payment_rth_stripe extends PaymentModule
         }
         self::$actionInvoked = true;
 
-        $config = new StripeConfiguration(self::NAME);
+        $config        = new StripeConfiguration(self::NAME);
         $stripeService = StripeService::createFromConfig($config);
 
         if (!$stripeService->hasValidSecret()) {
@@ -270,14 +270,14 @@ class payment_rth_stripe extends PaymentModule
     {
         $selectionFieldArray = [
             'title' => '',
-            'field' => xtc_draw_hidden_field(xtc_session_name(), xtc_session_id())
+            'field' => xtc_draw_hidden_field(xtc_session_name(), xtc_session_id()),
         ];
 
         $selectionArray = [
             'id'          => $this->code,
             'module'      => 'Stripe',
             'description' => 'Zahle mit Stripe',
-            'fields'      => [$selectionFieldArray]
+            'fields'      => [$selectionFieldArray],
         ];
 
         return $selectionArray;

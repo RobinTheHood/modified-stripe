@@ -54,7 +54,7 @@ class Controller extends AbstractController
     public function __construct(DIContainer $container)
     {
         parent::__construct();
-        $this->config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+        $this->config    = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
         $this->container = $container;
     }
 
@@ -77,8 +77,8 @@ class Controller extends AbstractController
          * with the Stripe payment process. When the PHP session times out, the customer has paid, but no order is
          * placed in the shop.
          */
-        $phpSession = $this->container->get(PhpSession::class);
-        $phpSessionId  = $phpSession->save();
+        $phpSession   = $this->container->get(PhpSession::class);
+        $phpSessionId = $phpSession->save();
 
         $order = $phpSession->getOrder();
         if (!$order) {
@@ -90,12 +90,12 @@ class Controller extends AbstractController
         /**
          * //TODO: Use reasonable defaults per language.
          */
-        $name = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
+        $name        = parse_multi_language_value($this->config->checkoutTitle, $_SESSION['language_code']) ?: 'title';
         $description = parse_multi_language_value($this->config->checkoutDesc, $_SESSION['language_code']) ?: 'description';
 
         // Stripe only accepts values in the smallest unit (e.g. cents) without decimal places
         $priceCent = (int) round($order->getTotal() * 100);
-        $currency = strtolower($order->getCurrency());
+        $currency  = strtolower($order->getCurrency());
 
         $priceData = [
             'currency'     => $currency, // ISO 3 letter in lower case
@@ -103,7 +103,7 @@ class Controller extends AbstractController
             'product_data' => [
                 'name'        => $name,
                 'description' => $description,
-            ]
+            ],
         ];
 
         /**
@@ -111,17 +111,21 @@ class Controller extends AbstractController
          *
          * @link https://stripe.com/docs/api/checkout/sessions/object
          */
-        $checkoutSession = StripeSession::create([
-            'line_items'          => [[
-                'price_data' => $priceData,
-                'quantity'   => 1,
-            ]],
-            'client_reference_id' => $phpSessionId,
-            'mode'                => 'payment',
-            'success_url'         => Url::create()->getStripeSuccess(),
-            'cancel_url'          => Url::create()->getStripeCancel(),
-            'expires_at'          => time() + (self::CHECKOUT_SESSION_TIMOUT) // Configured to expire after 30 minutes
-        ]);
+        $checkoutSession = StripeSession::create(
+            [
+                'line_items'          => [
+                    [
+                        'price_data' => $priceData,
+                        'quantity'   => 1,
+                    ],
+                ],
+                'client_reference_id' => $phpSessionId,
+                'mode'                => 'payment',
+                'success_url'         => Url::create()->getStripeSuccess(),
+                'cancel_url'          => Url::create()->getStripeCancel(),
+                'expires_at'          => time() + (self::CHECKOUT_SESSION_TIMOUT), // Configured to expire after 30 minutes
+            ]
+        );
 
         if (!$checkoutSession->url) {
             $splashMessage = SplashMessage::getInstance(); // TODO: Move to DIContainer
@@ -137,9 +141,9 @@ class Controller extends AbstractController
         $stripe = new \Stripe\StripeClient($this->getSecretKey());
 
         try {
-            $stripeSessionId = $request->get('session_id');
+            $stripeSessionId       = $request->get('session_id');
             $stripeCheckoutSession = $stripe->checkout->sessions->retrieve($stripeSessionId);
-            $phpSessionId = $stripeCheckoutSession->client_reference_id;
+            $phpSessionId          = $stripeCheckoutSession->client_reference_id;
 
             $phpSession = $this->container->get(PhpSession::class);
             try {
