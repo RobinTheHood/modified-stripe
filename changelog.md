@@ -4,6 +4,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.4.1] - 2024-01-06
+You have to update the module via MMLC and under Admin > Modules > Payment Methods
+
+### Fixed
+- Fixed a bug that the module does not work with a shop installed in a subfolder. [(#57)](https://github.com/RobinTheHood/modified-stripe/pull/57)
+- A bug has been fixed where only currencies in euros were transferred to Stripe. [(#58)](https://github.com/RobinTheHood/modified-stripe/pull/58)
+
 ## [0.4.0] - 2024-01-03
 You have to update the module via MMLC and under Admin > Modules > Payment Methods
 
@@ -39,9 +46,10 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.3.0...HEAD
-[0.4.0]: https://github.com/RobinTheHood/modified-std-module/compare/0.3.0...0.4.0
-[0.3.0]: https://github.com/RobinTheHood/modified-std-module/compare/0.2.0...0.3.0
-[0.2.0]: https://github.com/RobinTheHood/modified-std-module/compare/0.1.1...0.2.0
-[0.1.1]: https://github.com/RobinTheHood/modified-std-module/compare/0.1.0...0.1.1
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.1...HEAD
+[0.4.1]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.0...0.4.1
+[0.4.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.3.0...0.4.0
+[0.3.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.2.0...0.3.0
+[0.2.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.1.1...0.2.0
+[0.1.1]: https://github.com/RobinTheHood/modified-stripe/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/RobinTheHood/modified-stripe/releases/tag/0.1.0
