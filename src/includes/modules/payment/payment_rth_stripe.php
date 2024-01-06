@@ -24,7 +24,10 @@ use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 
 class payment_rth_stripe extends PaymentModule
 {
+    /** @var string */
     public const VERSION = '0.4.1';
+
+    /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
 
     // StatusId 1 is a default modified status 'Pending'
