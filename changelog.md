@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.5.0] - 2024-02-05
+### Added
+- modified compatibility `3.0.1` and `3.0.2`
+
 ## [0.4.1] - 2024-01-06
 You have to update the module via MMLC and under Admin > Modules > Payment Methods
 
