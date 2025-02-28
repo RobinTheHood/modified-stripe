@@ -70,8 +70,12 @@ class Repository
 
     public function getAllExpiredRthStripePhpSessions(int $expiresAt): array
     {
+        $dateTime = new \DateTime();
+        $dateTime->modify("-$expiresAt seconds");
+        $formattedDateTime = $dateTime->format('Y-m-d H:i:s');
+
         $query = $this->db->query(
-            "SELECT * FROM rth_stripe_php_session WHERE created < NOW() - INTERVAL $expiresAt SECOND;"
+            "SELECT * FROM rth_stripe_php_session WHERE created < '$formattedDateTime';"
         );
 
         return $this->db->fetchAll($query);
@@ -79,11 +83,14 @@ class Repository
 
     public function insertRthStripePhpSession(string $id, string $data): void
     {
+        $dateTime = new \DateTime();
+        $formattedDateTime = $dateTime->format('Y-m-d H:i:s');
+
         $this->db->query(
             "INSERT INTO rth_stripe_php_session (
                 `id`, `data`, `created`
             ) VALUES (
-                '$id', '$data', NOW()
+                '$id', '$data', '$formattedDateTime'
             )"
         );
     }
@@ -97,38 +104,46 @@ class Repository
 
     public function updateOrderStatus(int $orderId, int $statusId): void
     {
+        $dateTime = new \DateTime();
+        $formattedDateTime = $dateTime->format('Y-m-d H:i:s');
+
         $this->db->query(
-            "UPDATE `orders` SET `orders_status` = '$statusId', `last_modified` = NOW() WHERE orders_id = '$orderId'"
+            "UPDATE `orders` SET `orders_status` = '$statusId', `last_modified` = '$formattedDateTime' WHERE orders_id = '$orderId'"
         );
     }
 
     public function insertOrderStatusHistory(int $orderId, int $statusId, string $comment = ''): void
     {
+        $dateTime = new \DateTime();
+        $formattedDateTime = $dateTime->format('Y-m-d H:i:s');
+
         $this->db->query(
             "INSERT INTO orders_status_history (
                 `orders_id`, `orders_status_id`, `date_added`, `customer_notified`, `comments`, `comments_sent`
             ) VALUES (
-                '$orderId', '$statusId', NOW(), '0', '$comment', '0'
+                '$orderId', '$statusId', '$formattedDateTime', '0', '$comment', '0'
             )"
         );
     }
 
     public function insertRthStripePayment(int $orderId, string $stripePaymentIntentId): void
     {
+        $dateTime = new \DateTime();
+        $formattedDateTime = $dateTime->format('Y-m-d H:i:s');
+
         $this->db->query(
             "INSERT INTO rth_stripe_payment (
                 `created`, `order_id`, `stripe_payment_intent_id`
             ) VALUES (
-                NOW(), '$orderId', '$stripePaymentIntentId'
+                '$formattedDateTime', '$orderId', '$stripePaymentIntentId'
             )"
         );
     }
 
     public function updateConfigurationValue(string $configurationKey, string $configurationValue): void
     {
-        $table = TABLE_CONFIGURATION;
         $this->db->query(
-            "UPDATE $table SET configuration_value = '$configurationValue'
+            "UPDATE `configuration` SET configuration_value = '$configurationValue'
                 WHERE configuration_key = '$configurationKey';"
         );
     }
