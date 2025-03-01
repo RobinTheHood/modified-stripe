@@ -171,7 +171,7 @@ class Controller extends AbstractController
      */
     public function invokeCancel(): Response
     {
-        return new RedirectResponse(Url::create()->getCheckoutConfirmation());
+        return new RedirectResponse(Url::create()->getCheckoutConfirmation() . '?conditions=true');
     }
 
     /**
