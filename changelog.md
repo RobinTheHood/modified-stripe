@@ -4,6 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.6.0] - 2025-03-01
 ### Added
 - modified compatibility `3.1.0`, `3.1.1` and `3.1.2`
 
@@ -57,7 +58,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.5.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.6.0...HEAD
+[0.6.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.3.0...0.4.0
