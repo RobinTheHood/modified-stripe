@@ -25,7 +25,7 @@ use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.5.0';
+    public const VERSION = '0.6.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -258,6 +258,11 @@ class payment_rth_stripe extends PaymentModule
 
         if ('0.4.1' === $currentVersion) {
             $this->setVersion('0.5.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.5.0' === $currentVersion) {
+            $this->setVersion('0.6.0');
             return self::UPDATE_SUCCESS;
         }
 
