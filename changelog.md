@@ -4,6 +4,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+### Added
+- modified compatibility `3.1.0`, `3.1.1` and `3.1.2`
+
+### Fixed
+- Fixed an issue where PHP session expiration caused errors during checkout with the Stripe module due to time discrepancies between the database and PHP sessions. [(#64)](https://github.com/RobinTheHood/modified-stripe/pull/64)
+- Fixed an issue where navigating back from the Stripe payment page or browser back button caused errors due to missing terms and conditions confirmation. [(#66)](https://github.com/RobinTheHood/modified-stripe/pull/66)
+
 ## [0.5.0] - 2024-02-05
 ### Added
 - modified compatibility `3.0.1` and `3.0.2`
@@ -50,7 +57,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.1...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.5.0...HEAD
+[0.5.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.2.0...0.3.0
