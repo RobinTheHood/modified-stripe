@@ -6,7 +6,7 @@ Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unr
 
 ## [0.7.0] - 2025-03-03
 ### Added
-- Added multilingual support for payment title and description in the frontend, configurable through module settings
+- Added multilingual support for payment title and description in the frontend, configurable through module settings [(#67)](https://github.com/RobinTheHood/modified-stripe/pull/67)
 
 ## [0.6.0] - 2025-03-01
 ### Added
@@ -62,7 +62,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.6.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.7.0...HEAD
+[0.7.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.0...0.4.1
