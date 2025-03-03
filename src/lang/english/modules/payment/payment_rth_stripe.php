@@ -46,6 +46,11 @@ define($prefix . 'CHECKOUT_TITLE_DESC', 'Text to be used as the title in the Str
 define($prefix . 'CHECKOUT_DESC_TITLE', 'Checkout Description');
 define($prefix . 'CHECKOUT_DESC_DESC', 'Text to be used as the description in the Stripe Checkout.');
 
+define($prefix . 'PAYMENT_TITLE_TITLE', 'Payment Name');
+define($prefix . 'PAYMENT_TITLE_DESC', 'Name displayed in the checkout payment step.');
+define($prefix . 'PAYMENT_DESC_TITLE', 'Payment Description');
+define($prefix . 'PAYMENT_DESC_DESC', 'Description shown to customers in the checkout payment step.');
+
 define($prefix . 'ORDER_STATUS_PENDING_TITLE', 'Order Status for Pending Payment');
 define($prefix . 'ORDER_STATUS_PENDING_DESC', 'Some payment methods are recorded as paid by Stripe after a delay. What order status should the order receive in the meantime?');
 

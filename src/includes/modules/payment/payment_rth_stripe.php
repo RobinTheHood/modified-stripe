@@ -25,7 +25,7 @@ use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.6.0';
+    public const VERSION = '0.7.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -79,6 +79,8 @@ class payment_rth_stripe extends PaymentModule
         'API_LIVE_ENDPOINT_SECRET',
         'CHECKOUT_TITLE',
         'CHECKOUT_DESC',
+        'PAYMENT_TITLE',
+        'PAYMENT_DESC',
         'ORDER_STATUS_PENDING',
         'ORDER_STATUS_PAID',
     ];
@@ -195,6 +197,8 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('API_LIVE_ENDPOINT_SECRET', '', 6, 1, $setFunctionFieldapiLiveEndpointSecret);
         $this->addConfiguration('CHECKOUT_TITLE', 'DE::Einkauf bei SHOPNAME||EN::Purchase at SHOPNAME', 6, 1, $setFunctionFieldcheckoutTitleDesc);
         $this->addConfiguration('CHECKOUT_DESC', 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+        $this->addConfiguration('PAYMENT_TITLE', 'DE::Stripe||EN::Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+        $this->addConfiguration('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
 
         $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, 6, 1);
         $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, 6, 1);
@@ -266,6 +270,16 @@ class payment_rth_stripe extends PaymentModule
             return self::UPDATE_SUCCESS;
         }
 
+        if ('0.6.0' === $currentVersion) {
+            $setFunctionField = self::class . '::setFunction(\'%s\',';
+            $setFunctionFieldcheckoutTitleDesc = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::checkoutTitleDesc'));
+            $this->addConfiguration('PAYMENT_TITLE', 'DE::Stripe||EN::Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+            $this->addConfiguration('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+
+            $this->setVersion('0.7.0');
+            return self::UPDATE_SUCCESS;
+        }
+
         return self::UPDATE_NOTHING;
     }
 
@@ -286,10 +300,15 @@ class payment_rth_stripe extends PaymentModule
             'field' => xtc_draw_hidden_field(xtc_session_name(), xtc_session_id()),
         ];
 
+        $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+
+        $titel = parse_multi_language_value($config->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
+        $description = parse_multi_language_value($config->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
+
         $selectionArray = [
             'id'          => $this->code,
-            'module'      => 'Stripe',
-            'description' => 'Zahle mit Stripe',
+            'module'      => $titel, // Stripe
+            'description' => $description, // Zahle mit Stripe
             'fields'      => [$selectionFieldArray],
         ];
 

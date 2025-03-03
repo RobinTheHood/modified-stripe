@@ -88,4 +88,22 @@ class StripeConfiguration extends Configuration
         $repo = $container->get(Repository::class);
         $repo->updateConfigurationValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
     }
+
+    public function getPaymentTitle(): string
+    {
+        try {
+            return $this->paymentTitle;
+        } catch (Exception $e) {
+            return '';
+        }
+    }
+
+    public function getPaymentDescription(): string
+    {
+        try {
+            return $this->paymentDesc;
+        } catch (Exception $e) {
+            return '';
+        }
+    }
 }

@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.7.0] - 2025-03-03
+### Added
+- Added multilingual support for payment title and description in the frontend, configurable through module settings
+
 ## [0.6.0] - 2025-03-01
 ### Added
 - modified compatibility `3.1.0`, `3.1.1` and `3.1.2`
