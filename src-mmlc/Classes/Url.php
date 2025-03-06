@@ -66,4 +66,9 @@ class Url
     {
         return $this->getShopBase() . 'checkout_confirmation.php';
     }
+
+    public function getAdminOrders(): string
+    {
+        return $this->getShopBase() . Constant::getDirAdmin() . 'orders.php';
+    }
 }
