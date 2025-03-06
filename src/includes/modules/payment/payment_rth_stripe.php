@@ -25,7 +25,7 @@ use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.7.0';
+    public const VERSION = '0.8.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -203,6 +203,8 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, 6, 1);
         $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, 6, 1);
 
+        $this->setAdminAccess('rth_stripe');
+
         /** @var Repository **/
         $repo = $this->container->get(Repository::class);
         $repo->createRthStripePhpSession();
@@ -277,6 +279,13 @@ class payment_rth_stripe extends PaymentModule
             $this->addConfiguration('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
 
             $this->setVersion('0.7.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.7.0' === $currentVersion) {
+            $this->setAdminAccess('rth_stripe');
+
+            $this->setVersion('0.8.0');
             return self::UPDATE_SUCCESS;
         }
 
