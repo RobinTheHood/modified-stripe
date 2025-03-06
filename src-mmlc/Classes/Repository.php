@@ -147,4 +147,24 @@ class Repository
                 WHERE configuration_key = '$configurationKey';"
         );
     }
+
+    /**
+     * Get Stripe payment data by order ID
+     *
+     * @param int $orderId
+     * @return array|false Payment data array or false if not found
+     */
+    public function getStripePaymentByOrderId(int $orderId)
+    {
+        $query = $this->db->query(
+            "SELECT * FROM rth_stripe_payment WHERE order_id = $orderId ORDER BY created DESC LIMIT 1"
+        );
+
+        $row = $this->db->fetch($query);
+        if (!isset($row['id'])) {
+            return false;
+        }
+
+        return $row;
+    }
 }
