@@ -56,3 +56,5 @@ define($prefix . 'ORDER_STATUS_PENDING_DESC', 'Some payment methods are recorded
 
 define($prefix . 'ORDER_STATUS_PAID_TITLE', 'Order Status for Successful Payment');
 define($prefix . 'ORDER_STATUS_PAID_DESC', 'What order status should the order receive after Stripe has verified the payment as successful?');
+define($prefix . 'MANUAL_CAPTURE_TITLE', 'Manual Capture');
+define($prefix . 'MANUAL_CAPTURE_DESC', 'Enable manual capturing of payments? If yes, payment amounts will be authorized but not automatically captured. You must manually capture payments from the order or from your Stripe dashboard.');

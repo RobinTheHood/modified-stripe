@@ -89,6 +89,15 @@ class StripeConfiguration extends Configuration
         $repo->updateConfigurationValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
     }
 
+    public function getManualCapture(): bool
+    {
+        try {
+            return 'true' === $this->manualCapture ? true : false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     public function getPaymentTitle(): string
     {
         try {

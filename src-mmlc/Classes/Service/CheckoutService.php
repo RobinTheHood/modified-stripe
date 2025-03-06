@@ -44,19 +44,23 @@ class CheckoutService
 
         $lineItems = $this->createLineItems($order);
 
-        return StripeSession::create(
-            [
-                'line_items' => $lineItems,
-                'client_reference_id' => $phpSessionId,
-                'mode' => 'payment',
-                'payment_intent_data' => [
-                    'capture_method' => 'manual',
-                ],
-                'success_url' => Url::create()->getStripeSuccess(),
-                'cancel_url' => Url::create()->getStripeCancel(),
-                'expires_at' => time() + self::CHECKOUT_SESSION_TIMOUT,
-            ]
-        );
+        $sessionParams = [
+            'line_items' => $lineItems,
+            'client_reference_id' => $phpSessionId,
+            'mode' => 'payment',
+            'success_url' => Url::create()->getStripeSuccess(),
+            'cancel_url' => Url::create()->getStripeCancel(),
+            'expires_at' => time() + self::CHECKOUT_SESSION_TIMOUT,
+        ];
+
+        // Only add payment_intent_data with manual capture if the setting is enabled
+        if ($this->config->getManualCapture()) {
+            $sessionParams['payment_intent_data'] = [
+                'capture_method' => 'manual',
+            ];
+        }
+
+        return StripeSession::create($sessionParams);
     }
 
     /**

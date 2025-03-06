@@ -83,6 +83,7 @@ class payment_rth_stripe extends PaymentModule
         'PAYMENT_DESC',
         'ORDER_STATUS_PENDING',
         'ORDER_STATUS_PAID',
+        'MANUAL_CAPTURE',
     ];
 
     private DIContainer $container;
@@ -199,6 +200,7 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('CHECKOUT_DESC', 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order', 6, 1, $setFunctionFieldcheckoutTitleDesc);
         $this->addConfiguration('PAYMENT_TITLE', 'DE::Stripe||EN::Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
         $this->addConfiguration('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+        $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', 6, 1);
 
         $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, 6, 1);
         $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, 6, 1);
@@ -285,6 +287,7 @@ class payment_rth_stripe extends PaymentModule
         if ('0.7.0' === $currentVersion) {
             $this->setAdminAccess('rth_stripe');
 
+            $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', 6, 1);
             $this->setVersion('0.8.0');
             return self::UPDATE_SUCCESS;
         }
