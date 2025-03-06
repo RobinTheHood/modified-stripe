@@ -8,6 +8,11 @@ if (payment_rth_stripe::class !== $order->info['payment_method']) {
     return;
 }
 
+// Get the order ID from the URL parameter
+$orderId = isset($_GET['oID']) ? (int)$_GET['oID'] : 0;
+
+// Retrieve payment intent ID from order
+$paymentIntentId = 'pi_3QzP3oJIsfvAtVBd0226XgkJ'; // This should be retrieved from your order data
 ?>
 
 <style>
@@ -15,134 +20,84 @@ if (payment_rth_stripe::class !== $order->info['payment_method']) {
         padding: 20px;
         background-color: white;
         margin-top: 10px;
-        width: 100%
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .rth-stripe h3 {
         color: rgb(26, 27, 37);
         font-size: 18px;
         margin-top: 0px;
+        margin-bottom: 15px;
     }
 
-    .rth-stripe .rth-stripe-content {
-        border-top: 1px solid rgb(235,238,241);
-        padding-top: 20px;
-    }
-
-    .rth-stripe .rth-stripe-property-list-row {
+    .rth-stripe .loading-spinner {
         display: flex;
-        margin: 8px 0px;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
     }
 
-    .rth-stripe .rth-stripe-property-list-item-label {
-        min-width: 180px;
-        color: rgb(104, 115, 133);
+    .rth-stripe .loading-spinner .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: #635bff;
+        animation: spin 1s linear infinite;
     }
 
-    .rth-stripe .rth-stripe-property-list-item-value {
-        color: rgb(65, 69, 82);
+    .rth-stripe .error-message {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 </style>
 
 <tr>
     <td colspan="2">
-        <div class="rth-stripe">
-            <h3>Stripe - Zahlungsmethode</h3>
-            <div class="rth-stripe-content">
-                <div class="rth-stripe-property-list">
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">ID</div>
-                        <div class="rth-stripe-property-list-item-value">pm_1O5ngnJIsfvAtVBdxcIxeu3b</div>
-                    </div>
-
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Nummer</div>
-                        <div class="rth-stripe-property-list-item-value">•••• 4242</div>
-                    </div>
-
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Fingerabdruck</div>
-                        <div class="rth-stripe-property-list-item-value">uyMGel009AKHV6UG</div>
-                    </div>
-
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Gültig bis</div>
-                        <div class="rth-stripe-property-list-item-value">04 / 2024</div>
-                    </div>
-
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Typ</div>
-                        <div class="rth-stripe-property-list-item-value">Visa credit Karte</div>
-                    </div>
-
-                    <div class="rth-stripe-property-list-row">
-                        <div class="rth-stripe-property-list-item-label">Aussteller</div>
-                        <div class="rth-stripe-property-list-item-value">Stripe Payments UK Limited</div>
-                    </div>
-                </div>
+        <div class="rth-stripe" id="rth-stripe-container">
+            <h3>Stripe - Zahlungsinformationen</h3>
+            <div class="loading-spinner">
+                <div class="spinner"></div>
             </div>
         </div>
     </td>
-</td>
-
-<tr style="display: none">
-    <td>
-        <div style="border: 1px solid rgb(153, 102, 255);">
-            Stripe Payment Info
-            <table>
-                <tr>
-                    <th>Zahlungsdetails</th>
-                    <td>
-                        <ul>
-                            <li><strong>Karteninhaber:</strong> Max Mustermann</li>
-                            <li><strong>Kartennummer:</strong> **** **** **** 1234</li>
-                            <li><strong>Ablaufdatum:</strong> 12/24</li>
-                            <li><strong>Zahlungsart:</strong> Kreditkarte</li>
-                            <li><strong>Transaktions-ID:</strong> XXXXXXXXXXXXXX</li>
-                        </ul>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Transaktionen</th>
-                    <td>
-                        <ul>
-                            <li>
-                            <strong>Datum:</strong> 28.05.2023 17:06:29
-                            <ul>
-                                <li><strong>Status:</strong> Abgeschlossen</li>
-                                <li><strong>Betrag:</strong> 41,90 EUR</li>
-                                <li><strong>Gebühr:</strong> 1,39 EUR</li>
-                                <li><strong>ID:</strong> XXXXXXXXXXXXXX</li>
-                            </ul>
-                            </li>
-                            <li>
-                            <strong>Datum:</strong> 27.05.2023 10:12:45
-                            <ul>
-                                <li><strong>Status:</strong> Abgelehnt</li>
-                                <li><strong>Betrag:</strong> 15,00 EUR</li>
-                                <li><strong>Gebühr:</strong> 0,75 EUR</li>
-                                <li><strong>ID:</strong> XXXXXXXXXXXXXX</li>
-                            </ul>
-                            </li>
-                            <!-- Weitere Transaktionen -->
-                        </ul>
-                    </td>
-                </tr>
-                <tr>
-                    <th>Rückzahlung</th>
-                    <td>
-                        <form>
-                            <label for="refund_amount">Betrag:</label>
-                            <input type="text" name="refund_amount" id="refund_amount" placeholder="Betrag eingeben">
-                            <br>
-                            <label for="refund_comment">Kommentar:</label>
-                            <textarea name="refund_comment" id="refund_comment" placeholder="Kommentar eingeben"></textarea>
-                            <br>
-                            <input type="submit" value="Rückzahlung durchführen">
-                        </form>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </td>
 </tr>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stripeContainer = document.getElementById('rth-stripe-container');
+    
+    // AJAX request to fetch payment information
+    fetch('rth_stripe.php?action=getStripePaymentDetails&order_id=<?php echo $orderId; ?>')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            stripeContainer.innerHTML = data;
+        })
+        .catch(error => {
+            stripeContainer.innerHTML = `
+                <h3>Stripe - Zahlungsinformationen</h3>
+                <div class="error-message">
+                    <strong>Fehler beim Laden der Zahlungsinformationen</strong><br>
+                    Die Stripe-Daten konnten nicht geladen werden. Bitte versuchen Sie es später erneut.
+                </div>
+            `;
+            console.error('Error fetching payment info:', error);
+        });
+});
+</script>
