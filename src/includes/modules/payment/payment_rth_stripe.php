@@ -36,6 +36,9 @@ class payment_rth_stripe extends PaymentModule
     // StatusId 2 is a default modified status 'Processing'
     public const DEFAULT_ORDER_STATUS_PAID = 2;
 
+    // StatusId for authorized payments (default to 'Pending')
+    public const DEFAULT_ORDER_STATUS_AUTHORIZED = 1;
+
     public static $actionInvoked = false;
 
     /**
@@ -83,6 +86,7 @@ class payment_rth_stripe extends PaymentModule
         'PAYMENT_DESC',
         'ORDER_STATUS_PENDING',
         'ORDER_STATUS_PAID',
+        'ORDER_STATUS_AUTHORIZED',
         'MANUAL_CAPTURE',
     ];
 
@@ -204,6 +208,7 @@ class payment_rth_stripe extends PaymentModule
 
         $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, 6, 1);
         $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, 6, 1);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_AUTHORIZED', (string) self::DEFAULT_ORDER_STATUS_AUTHORIZED, 6, 1);
 
         $this->setAdminAccess('rth_stripe');
 
@@ -286,8 +291,8 @@ class payment_rth_stripe extends PaymentModule
 
         if ('0.7.0' === $currentVersion) {
             $this->setAdminAccess('rth_stripe');
-
             $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', 6, 1);
+            $this->addConfigurationOrderStatus('ORDER_STATUS_AUTHORIZED', (string) self::DEFAULT_ORDER_STATUS_AUTHORIZED, 6, 1);
             $this->setVersion('0.8.0');
             return self::UPDATE_SUCCESS;
         }

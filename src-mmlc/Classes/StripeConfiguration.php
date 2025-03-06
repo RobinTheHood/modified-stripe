@@ -81,6 +81,15 @@ class StripeConfiguration extends Configuration
         }
     }
 
+    public function getOrderStatusAuthorized(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusAuthorized;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
     public function setWebhookSerect(string $secret): void
     {
         $container = new DIContainer();

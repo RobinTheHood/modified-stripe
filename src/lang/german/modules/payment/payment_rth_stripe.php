@@ -56,5 +56,9 @@ define($prefix . 'ORDER_STATUS_PENDING_DESC', 'Einige Zahlungsarten werden von S
 
 define($prefix . 'ORDER_STATUS_PAID_TITLE', 'Bestellstatus für erfolgreiche Bezahlung');
 define($prefix . 'ORDER_STATUS_PAID_DESC', 'Welchen Bestellstatus soll die Bestellung erhalten, nachdem Stripe die Zahlung als erfolgreich geprüft hat?');
+
+define($prefix . 'ORDER_STATUS_AUTHORIZED_TITLE', 'Bestellstatus für autorisierte Zahlung');
+define($prefix . 'ORDER_STATUS_AUTHORIZED_DESC', 'Welchen Bestellstatus soll die Bestellung erhalten, wenn eine Zahlung autorisiert, aber noch nicht eingezogen wurde?');
+
 define($prefix . 'MANUAL_CAPTURE_TITLE', 'Manuelles Capture');
 define($prefix . 'MANUAL_CAPTURE_DESC', 'Manuelles Erfassen der Zahlungen aktivieren? Wenn ja, werden Zahlungsbeträge autorisiert, aber nicht automatisch eingezogen. Sie müssen Zahlungen manuell in der Bestellung oder von Ihrem Stripe-Dashboard aus erfassen.');
