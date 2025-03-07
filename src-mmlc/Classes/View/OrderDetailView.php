@@ -9,6 +9,7 @@ class OrderDetailView
 {
     private PaymentIntent $paymentIntent;
     private ?Charge $charge = null;
+    private ?float $refundableAmount = null;
 
     public function __construct(PaymentIntent $paymentIntent, ?Charge $charge = null)
     {
@@ -112,5 +113,15 @@ class OrderDetailView
         }
 
         return $hours . ' Stunde' . ($hours > 1 ? 'n' : '');
+    }
+
+    public function setRefundableAmount(float $amount): void
+    {
+        $this->refundableAmount = $amount;
+    }
+
+    public function getRefundableAmount(): float
+    {
+        return $this->refundableAmount ?? 0;
     }
 }

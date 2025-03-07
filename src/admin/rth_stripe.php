@@ -16,8 +16,17 @@ use RobinTheHood\Stripe\Classes\Controller\AdminController;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RequestFactory;
 
+$rthGet = $_GET;
+$rthPost = $_POST;
+$rthServer = $_SERVER;
+
 require_once 'includes/application_top.php';
 
+$_GET = $rthGet;
+$_POST = $rthPost;
+$_SERVER = $rthServer;
+
+$rthDevMode = true;
 if (true === $rthDevMode) {
     /** Show all error messages in the browser.  */
     restore_error_handler();
