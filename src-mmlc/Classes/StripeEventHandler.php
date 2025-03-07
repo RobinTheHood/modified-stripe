@@ -27,9 +27,13 @@ class StripeEventHandler
 
     // StatusId 2 is a default modified status 'Processing'
     private const DEFAULT_ORDER_STATUS_PAID = 2;
+    private const DEFAULT_ORDER_STATUS_AUTHORIZED = 1;
 
     /** @var int */
     private $orderStatusPaid = 2;
+
+    /** @var int */
+    private $orderStatusAuthorized = 1;
 
     private DIContainer $container;
 
@@ -40,6 +44,7 @@ class StripeEventHandler
         $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
 
         $this->orderStatusPaid = $config->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
+        $this->orderStatusAuthorized = $config->getOrderStatusAuthorized(self::DEFAULT_ORDER_STATUS_AUTHORIZED);
     }
 
     /**
@@ -59,43 +64,35 @@ class StripeEventHandler
         $paymentIntentId   = $session->payment_intent;
         $phpSessionId      = $clientReferenceId;
 
-
-        if ('paid' !== $session->payment_status) {
-            return false;
-        }
-
-        try {
-            /** @var PhpSession $phpSession */
-            $phpSession = $this->container->get(PhpSession::class);
-            $phpSession->load($phpSessionId);
-        } catch (Exception $e) {
-            error_log("Can not handle stripe event {$event->type} - " . $e->getMessage());
-            return false;
-        }
-
-        $order = $phpSession->getOrder();
+        $order = $this->getOrderBySessionId($phpSessionId);
 
         if (!$order) {
             error_log("Can not handle stripe event {$event->type} - order is null");
             return false;
         }
 
-        $messageData = [
-            "id"       => $event->id,
-            "object"   => $event->object,
-            "created"  => $event->created,
-            "livemode" => $event->livemode,
-            "type"     => $event->type,
-        ];
-
         /** @var Repository $repo */
         $repo = $this->container->get(Repository::class);
-        $repo->updateOrderStatus($order->getId(), $this->orderStatusPaid);
-        $repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid, json_encode($messageData, JSON_PRETTY_PRINT));
 
-        // Create a link between the order and the payment
+        // Create a link between the order and the payment regardless of payment status
         $repo->insertRthStripePayment($order->getId(), $paymentIntentId);
 
+        // Only update order status and history if payment status is 'paid'
+        if ('paid' === $session->payment_status) {
+            $messageData = [
+                "id"       => $event->id,
+                "object"   => $event->object,
+                "created"  => $event->created,
+                "livemode" => $event->livemode,
+                "type"     => $event->type,
+                'payment_intent_id' => $paymentIntentId,
+            ];
+
+            $repo->updateOrderStatus($order->getId(), $this->orderStatusPaid);
+            $repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid, json_encode($messageData, JSON_PRETTY_PRINT));
+        }
+
+        $phpSession = $this->container->get(PhpSession::class);
         $phpSession->removeAllExpiredSessions(self::RECONSTRUCT_SESSION_TIMEOUT);
         return true;
     }
@@ -110,15 +107,7 @@ class StripeEventHandler
             return false;
         }
 
-        try {
-            $phpSession = $this->container->get(Session::class);
-            $phpSession->load($phpSessionId);
-        } catch (Exception $e) {
-            error_log("Can not handle stripe event {$event->type} - " . $e->getMessage());
-            return false;
-        }
-
-        $order = $phpSession->getOrder();
+        $order = $this->getOrderBySessionId($phpSessionId);
 
         if (!$order) {
             error_log("Can not handle stripe event {$event->type} - order is null");
@@ -181,5 +170,24 @@ class StripeEventHandler
         $repo->insertOrderStatusHistory($orderId, $this->orderStatusAuthorized, json_encode($messageData, JSON_PRETTY_PRINT));
 
         return true;
+    }
+
+    /**
+     * Retrieves an order by PHP session ID
+     *
+     * @param string $phpSessionId The PHP session ID
+     * @return Order|null The order if found, null otherwise
+     */
+    private function getOrderBySessionId(string $phpSessionId): ?Order
+    {
+        try {
+            /** @var PhpSession $phpSession */
+            $phpSession = $this->container->get(PhpSession::class);
+            $phpSession->load($phpSessionId);
+            return $phpSession->getOrder();
+        } catch (Exception $e) {
+            error_log("Failed to retrieve order from session - " . $e->getMessage());
+            return null;
+        }
     }
 }
