@@ -10,9 +10,6 @@ if (payment_rth_stripe::class !== $order->info['payment_method']) {
 
 // Get the order ID from the URL parameter
 $orderId = isset($_GET['oID']) ? (int)$_GET['oID'] : 0;
-
-// Retrieve payment intent ID from order
-$paymentIntentId = 'pi_3QzP3oJIsfvAtVBd0226XgkJ'; // This should be retrieved from your order data
 ?>
 
 <style>
