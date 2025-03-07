@@ -129,4 +129,57 @@ class StripeEventHandler
 
         return true;
     }
+
+    /**
+     * Handles the Stripe WebHook Event payment_intent.amount_capturable_updated
+     *
+     * This event is triggered when a PaymentIntent with manual capture is ready for capture.
+     * The main task is to update the order status to indicate the payment is authorized.
+     *
+     * @link https://stripe.com/docs/api/events/types#event_types-payment_intent.amount_capturable_updated
+     *
+     * @param Event $event A Stripe Event
+     */
+    public function paymentIntentAmountCapturableUpdated(Event $event): bool
+    {
+        $paymentIntent = $event->data->object;
+        $paymentIntentId = $paymentIntent->id;
+
+        if ('requires_capture' !== $paymentIntent->status) {
+            return false;
+        }
+
+        $orderId = null;
+
+        // Try to get order ID from metadata
+        if (isset($paymentIntent->metadata->order_id)) {
+            $orderId = (int) $paymentIntent->metadata->order_id;
+        } else {
+            /** @var Repository $repo */
+            $repo = $this->container->get(Repository::class);
+            $orderId = $repo->getOrderIdByPaymentIntentId($paymentIntentId);
+        }
+
+        if (!$orderId) {
+            error_log("Can not handle stripe event {$event->type} - no order found for paymentIntentId {$paymentIntentId}");
+            return false;
+        }
+
+        // Rest of your code...
+        $messageData = [
+            "id"       => $event->id,
+            "object"   => $event->object,
+            "created"  => $event->created,
+            "livemode" => $event->livemode,
+            "type"     => $event->type,
+            'payment_intent_id' => $paymentIntentId,
+        ];
+
+        // Update the order status to authorized
+        $repo = $this->container->get(Repository::class);
+        $repo->updateOrderStatus($orderId, $this->orderStatusAuthorized);
+        $repo->insertOrderStatusHistory($orderId, $this->orderStatusAuthorized, json_encode($messageData, JSON_PRETTY_PRINT));
+
+        return true;
+    }
 }

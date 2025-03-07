@@ -41,6 +41,8 @@ class WebhookService
                 return $stripeEventHandler->checkoutSessionCompleted($event);
             case 'checkout.session.expired':
                 return $stripeEventHandler->checkoutSessionExpired($event);
+            case 'payment_intent.amount_capturable_updated':
+                return $stripeEventHandler->paymentIntentAmountCapturableUpdated($event);
             default:
                 return true;
         }
