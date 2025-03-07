@@ -167,4 +167,26 @@ class Repository
 
         return $row;
     }
+
+    /**
+     * Get order ID by Stripe payment intent ID
+     *
+     * @param string $paymentIntentId
+     * @return int|false Order ID or false if not found
+     */
+    public function getOrderIdByPaymentIntentId(string $paymentIntentId)
+    {
+        $query = $this->db->query(
+            "SELECT order_id FROM rth_stripe_payment 
+            WHERE stripe_payment_intent_id = '$paymentIntentId' 
+            ORDER BY created DESC LIMIT 1"
+        );
+
+        $row = $this->db->fetch($query);
+        if (!isset($row['order_id'])) {
+            return false;
+        }
+
+        return (int) $row['order_id'];
+    }
 }
