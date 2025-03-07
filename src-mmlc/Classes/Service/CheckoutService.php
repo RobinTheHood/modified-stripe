@@ -60,6 +60,13 @@ class CheckoutService
             ];
         }
 
+        // Add metadata to the session payment_intent
+        $sessionParams['payment_intent_data']['metadata'] = [
+            'order_id' => $order->getId(),
+            'php_session_id' => $phpSessionId,
+            'customer_email' => $order->getCustomerEmail(),
+        ];
+
         return StripeSession::create($sessionParams);
     }
 
