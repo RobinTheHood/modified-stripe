@@ -72,7 +72,7 @@ class AdminController extends AbstractController
                 $charge = \Stripe\Charge::retrieve(
                     [
                         'id' => $paymentIntent->latest_charge,
-                        'expand' => ['payment_method_details'],
+                        'expand' => ['payment_method_details', 'balance_transaction', 'refunds'],
                     ]
                 );
             }
@@ -82,7 +82,7 @@ class AdminController extends AbstractController
 
             // Start output buffering to capture the template output
             ob_start();
-            include self::TEMPLATE_PATH . 'OrderDetail.tmpl.php';
+            include self::TEMPLATE_PATH . 'StripeDetail.tmpl.php';
             $html = ob_get_clean();
 
             return new Response($html);
