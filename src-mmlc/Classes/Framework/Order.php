@@ -108,4 +108,9 @@ class Order
     {
         return $this->modifiedOrder->info['currency'];
     }
+
+    public function getCustomerEmail(): string
+    {
+        return $this->modifiedOrder->customer['email_address'];
+    }
 }
