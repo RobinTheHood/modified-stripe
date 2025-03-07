@@ -82,7 +82,9 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch('rth_stripe.php?action=getStripePaymentDetails&order_id=<?php echo $orderId; ?>')
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                return response.text().then(text => {
+                    throw new Error(`Network response was not ok: ${text}`);
+                });
             }
             return response.text();
         })
@@ -95,9 +97,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="error-message">
                     <strong>Fehler beim Laden der Zahlungsinformationen</strong><br>
                     Die Stripe-Daten konnten nicht geladen werden. Bitte versuchen Sie es später erneut.
+                    <br>
+                    <small> (Fehler: ${error.message})</small>
                 </div>
             `;
             console.error('Error fetching payment info:', error);
         });
-});
+    });
 </script>
