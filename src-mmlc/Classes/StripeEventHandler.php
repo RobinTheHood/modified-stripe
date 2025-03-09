@@ -178,7 +178,7 @@ class StripeEventHandler
         ];
 
         // Update the order status to authorized
-        $this->orderRepo->updateStatus($orderId, $this->orderStatusPaid);
+        $this->orderRepo->updateStatus($orderId, $this->orderStatusAuthorized);
         $this->orderStatusHistoryRepo->add(
             $orderId,
             $this->orderStatusAuthorized,
