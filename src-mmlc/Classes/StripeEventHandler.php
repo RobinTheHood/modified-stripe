@@ -16,8 +16,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
-use PHPUnit\TextUI\Configuration\Php;
-use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
 use RobinTheHood\Stripe\Classes\Repository\OrderStatusHistoryRepository;
@@ -43,22 +42,20 @@ class StripeEventHandler
     private OrderStatusHistoryRepository $orderStatusHistoryRepo;
     private PaymentRepository $paymentRepo;
     private PhpSession $phpSession;
-    private StripeConfiguration $config;
 
     public function __construct(
         OrderRepository $orderRepo,
         OrderStatusHistoryRepository $orderStatusHistoryRepo,
         PaymentRepository $paymentRepo,
         PhpSession $phpSession,
-        StripeConfiguration $config
+        StripeConfig $stripeConfig
     ) {
         $this->orderRepo = $orderRepo;
         $this->orderStatusHistoryRepo = $orderStatusHistoryRepo;
         $this->paymentRepo = $paymentRepo;
         $this->phpSession = $phpSession;
-        $this->config = $config;
-        $this->orderStatusPaid = $config->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
-        $this->orderStatusAuthorized = $config->getOrderStatusAuthorized(self::DEFAULT_ORDER_STATUS_AUTHORIZED);
+        $this->orderStatusPaid = $stripeConfig->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
+        $this->orderStatusAuthorized = $stripeConfig->getOrderStatusAuthorized(self::DEFAULT_ORDER_STATUS_AUTHORIZED);
     }
 
     /**

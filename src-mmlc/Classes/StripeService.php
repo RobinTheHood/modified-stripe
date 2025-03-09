@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use Stripe\Event;
 use Stripe\WebhookEndpoint;
 
@@ -36,17 +37,17 @@ class StripeService
     /**
      * A helper method that we can use to more easily create a new StripeSerive Object.
      */
-    public static function createFromConfig(StripeConfiguration $config): StripeService
+    public static function createFromConfig(StripeConfig $stripeConfig): StripeService
     {
-        $liveMode = $config->getLiveMode();
+        $liveMode = $stripeConfig->getLiveMode();
 
         if ($liveMode) {
-            $secret = $config->getApiLiveSecret();
+            $secret = $stripeConfig->getApiLiveSecret();
         } else {
-            $secret = $config->getApiSandboxSecret();
+            $secret = $stripeConfig->getApiSandboxSecret();
         }
 
-        $endpointSecret = $config->getApiLiveEndpointSecret();
+        $endpointSecret = $stripeConfig->getApiLiveEndpointSecret();
 
         return new StripeService(
             $liveMode,

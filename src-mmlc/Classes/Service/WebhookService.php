@@ -4,23 +4,21 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes\Service;
 
-use RobinTheHood\Stripe\Classes\Framework\DIContainer;
-use RobinTheHood\Stripe\Classes\StripeConfiguration;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\StripeEventHandler;
 use RobinTheHood\Stripe\Classes\StripeService;
-use Stripe\Stripe;
 
 class WebhookService
 {
     private StripeEventHandler $stripeEventHandler;
-    private StripeConfiguration $config;
+    private StripeConfig $stripeConfig;
 
     public function __construct(
         StripeEventHandler $stripeEventHandler,
-        StripeConfiguration $config
+        StripeConfig $stripeConfig
     ) {
         $this->stripeEventHandler = $stripeEventHandler;
-        $this->config = $config;
+        $this->stripeConfig = $stripeConfig;
     }
 
     /**
@@ -28,7 +26,7 @@ class WebhookService
      */
     public function processWebhook(string $payload, string $sigHeader): bool
     {
-        $stripeService = StripeService::createFromConfig($this->config);
+        $stripeService = StripeService::createFromConfig($this->stripeConfig);
         $event = $stripeService->receiveEvent($payload, $sigHeader);
 
         switch ($event->type) {

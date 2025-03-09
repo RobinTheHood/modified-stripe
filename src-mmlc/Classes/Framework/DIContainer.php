@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Framework;
 
 use Exception;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Controller\AdminController;
 use RobinTheHood\Stripe\Classes\Controller\Controller;
 use RobinTheHood\Stripe\Classes\Repository;
@@ -52,7 +53,7 @@ class DIContainer
         // Create controller objects
         if (AdminController::class === $class) {
             return $this->instances[$class] = new AdminController(
-                $this->get(StripeConfiguration::class),
+                $this->get(StripeConfig::class),
                 $this->get(PaymentRepository::class)
             );
         } elseif (Controller::class === $class) {
@@ -95,23 +96,23 @@ class DIContainer
         if (CheckoutService::class === $class) {
             return $this->instances[$class] = new CheckoutService(
                 $this->get(Session::class),
-                $this->get(StripeConfiguration::class)
+                $this->get(StripeConfig::class),
                 $this->get(UrlBuilder::class),
             );
         } elseif (SessionService::class === $class) {
             return $this->instances[$class] = new SessionService(
                 $this->get(Session::class),
-                $this->get(StripeConfiguration::class)
+                $this->get(StripeConfig::class)
             );
         } elseif (WebhookService::class === $class) {
             return $this->instances[$class] = new WebhookService(
                 $this->get(StripeEventHandler::class),
-                $this->get(StripeConfiguration::class)
+                $this->get(StripeConfig::class)
             );
         } elseif (PaymentCaptureService::class === $class) {
             return $this->instances[$class] = new PaymentCaptureService(
                 $this->get(PaymentRepository::class),
-                $this->get(StripeConfiguration::class)
+                $this->get(StripeConfig::class)
             );
         }
 
@@ -121,7 +122,7 @@ class DIContainer
                 $this->get(OrderStatusHistoryRepository::class),
                 $this->get(PaymentRepository::class),
                 $this->get(Session::class),
-                $this->get(StripeConfiguration::class)
+                $this->get(StripeConfig::class)
             );
         }
 

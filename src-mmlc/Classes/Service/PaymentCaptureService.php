@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes\Service;
 
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
-use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
 class PaymentCaptureService
 {
     private PaymentRepository $paymentRepo;
-    private StripeConfiguration $config;
+    private StripeConfig $stripeConfig;
 
     public function __construct(
         PaymentRepository $paymentRepo,
-        StripeConfiguration $config
+        StripeConfig $stripeConfig
     ) {
         $this->paymentRepo = $paymentRepo;
-        $this->config = $config;
+        $this->stripeConfig = $stripeConfig;
     }
 
     /**
@@ -49,10 +49,10 @@ class PaymentCaptureService
      */
     private function getSecretKey(): string
     {
-        if ($this->config->getLiveMode()) {
-            return $this->config->getApiLiveSecret();
+        if ($this->stripeConfig->getLiveMode()) {
+            return $this->stripeConfig->getApiLiveSecret();
         } else {
-            return $this->config->getApiSandboxSecret();
+            return $this->stripeConfig->getApiSandboxSecret();
         }
     }
 }

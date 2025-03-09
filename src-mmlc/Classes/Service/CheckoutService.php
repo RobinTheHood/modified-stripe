@@ -6,8 +6,8 @@ namespace RobinTheHood\Stripe\Classes\Service;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Session;
-use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use RobinTheHood\Stripe\Classes\Url;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Stripe;
 
@@ -16,14 +16,14 @@ class CheckoutService
     private const CHECKOUT_SESSION_TIMOUT = 60 * 30;
 
     private Session $phpSession;
-    private $config;
+    private StripeConfig $stripeConfig;
 
     public function __construct(
         Session $phpSession,
-        StripeConfiguration $config
+        StripeConfig $stripeConfig,
     ) {
         $this->phpSession = $phpSession;
-        $this->config = $config;
+        $this->stripeConfig = $stripeConfig;
     }
 
     /**
@@ -46,13 +46,13 @@ class CheckoutService
             'line_items' => $lineItems,
             'client_reference_id' => $phpSessionId,
             'mode' => 'payment',
-            'success_url' => Url::create()->getStripeSuccess(),
-            'cancel_url' => Url::create()->getStripeCancel(),
+            'success_url' => $this->urlBuilder->getStripeSuccess(),
+            'cancel_url' => $this->urlBuilder->getStripeCancel(),
             'expires_at' => time() + self::CHECKOUT_SESSION_TIMOUT,
         ];
 
         // Only add payment_intent_data with manual capture if the setting is enabled
-        if ($this->config->getManualCapture()) {
+        if ($this->stripeConfig->getManualCapture()) {
             $sessionParams['payment_intent_data'] = [
                 'capture_method' => 'manual',
             ];
@@ -74,12 +74,12 @@ class CheckoutService
     private function createLineItems($order): array
     {
         $name = parse_multi_language_value(
-            $this->config->checkoutTitle,
+            $this->stripeConfig->checkoutTitle,
             $_SESSION['language_code']
         ) ?: 'title';
 
         $description = parse_multi_language_value(
-            $this->config->checkoutDesc,
+            $this->stripeConfig->checkoutDesc,
             $_SESSION['language_code']
         ) ?: 'description';
 
@@ -107,10 +107,10 @@ class CheckoutService
      */
     private function getSecretKey(): string
     {
-        if ($this->config->getLiveMode()) {
-            return $this->config->getApiLiveSecret();
+        if ($this->stripeConfig->getLiveMode()) {
+            return $this->stripeConfig->getApiLiveSecret();
         } else {
-            return $this->config->getApiSandboxSecret();
+            return $this->stripeConfig->getApiSandboxSecret();
         }
     }
 }
