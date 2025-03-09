@@ -21,6 +21,8 @@ use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfiguration, Strip
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
+use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
+use RobinTheHood\Stripe\Classes\Repository\SessionRepository;
 
 class payment_rth_stripe extends PaymentModule
 {
@@ -212,10 +214,10 @@ class payment_rth_stripe extends PaymentModule
 
         $this->setAdminAccess('rth_stripe');
 
-        /** @var Repository **/
-        $repo = $this->container->get(Repository::class);
-        $repo->createRthStripePhpSession();
-        $repo->createRthStripePayment();
+        $paymentRepo = $this->container->get(PaymentRepository::class);
+        $paymentRepo->createTable();
+        $sessionRepo = $this->container->get(SessionRepository::class);
+        $sessionRepo->createTable();
     }
 
     /**

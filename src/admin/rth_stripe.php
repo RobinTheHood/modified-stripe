@@ -58,6 +58,6 @@ if (rth_is_module_disabled('MODULE_PAYMENT_PAYMENT_RTH_STRIPE')) {
 
 $diContainer = new DIContainer();
 $request = RequestFactory::createFromGlobals();
-$controller = new AdminController($diContainer);
-$response = $controller->invoke($request);
+$adminController = $diContainer->get(AdminController::class);
+$response = $adminController->invoke($request);
 $response->send();

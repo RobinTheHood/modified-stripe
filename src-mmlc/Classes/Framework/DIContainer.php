@@ -16,6 +16,8 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Framework;
 
 use Exception;
+use RobinTheHood\Stripe\Classes\Controller\AdminController;
+use RobinTheHood\Stripe\Classes\Controller\Controller;
 use RobinTheHood\Stripe\Classes\Repository;
 use RobinTheHood\Stripe\Classes\Repository\ConfigurationRepository;
 use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
@@ -45,6 +47,21 @@ class DIContainer
             return $this->instances[$class];
         }
 
+        // Create controller objects
+        if (AdminController::class === $class) {
+            return $this->instances[$class] = new AdminController(
+                $this->get(StripeConfiguration::class),
+                $this->get(PaymentRepository::class)
+            );
+        } elseif (Controller::class === $class) {
+            return $this->instances[$class] = new Controller(
+                $this->get(CheckoutService::class),
+                $this->get(SessionService::class),
+                $this->get(WebhookService::class),
+                $this->get(PaymentCaptureService::class)
+            );
+        }
+
         // Create configuration for services
         if (StripeConfiguration::class === $class) {
             return $this->instances[$class] = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
@@ -66,7 +83,9 @@ class DIContainer
         } elseif (SessionRepository::class === $class) {
             return $this->instances[$class] = new SessionRepository($this->get(Database::class));
         } elseif (Session::class === $class) {
-            return $this->instances[$class] = new Session($this->get(Repository::class));
+            return $this->instances[$class] = new Session(
+                $this->get(SessionRepository::class)
+            );
         }
 
         // Create service objects

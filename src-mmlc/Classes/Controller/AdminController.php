@@ -17,11 +17,12 @@ namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
-use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+//use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
-use RobinTheHood\Stripe\Classes\Repository;
+//use RobinTheHood\Stripe\Classes\Repository;
+use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use RobinTheHood\Stripe\Classes\View\OrderDetailView;
 
@@ -31,13 +32,17 @@ class AdminController extends AbstractController
 
     private StripeConfiguration $config;
 
-    private Repository $repo;
+    //private Repository $repo;
 
-    public function __construct(DIContainer $container)
+    private PaymentRepository $paymentRepo;
+
+    public function __construct(StripeConfiguration $config, PaymentRepository $paymentRepo)
     {
         parent::__construct();
-        $this->config = $container->get(StripeConfiguration::class);
-        $this->repo = $container->get(Repository::class);
+        $this->config = $config;
+        $this->paymentRepo = $paymentRepo;
+        //$this->repo = $container->get(Repository::class);
+        //$this->paymentRepo = $container->get(PaymentRepository::class);
     }
 
     public function invokeGetStripePaymentDetails(Request $request): Response
@@ -56,7 +61,10 @@ class AdminController extends AbstractController
         }
 
         // Retrieve payment intent ID from order through the repository
-        $paymentIntent = $this->repo->getStripePaymentByOrderId($orderId);
+        // $paymentIntent = $this->repo->getStripePaymentByOrderId($orderId);
+        // $paymentIntentId = $paymentIntent['stripe_payment_intent_id'] ?? null;
+
+        $paymentIntent = $this->paymentRepo->findByOrderId($orderId);
         $paymentIntentId = $paymentIntent['stripe_payment_intent_id'] ?? null;
 
         if (empty($paymentIntentId)) {

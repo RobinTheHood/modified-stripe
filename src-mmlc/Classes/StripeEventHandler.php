@@ -18,6 +18,9 @@ namespace RobinTheHood\Stripe\Classes;
 use Exception;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\Order;
+use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
+use RobinTheHood\Stripe\Classes\Repository\OrderStatusHistoryRepository;
+use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\Session as PhpSession;
 use Stripe\Event;
 
@@ -73,9 +76,15 @@ class StripeEventHandler
 
         /** @var Repository $repo */
         $repo = $this->container->get(Repository::class);
+        $orderRepo = $this->container->get(OrderRepository::class);
+        $orderStatusHistoryRepo = $this->container->get(OrderStatusHistoryRepository::class);
+        $paymentRepo = $this->container->get(PaymentRepository::class);
 
+        // Check if the order is already paid
         // Create a link between the order and the payment regardless of payment status
-        $repo->insertRthStripePayment($order->getId(), $paymentIntentId);
+        //$repo->insertRthStripePayment($order->getId(), $paymentIntentId);
+        $paymentRepo->add($order->getId(), $paymentIntentId);
+
 
         // Only update order status and history if payment status is 'paid'
         if ('paid' === $session->payment_status) {
@@ -88,8 +97,14 @@ class StripeEventHandler
                 'payment_intent_id' => $paymentIntentId,
             ];
 
-            $repo->updateOrderStatus($order->getId(), $this->orderStatusPaid);
-            $repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid, json_encode($messageData, JSON_PRETTY_PRINT));
+            //$repo->updateOrderStatus($order->getId(), $this->orderStatusPaid);
+            $orderRepo->updateStatus($order->getId(), $this->orderStatusPaid);
+            //$repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid, json_encode($messageData, JSON_PRETTY_PRINT));
+            $orderStatusHistoryRepo->add(
+                $order->getId(),
+                $this->orderStatusPaid,
+                json_encode($messageData, JSON_PRETTY_PRINT)
+            );
         }
 
         $phpSession = $this->container->get(PhpSession::class);
@@ -144,9 +159,13 @@ class StripeEventHandler
         if (isset($paymentIntent->metadata->order_id)) {
             $orderId = (int) $paymentIntent->metadata->order_id;
         } else {
-            /** @var Repository $repo */
-            $repo = $this->container->get(Repository::class);
-            $orderId = $repo->getOrderIdByPaymentIntentId($paymentIntentId);
+            // /** @var Repository $repo */
+            // $repo = $this->container->get(Repository::class);
+            // $orderId = $repo->getOrderIdByPaymentIntentId($paymentIntentId);
+
+            $paymentRepo = $this->container->get(PaymentRepository::class);
+            $payment = $paymentRepo->findByStripePaymentIntentId($paymentIntentId);
+            $orderId = $payment['order_id'] ?? null;
         }
 
         if (!$orderId) {
@@ -165,9 +184,19 @@ class StripeEventHandler
         ];
 
         // Update the order status to authorized
-        $repo = $this->container->get(Repository::class);
-        $repo->updateOrderStatus($orderId, $this->orderStatusAuthorized);
-        $repo->insertOrderStatusHistory($orderId, $this->orderStatusAuthorized, json_encode($messageData, JSON_PRETTY_PRINT));
+        // $repo = $this->container->get(Repository::class);
+        // $repo->updateOrderStatus($orderId, $this->orderStatusAuthorized);
+        // $repo->insertOrderStatusHistory($orderId, $this->orderStatusAuthorized, json_encode($messageData, JSON_PRETTY_PRINT));
+
+        $orderRepo = $this->container->get(OrderRepository::class);
+        $orderStatusHistoryRepo = $this->container->get(OrderStatusHistoryRepository::class);
+
+        $orderRepo->updateStatus($orderId, $this->orderStatusPaid);
+        $orderStatusHistoryRepo->add(
+            $orderId,
+            $this->orderStatusAuthorized,
+            json_encode($messageData, JSON_PRETTY_PRINT)
+        );
 
         return true;
     }

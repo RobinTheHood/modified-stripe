@@ -17,7 +17,7 @@ namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
-use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+// use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
@@ -35,15 +35,29 @@ class Controller extends AbstractController
     private WebhookService $webhookService;
     private PaymentCaptureService $captureService;
 
-    public function __construct(DIContainer $container)
-    {
+    public function __construct(
+        CheckoutService $checkoutService,
+        SessionService $sessionService,
+        WebhookService $webhookService,
+        PaymentCaptureService $captureService
+    ) {
         parent::__construct();
 
-        $this->checkoutService = $container->get(CheckoutService::class);
-        $this->sessionService = $container->get(SessionService::class);
-        $this->webhookService = $container->get(WebhookService::class);
-        $this->captureService = $container->get(PaymentCaptureService::class);
+        $this->checkoutService = $checkoutService;
+        $this->sessionService = $sessionService;
+        $this->webhookService = $webhookService;
+        $this->captureService = $captureService;
     }
+
+    // public function __construct(DIContainer $container)
+    // {
+    //     parent::__construct();
+
+    //     $this->checkoutService = $container->get(CheckoutService::class);
+    //     $this->sessionService = $container->get(SessionService::class);
+    //     $this->webhookService = $container->get(WebhookService::class);
+    //     $this->captureService = $container->get(PaymentCaptureService::class);
+    // }
 
     protected function invokeIndex(Request $request): Response
     {

@@ -17,6 +17,7 @@ namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Framework\Order;
+use RobinTheHood\Stripe\Classes\Repository\SessionRepository;
 
 /**
  * We need to save the current PHP session, as it may have already expired if the customer takes a long time
@@ -36,11 +37,14 @@ class Session
 
     private const SESSION_INDEX_ORDER = 'order';
 
-    private Repository $repo;
+    //private Repository $repo;
 
-    public function __construct(Repository $repo)
+    private SessionRepository $sessionRepo;
+
+    public function __construct(SessionRepository $sessionRepo)
     {
-        $this->repo = $repo;
+        //$this->repo = $repo;
+        $this->sessionRepo = $sessionRepo;
     }
 
     public function getOrder(): ?Order
@@ -73,7 +77,8 @@ class Session
         $sessionData = serialize($_SESSION);
         $sessionData = base64_encode($sessionData);
 
-        $this->repo->insertRthStripePhpSession($sessionId, $sessionData);
+        //$this->repo->insertRthStripePhpSession($sessionId, $sessionData);
+        $this->sessionRepo->add($sessionId, $sessionData);
 
         return $sessionId;
     }
@@ -95,9 +100,12 @@ class Session
 
     public function removeAllExpiredSessions(int $expiresAt): void
     {
-        $phpSessions = $this->repo->getAllExpiredRthStripePhpSessions($expiresAt);
+        // $phpSessions = $this->repo->getAllExpiredRthStripePhpSessions($expiresAt);
+        $phpSessions = $this->sessionRepo->findAllExpired($expiresAt);
+
         foreach ($phpSessions as $phpSession) {
-            $this->repo->deleteRthStripePhpSessionById($phpSession['id']);
+            $this->sessionRepo->deleteById($phpSession['id']);
+            // $this->repo->deleteRthStripePhpSessionById($phpSession['id']);
         }
     }
 
@@ -108,7 +116,9 @@ class Session
      */
     private function getSession(string $sessionId, int $expiresAt = 0): array
     {
-        $phpSession = $this->repo->getRthStripePhpSessionById($sessionId);
+        //$phpSession = $this->repo->getRthStripePhpSessionById($sessionId);
+        $phpSession = $this->sessionRepo->findById($sessionId);
+
         if (!$phpSession) {
             throw new Exception("Can not find PhpSession with id: $sessionId");
         }

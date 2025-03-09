@@ -65,4 +65,21 @@ class PaymentRepository
 
         return $row;
     }
+
+
+    public function findByStripePaymentIntentId(string $paymentIntentId): array|false
+    {
+        $query = $this->db->query(
+            "SELECT * FROM rth_stripe_payment 
+            WHERE stripe_payment_intent_id = '$paymentIntentId' 
+            ORDER BY created DESC LIMIT 1"
+        );
+
+        $row = $this->db->fetch($query);
+        if (!isset($row['id'])) {
+            return false;
+        }
+
+        return $row;
+    }
 }
