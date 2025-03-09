@@ -22,6 +22,7 @@ use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
 use RobinTheHood\Stripe\Classes\Framework\SplashMessage;
+use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Service\CheckoutService;
 use RobinTheHood\Stripe\Classes\Service\PaymentCaptureService;
 use RobinTheHood\Stripe\Classes\Service\SessionService;
@@ -34,12 +35,14 @@ class Controller extends AbstractController
     private SessionService $sessionService;
     private WebhookService $webhookService;
     private PaymentCaptureService $captureService;
+    private UrlBuilder $urlBuilder;
 
     public function __construct(
         CheckoutService $checkoutService,
         SessionService $sessionService,
         WebhookService $webhookService,
         PaymentCaptureService $captureService
+        UrlBuilder $urlBuilder
     ) {
         parent::__construct();
 
@@ -47,6 +50,7 @@ class Controller extends AbstractController
         $this->sessionService = $sessionService;
         $this->webhookService = $webhookService;
         $this->captureService = $captureService;
+        $this->urlBuilder = $urlBuilder;
     }
 
     // public function __construct(DIContainer $container)
@@ -72,7 +76,7 @@ class Controller extends AbstractController
         } catch (Exception $e) {
             $splashMessage = SplashMessage::getInstance();
             $splashMessage->error('shopping_cart', 'Can not create Stripe Checkout Session.');
-            return new RedirectResponse(Url::create()->getShoppingCart());
+            return new RedirectResponse($this->urlBuilder->getShoppingCart());
         }
     }
 
@@ -81,17 +85,17 @@ class Controller extends AbstractController
         try {
             $stripeSessionId = $request->get('session_id');
             $this->sessionService->processSuccessfulCheckout($stripeSessionId);
-            return new RedirectResponse(Url::create()->getCheckoutProcess());
+            return new RedirectResponse($this->urlBuilder->getCheckoutProcess());
         } catch (Exception $e) {
             $splashMessage = SplashMessage::getInstance();
             $splashMessage->error('shopping_cart', $e->getMessage());
-            return new RedirectResponse(Url::create()->getShoppingCart());
+            return new RedirectResponse($this->urlBuilder->getShoppingCart());
         }
     }
 
     public function invokeCancel(): Response
     {
-        return new RedirectResponse(Url::create()->getCheckoutConfirmation() . '?conditions=true');
+        return new RedirectResponse($this->urlBuilder->getCheckoutConfirmation() . '?conditions=true');
     }
 
     protected function invokeReceiveHook(Request $request): Response
@@ -122,7 +126,7 @@ class Controller extends AbstractController
             $splashMessage = SplashMessage::getInstance();
             $splashMessage->addAdminMessage('Zahlung erfolgreich eingenommen.', SplashMessage::TYPE_SUCCESS);
 
-            return new RedirectResponse(Url::create()->getAdminOrders() . '?oID=' . $orderId . '&action=edit');
+            return new RedirectResponse($this->urlBuilder->getAdminOrders() . '?oID=' . $orderId . '&action=edit');
         } catch (Exception $e) {
             $splashMessage = SplashMessage::getInstance();
             $splashMessage->addAdminMessage(
@@ -130,7 +134,7 @@ class Controller extends AbstractController
                 SplashMessage::TYPE_ERROR
             );
 
-            return new RedirectResponse(Url::create()->getAdminOrders() . '?oID=' . $orderId . '&action=edit');
+            return new RedirectResponse($this->urlBuilder->getAdminOrders() . '?oID=' . $orderId . '&action=edit');
         }
     }
 }

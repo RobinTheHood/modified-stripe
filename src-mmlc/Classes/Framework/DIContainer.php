@@ -25,6 +25,7 @@ use RobinTheHood\Stripe\Classes\Repository\OrderStatusHistoryRepository;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\Repository\SessionRepository;
 use RobinTheHood\Stripe\Classes\Session;
+use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Service\CheckoutService;
 use RobinTheHood\Stripe\Classes\Service\PaymentCaptureService;
 use RobinTheHood\Stripe\Classes\Service\SessionService;
@@ -60,6 +61,7 @@ class DIContainer
                 $this->get(SessionService::class),
                 $this->get(WebhookService::class),
                 $this->get(PaymentCaptureService::class)
+                $this->get(UrlBuilder::class),
             );
         }
 
@@ -94,6 +96,7 @@ class DIContainer
             return $this->instances[$class] = new CheckoutService(
                 $this->get(Session::class),
                 $this->get(StripeConfiguration::class)
+                $this->get(UrlBuilder::class),
             );
         } elseif (SessionService::class === $class) {
             return $this->instances[$class] = new SessionService(
@@ -120,6 +123,10 @@ class DIContainer
                 $this->get(Session::class),
                 $this->get(StripeConfiguration::class)
             );
+        }
+
+        if (UrlBuilder::class === $class) {
+            return $this->instances[$class] = new UrlBuilder();
         }
 
         throw new Exception('Can not create object of type ' . $class);
