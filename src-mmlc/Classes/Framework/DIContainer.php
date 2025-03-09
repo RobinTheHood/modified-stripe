@@ -31,6 +31,7 @@ use RobinTheHood\Stripe\Classes\Service\SessionService;
 use RobinTheHood\Stripe\Classes\Service\WebhookService;
 use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use RobinTheHood\Stripe\Classes\StripeEventHandler;
+use RobinTheHood\Stripe\Classes\StripeService;
 
 class DIContainer
 {
@@ -102,6 +103,7 @@ class DIContainer
             );
         } elseif (WebhookService::class === $class) {
             return $this->instances[$class] = new WebhookService(
+                $this->get(StripeService::class),
                 $this->get(StripeEventHandler::class),
                 $this->get(StripeConfig::class)
             );
@@ -124,6 +126,12 @@ class DIContainer
 
         if (UrlBuilder::class === $class) {
             return $this->instances[$class] = new UrlBuilder();
+        }
+
+        if (StripeService::class === $class) {
+            return $this->instances[$class] = new StripeService(
+                $this->get(StripeConfig::class)
+            );
         }
 
         throw new Exception('Can not create object of type ' . $class);

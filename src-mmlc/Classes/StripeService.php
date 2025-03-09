@@ -34,33 +34,17 @@ class StripeService
     /** @var string A Webhook Entpoint secret */
     private $endpointSecret;
 
-    /**
-     * A helper method that we can use to more easily create a new StripeSerive Object.
-     */
-    public static function createFromConfig(StripeConfig $stripeConfig): StripeService
+    public function __construct(StripeConfig $stripeConfig)
     {
-        $liveMode = $stripeConfig->getLiveMode();
+        $this->liveMode = $stripeConfig->getLiveMode();
 
-        if ($liveMode) {
-            $secret = $stripeConfig->getApiLiveSecret();
+        if ($this->liveMode) {
+            $this->secret = $stripeConfig->getApiLiveSecret();
         } else {
-            $secret = $stripeConfig->getApiSandboxSecret();
+            $this->secret = $stripeConfig->getApiSandboxSecret();
         }
 
-        $endpointSecret = $stripeConfig->getApiLiveEndpointSecret();
-
-        return new StripeService(
-            $liveMode,
-            $secret,
-            $endpointSecret
-        );
-    }
-
-    public function __construct(bool $liveMode, string $secret, string $endpointSecret)
-    {
-        $this->liveMode       = $liveMode;
-        $this->secret         = $secret;
-        $this->endpointSecret = $endpointSecret;
+        $this->endpointSecret = $stripeConfig->getApiLiveEndpointSecret();
     }
 
     public function hasValidSecret(): bool

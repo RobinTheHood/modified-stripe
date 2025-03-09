@@ -10,13 +10,16 @@ use RobinTheHood\Stripe\Classes\StripeService;
 
 class WebhookService
 {
+    private StripeService $stripeService;
     private StripeEventHandler $stripeEventHandler;
     private StripeConfig $stripeConfig;
 
     public function __construct(
+        StripeService $stripeService,
         StripeEventHandler $stripeEventHandler,
         StripeConfig $stripeConfig
     ) {
+        $this->stripeService = $stripeService;
         $this->stripeEventHandler = $stripeEventHandler;
         $this->stripeConfig = $stripeConfig;
     }
@@ -26,8 +29,7 @@ class WebhookService
      */
     public function processWebhook(string $payload, string $sigHeader): bool
     {
-        $stripeService = StripeService::createFromConfig($this->stripeConfig);
-        $event = $stripeService->receiveEvent($payload, $sigHeader);
+        $event = $this->stripeService->receiveEvent($payload, $sigHeader);
 
         switch ($event->type) {
             case 'checkout.session.completed':

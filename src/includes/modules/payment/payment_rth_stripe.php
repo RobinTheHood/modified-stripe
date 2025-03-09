@@ -17,12 +17,15 @@
 
 declare(strict_types=1);
 
-use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfig, StripeService, Url};
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\Repository\PhpSessionRepository;
+use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
+use RobinTheHood\Stripe\Classes\Storage\PhpSession;
+use RobinTheHood\Stripe\Classes\StripeService;
 
 class payment_rth_stripe extends PaymentModule
 {
@@ -66,6 +69,12 @@ class payment_rth_stripe extends PaymentModule
      */
     public $tmpStatus = self::DEFAULT_ORDER_STATUS_PENDING;
 
+    private UrlBuilder $urlBuilder;
+    private StripeConfig $stripeConfig;
+    private PaymentRepository $paymentRepo;
+    private PhpSessionRepository $phpSessionRepo;
+    private PhpSession $phpSession;
+    private StripeService $stripeService;
     /**
      * Configuration keys which are automatically added/removed on
      * install/remove
@@ -100,14 +109,18 @@ class payment_rth_stripe extends PaymentModule
         $this->checkForUpdate(true);
         $this->addKeys(self::$configurationKeys);
 
-        $this->form_action_url = Url::create()->getFormActionUrl();
+        $this->container = new DIContainer();
+        $this->urlBuilder = $this->container->get(UrlBuilder::class);
+        $this->stripeConfig = $this->container->get(StripeConfig::class);
+        $this->paymentRepo = $this->container->get(PaymentRepository::class);
+        $this->phpSessionRepo = $this->container->get(PhpSessionRepository::class);
+        $this->phpSession = $this->container->get(PhpSession::class);
+        $this->stripeService = $this->container->get(StripeService::class);
 
-        $config          = new StripeConfig(self::NAME);
-        $this->tmpStatus = $config->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
+        $this->form_action_url = $this->urlBuilder->getFormActionUrl();
+        $this->tmpStatus = $this->stripeConfig->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
 
         $this->addActions();
-
-        $this->container = new DIContainer();
     }
 
     private function addActions(): void
@@ -143,28 +156,25 @@ class payment_rth_stripe extends PaymentModule
         }
         self::$actionInvoked = true;
 
-        $config        = new StripeConfig(self::NAME);
-        $stripeService = StripeService::createFromConfig($config);
-
-        if (!$stripeService->hasValidSecret()) {
+        if (!$this->stripeService->hasValidSecret()) {
             $this->addMessage('Fehler: Stripe Webhook Endpoint konnte nicht hinzugefügt werden. Kein valider Live- oder Test-Modus API Secret vorhanden.', self::MESSAGE_ERROR);
             return;
         }
 
-        if ($stripeService->hasWebhookEndpoint()) {
+        if ($this->stripeService->hasWebhookEndpoint()) {
             $this->addMessage('Fehler: Stripe Webhook Endpoint konnte nicht hinzugefügt werden. Webhook Entpoint ist bereits vorhanden.', self::MESSAGE_ERROR);
             return;
         }
 
         try {
-            $endpoint = $stripeService->addWebhookEndpoint(
-                Url::create()->getStripeWebhook(),
+            $endpoint = $this->stripeService->addWebhookEndpoint(
+                $this->urlBuilder->getStripeWebhook(),
                 ['checkout.session.completed', 'checkout.session.expired', 'charge.succeeded'],
                 'Webhook Endpoint for modified module robinthehood/stripe'
             );
 
             $secret = $endpoint['secret'] ?? '';
-            $config->setWebhookSerect($secret);
+            $this->stripeConfig->setWebhookSerect($secret);
 
             $this->addMessage('Stripe Webhook Endpoint erfolgreich hinzugefügt.', self::MESSAGE_SUCCESS);
         } catch (Exception $e) {
@@ -214,10 +224,8 @@ class payment_rth_stripe extends PaymentModule
 
         $this->setAdminAccess('rth_stripe');
 
-        $paymentRepo = $this->container->get(PaymentRepository::class);
-        $paymentRepo->createTable();
-        $sessionRepo = $this->container->get(PhpSessionRepository::class);
-        $sessionRepo->createTable();
+        $this->paymentRepo->createTable();
+        $this->phpSessionRepo->createTable();
     }
 
     /**
@@ -353,7 +361,7 @@ class payment_rth_stripe extends PaymentModule
 
         $this->removeOrder($tempOrderId);
         $this->setTemporaryOrderId(false);
-        xtc_redirect(Url::create()->getCheckoutConfirmation());
+        xtc_redirect($this->urlBuilder->getCheckoutConfirmation());
     }
 
     /**
@@ -388,8 +396,7 @@ class payment_rth_stripe extends PaymentModule
 
         $rthOrder = new Order($tempOrderId, $modifiedOrder);
 
-        $session = $this->container->get(Session::class);
-        $session->setOrder($rthOrder);
+        $this->phpSession->setOrder($rthOrder);
 
         // TODO: Correct the entry in Order Status History, see also method description.
 
