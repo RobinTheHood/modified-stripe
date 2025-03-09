@@ -18,22 +18,16 @@ namespace RobinTheHood\Stripe\Classes\Controller;
 use Exception;
 use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
-//use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
-//use RobinTheHood\Stripe\Classes\Repository;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
-use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use RobinTheHood\Stripe\Classes\View\OrderDetailView;
 
 class AdminController extends AbstractController
 {
     public const TEMPLATE_PATH = '../vendor-mmlc/robinthehood/stripe/Templates/';
 
-    private StripeConfiguration $config;
-
-    //private Repository $repo;
     private StripeConfig $stripeConfig;
 
     private PaymentRepository $paymentRepo;
@@ -43,8 +37,6 @@ class AdminController extends AbstractController
         parent::__construct();
         $this->stripeConfig = $stripeConfig;
         $this->paymentRepo = $paymentRepo;
-        //$this->repo = $container->get(Repository::class);
-        //$this->paymentRepo = $container->get(PaymentRepository::class);
     }
 
     public function invokeGetStripePaymentDetails(Request $request): Response
@@ -63,9 +55,6 @@ class AdminController extends AbstractController
         }
 
         // Retrieve payment intent ID from order through the repository
-        // $paymentIntent = $this->repo->getStripePaymentByOrderId($orderId);
-        // $paymentIntentId = $paymentIntent['stripe_payment_intent_id'] ?? null;
-
         $paymentIntent = $this->paymentRepo->findByOrderId($orderId);
         $paymentIntentId = $paymentIntent['stripe_payment_intent_id'] ?? null;
 

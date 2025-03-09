@@ -17,7 +17,6 @@ namespace RobinTheHood\Stripe\Classes\Controller;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
-// use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
@@ -27,7 +26,6 @@ use RobinTheHood\Stripe\Classes\Service\CheckoutService;
 use RobinTheHood\Stripe\Classes\Service\PaymentCaptureService;
 use RobinTheHood\Stripe\Classes\Service\SessionService;
 use RobinTheHood\Stripe\Classes\Service\WebhookService;
-use RobinTheHood\Stripe\Classes\Url;
 
 class Controller extends AbstractController
 {
@@ -41,7 +39,7 @@ class Controller extends AbstractController
         CheckoutService $checkoutService,
         SessionService $sessionService,
         WebhookService $webhookService,
-        PaymentCaptureService $captureService
+        PaymentCaptureService $captureService,
         UrlBuilder $urlBuilder
     ) {
         parent::__construct();
@@ -52,16 +50,6 @@ class Controller extends AbstractController
         $this->captureService = $captureService;
         $this->urlBuilder = $urlBuilder;
     }
-
-    // public function __construct(DIContainer $container)
-    // {
-    //     parent::__construct();
-
-    //     $this->checkoutService = $container->get(CheckoutService::class);
-    //     $this->sessionService = $container->get(SessionService::class);
-    //     $this->webhookService = $container->get(WebhookService::class);
-    //     $this->captureService = $container->get(PaymentCaptureService::class);
-    // }
 
     protected function invokeIndex(Request $request): Response
     {
