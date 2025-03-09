@@ -19,19 +19,17 @@ use Exception;
 use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Controller\AdminController;
 use RobinTheHood\Stripe\Classes\Controller\Controller;
-use RobinTheHood\Stripe\Classes\Repository;
 use RobinTheHood\Stripe\Classes\Repository\ConfigurationRepository;
 use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
 use RobinTheHood\Stripe\Classes\Repository\OrderStatusHistoryRepository;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
-use RobinTheHood\Stripe\Classes\Repository\SessionRepository;
-use RobinTheHood\Stripe\Classes\Session;
+use RobinTheHood\Stripe\Classes\Repository\PhpSessionRepository;
 use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Service\CheckoutService;
 use RobinTheHood\Stripe\Classes\Service\PaymentCaptureService;
 use RobinTheHood\Stripe\Classes\Service\SessionService;
 use RobinTheHood\Stripe\Classes\Service\WebhookService;
-use RobinTheHood\Stripe\Classes\StripeConfiguration;
+use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use RobinTheHood\Stripe\Classes\StripeEventHandler;
 
 class DIContainer
@@ -61,21 +59,19 @@ class DIContainer
                 $this->get(CheckoutService::class),
                 $this->get(SessionService::class),
                 $this->get(WebhookService::class),
-                $this->get(PaymentCaptureService::class)
+                $this->get(PaymentCaptureService::class),
                 $this->get(UrlBuilder::class),
             );
         }
 
         // Create configuration for services
-        if (StripeConfiguration::class === $class) {
-            return $this->instances[$class] = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+        if (StripeConfig::class === $class) {
+            return $this->instances[$class] = new StripeConfig('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
         }
 
         // Create database and repository related objects
         if (Database::class === $class) {
             return $this->instances[$class] = new Database();
-        } elseif (Repository::class === $class) {
-            return $this->instances[$class] = new Repository($this->get(Database::class));
         } elseif (ConfigurationRepository::class === $class) {
             return $this->instances[$class] = new ConfigurationRepository($this->get(Database::class));
         } elseif (OrderRepository::class === $class) {
@@ -84,24 +80,24 @@ class DIContainer
             return $this->instances[$class] = new OrderStatusHistoryRepository($this->get(Database::class));
         } elseif (PaymentRepository::class === $class) {
             return $this->instances[$class] = new PaymentRepository($this->get(Database::class));
-        } elseif (SessionRepository::class === $class) {
-            return $this->instances[$class] = new SessionRepository($this->get(Database::class));
-        } elseif (Session::class === $class) {
-            return $this->instances[$class] = new Session(
-                $this->get(SessionRepository::class)
+        } elseif (PhpSessionRepository::class === $class) {
+            return $this->instances[$class] = new PhpSessionRepository($this->get(Database::class));
+        } elseif (PhpSession::class === $class) {
+            return $this->instances[$class] = new PhpSession(
+                $this->get(PhpSessionRepository::class)
             );
         }
 
         // Create service objects
         if (CheckoutService::class === $class) {
             return $this->instances[$class] = new CheckoutService(
-                $this->get(Session::class),
+                $this->get(PhpSession::class),
                 $this->get(StripeConfig::class),
                 $this->get(UrlBuilder::class),
             );
         } elseif (SessionService::class === $class) {
             return $this->instances[$class] = new SessionService(
-                $this->get(Session::class),
+                $this->get(PhpSession::class),
                 $this->get(StripeConfig::class)
             );
         } elseif (WebhookService::class === $class) {
@@ -121,7 +117,7 @@ class DIContainer
                 $this->get(OrderRepository::class),
                 $this->get(OrderStatusHistoryRepository::class),
                 $this->get(PaymentRepository::class),
-                $this->get(Session::class),
+                $this->get(PhpSession::class),
                 $this->get(StripeConfig::class)
             );
         }

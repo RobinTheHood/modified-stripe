@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Service;
 
 use Exception;
-use RobinTheHood\Stripe\Classes\Session;
-use RobinTheHood\Stripe\Classes\Url;
 use RobinTheHood\Stripe\Classes\Config\StripeConfig;
+use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
+use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use Stripe\Checkout\Session as StripeSession;
 use Stripe\Stripe;
 
@@ -15,15 +15,18 @@ class CheckoutService
 {
     private const CHECKOUT_SESSION_TIMOUT = 60 * 30;
 
-    private Session $phpSession;
+    private PhpSession $phpSession;
     private StripeConfig $stripeConfig;
+    private UrlBuilder $urlBuilder;
 
     public function __construct(
-        Session $phpSession,
+        PhpSession $phpSession,
         StripeConfig $stripeConfig,
+        UrlBuilder $urlBuilder
     ) {
         $this->phpSession = $phpSession;
         $this->stripeConfig = $stripeConfig;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**

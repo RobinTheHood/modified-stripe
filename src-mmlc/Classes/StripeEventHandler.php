@@ -21,7 +21,7 @@ use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
 use RobinTheHood\Stripe\Classes\Repository\OrderStatusHistoryRepository;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
-use RobinTheHood\Stripe\Classes\Session as PhpSession;
+use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use Stripe\Event;
 
 class StripeEventHandler

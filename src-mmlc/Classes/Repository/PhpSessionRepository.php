@@ -14,7 +14,7 @@ namespace RobinTheHood\Stripe\Classes\Repository;
 
 use RobinTheHood\Stripe\Classes\Framework\Database;
 
-class SessionRepository
+class PhpSessionRepository
 {
     private Database $db;
 

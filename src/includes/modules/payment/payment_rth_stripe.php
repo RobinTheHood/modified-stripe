@@ -17,12 +17,12 @@
 
 declare(strict_types=1);
 
-use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfiguration, StripeService, Url};
+use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfig, StripeService, Url};
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
-use RobinTheHood\Stripe\Classes\Repository\SessionRepository;
+use RobinTheHood\Stripe\Classes\Repository\PhpSessionRepository;
 
 class payment_rth_stripe extends PaymentModule
 {
@@ -102,7 +102,7 @@ class payment_rth_stripe extends PaymentModule
 
         $this->form_action_url = Url::create()->getFormActionUrl();
 
-        $config          = new StripeConfiguration(self::NAME);
+        $config          = new StripeConfig(self::NAME);
         $this->tmpStatus = $config->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
 
         $this->addActions();
@@ -143,7 +143,7 @@ class payment_rth_stripe extends PaymentModule
         }
         self::$actionInvoked = true;
 
-        $config        = new StripeConfiguration(self::NAME);
+        $config        = new StripeConfig(self::NAME);
         $stripeService = StripeService::createFromConfig($config);
 
         if (!$stripeService->hasValidSecret()) {
@@ -216,7 +216,7 @@ class payment_rth_stripe extends PaymentModule
 
         $paymentRepo = $this->container->get(PaymentRepository::class);
         $paymentRepo->createTable();
-        $sessionRepo = $this->container->get(SessionRepository::class);
+        $sessionRepo = $this->container->get(PhpSessionRepository::class);
         $sessionRepo->createTable();
     }
 
@@ -319,7 +319,7 @@ class payment_rth_stripe extends PaymentModule
             'field' => xtc_draw_hidden_field(xtc_session_name(), xtc_session_id()),
         ];
 
-        $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+        $config = new StripeConfig('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
 
         $titel = parse_multi_language_value($config->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
         $description = parse_multi_language_value($config->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
