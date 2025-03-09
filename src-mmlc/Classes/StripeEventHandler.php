@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
+use PHPUnit\TextUI\Configuration\Php;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
@@ -38,14 +39,24 @@ class StripeEventHandler
     /** @var int */
     private $orderStatusAuthorized = 1;
 
-    private DIContainer $container;
+    private OrderRepository $orderRepo;
+    private OrderStatusHistoryRepository $orderStatusHistoryRepo;
+    private PaymentRepository $paymentRepo;
+    private PhpSession $phpSession;
+    private StripeConfiguration $config;
 
-    public function __construct(DIContainer $container)
-    {
-        $this->container = $container;
-
-        $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
-
+    public function __construct(
+        OrderRepository $orderRepo,
+        OrderStatusHistoryRepository $orderStatusHistoryRepo,
+        PaymentRepository $paymentRepo,
+        PhpSession $phpSession,
+        StripeConfiguration $config
+    ) {
+        $this->orderRepo = $orderRepo;
+        $this->orderStatusHistoryRepo = $orderStatusHistoryRepo;
+        $this->paymentRepo = $paymentRepo;
+        $this->phpSession = $phpSession;
+        $this->config = $config;
         $this->orderStatusPaid = $config->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
         $this->orderStatusAuthorized = $config->getOrderStatusAuthorized(self::DEFAULT_ORDER_STATUS_AUTHORIZED);
     }
@@ -74,16 +85,10 @@ class StripeEventHandler
             return false;
         }
 
-        /** @var Repository $repo */
-        $repo = $this->container->get(Repository::class);
-        $orderRepo = $this->container->get(OrderRepository::class);
-        $orderStatusHistoryRepo = $this->container->get(OrderStatusHistoryRepository::class);
-        $paymentRepo = $this->container->get(PaymentRepository::class);
-
         // Check if the order is already paid
         // Create a link between the order and the payment regardless of payment status
         //$repo->insertRthStripePayment($order->getId(), $paymentIntentId);
-        $paymentRepo->add($order->getId(), $paymentIntentId);
+        $this->paymentRepo->add($order->getId(), $paymentIntentId);
 
 
         // Only update order status and history if payment status is 'paid'
@@ -97,18 +102,15 @@ class StripeEventHandler
                 'payment_intent_id' => $paymentIntentId,
             ];
 
-            //$repo->updateOrderStatus($order->getId(), $this->orderStatusPaid);
-            $orderRepo->updateStatus($order->getId(), $this->orderStatusPaid);
-            //$repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid, json_encode($messageData, JSON_PRETTY_PRINT));
-            $orderStatusHistoryRepo->add(
+            $this->orderRepo->updateStatus($order->getId(), $this->orderStatusPaid);
+            $this->orderStatusHistoryRepo->add(
                 $order->getId(),
                 $this->orderStatusPaid,
                 json_encode($messageData, JSON_PRETTY_PRINT)
             );
         }
 
-        $phpSession = $this->container->get(PhpSession::class);
-        $phpSession->removeAllExpiredSessions(self::RECONSTRUCT_SESSION_TIMEOUT);
+        $this->phpSession->removeAllExpiredSessions(self::RECONSTRUCT_SESSION_TIMEOUT);
         return true;
     }
 
@@ -159,12 +161,7 @@ class StripeEventHandler
         if (isset($paymentIntent->metadata->order_id)) {
             $orderId = (int) $paymentIntent->metadata->order_id;
         } else {
-            // /** @var Repository $repo */
-            // $repo = $this->container->get(Repository::class);
-            // $orderId = $repo->getOrderIdByPaymentIntentId($paymentIntentId);
-
-            $paymentRepo = $this->container->get(PaymentRepository::class);
-            $payment = $paymentRepo->findByStripePaymentIntentId($paymentIntentId);
+            $payment = $this->paymentRepo->findByStripePaymentIntentId($paymentIntentId);
             $orderId = $payment['order_id'] ?? null;
         }
 
@@ -184,15 +181,8 @@ class StripeEventHandler
         ];
 
         // Update the order status to authorized
-        // $repo = $this->container->get(Repository::class);
-        // $repo->updateOrderStatus($orderId, $this->orderStatusAuthorized);
-        // $repo->insertOrderStatusHistory($orderId, $this->orderStatusAuthorized, json_encode($messageData, JSON_PRETTY_PRINT));
-
-        $orderRepo = $this->container->get(OrderRepository::class);
-        $orderStatusHistoryRepo = $this->container->get(OrderStatusHistoryRepository::class);
-
-        $orderRepo->updateStatus($orderId, $this->orderStatusPaid);
-        $orderStatusHistoryRepo->add(
+        $this->orderRepo->updateStatus($orderId, $this->orderStatusPaid);
+        $this->orderStatusHistoryRepo->add(
             $orderId,
             $this->orderStatusAuthorized,
             json_encode($messageData, JSON_PRETTY_PRINT)
@@ -210,10 +200,8 @@ class StripeEventHandler
     private function getOrderBySessionId(string $phpSessionId): ?Order
     {
         try {
-            /** @var PhpSession $phpSession */
-            $phpSession = $this->container->get(PhpSession::class);
-            $phpSession->load($phpSessionId);
-            return $phpSession->getOrder();
+            $this->phpSession->load($phpSessionId);
+            return $this->phpSession->getOrder();
         } catch (Exception $e) {
             error_log("Failed to retrieve order from session - " . $e->getMessage());
             return null;

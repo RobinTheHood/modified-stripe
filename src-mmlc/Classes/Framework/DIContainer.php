@@ -30,6 +30,7 @@ use RobinTheHood\Stripe\Classes\Service\PaymentCaptureService;
 use RobinTheHood\Stripe\Classes\Service\SessionService;
 use RobinTheHood\Stripe\Classes\Service\WebhookService;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
+use RobinTheHood\Stripe\Classes\StripeEventHandler;
 
 class DIContainer
 {
@@ -90,13 +91,35 @@ class DIContainer
 
         // Create service objects
         if (CheckoutService::class === $class) {
-            return $this->instances[$class] = new CheckoutService($this, $this->get(StripeConfiguration::class));
+            return $this->instances[$class] = new CheckoutService(
+                $this->get(Session::class),
+                $this->get(StripeConfiguration::class)
+            );
         } elseif (SessionService::class === $class) {
-            return $this->instances[$class] = new SessionService($this, $this->get(StripeConfiguration::class));
+            return $this->instances[$class] = new SessionService(
+                $this->get(Session::class),
+                $this->get(StripeConfiguration::class)
+            );
         } elseif (WebhookService::class === $class) {
-            return $this->instances[$class] = new WebhookService($this, $this->get(StripeConfiguration::class));
+            return $this->instances[$class] = new WebhookService(
+                $this->get(StripeEventHandler::class),
+                $this->get(StripeConfiguration::class)
+            );
         } elseif (PaymentCaptureService::class === $class) {
-            return $this->instances[$class] = new PaymentCaptureService($this, $this->get(StripeConfiguration::class));
+            return $this->instances[$class] = new PaymentCaptureService(
+                $this->get(PaymentRepository::class),
+                $this->get(StripeConfiguration::class)
+            );
+        }
+
+        if (StripeEventHandler::class === $class) {
+            return $this->instances[$class] = new StripeEventHandler(
+                $this->get(OrderRepository::class),
+                $this->get(OrderStatusHistoryRepository::class),
+                $this->get(PaymentRepository::class),
+                $this->get(Session::class),
+                $this->get(StripeConfiguration::class)
+            );
         }
 
         throw new Exception('Can not create object of type ' . $class);

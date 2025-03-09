@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Service;
 
 use Exception;
-use RobinTheHood\Stripe\Classes\Framework\DIContainer;
-use RobinTheHood\Stripe\Classes\Session as PhpSession;
+use RobinTheHood\Stripe\Classes\Session;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use RobinTheHood\Stripe\Classes\Url;
 use Stripe\Checkout\Session as StripeSession;
@@ -16,14 +15,14 @@ class CheckoutService
 {
     private const CHECKOUT_SESSION_TIMOUT = 60 * 30;
 
-    private $container;
+    private Session $phpSession;
     private $config;
 
     public function __construct(
-        DIContainer $container,
+        Session $phpSession,
         StripeConfiguration $config
     ) {
-        $this->container = $container;
+        $this->phpSession = $phpSession;
         $this->config = $config;
     }
 
@@ -32,10 +31,9 @@ class CheckoutService
      */
     public function createCheckoutSession(): StripeSession
     {
-        $phpSession = $this->container->get(PhpSession::class);
-        $phpSessionId = $phpSession->save();
+        $phpSessionId = $this->phpSession->save();
 
-        $order = $phpSession->getOrder();
+        $order = $this->phpSession->getOrder();
         if (!$order) {
             throw new Exception('Can not create a Stripe session because we have no order object');
         }

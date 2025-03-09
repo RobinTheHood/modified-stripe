@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Service;
 
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
-use RobinTheHood\Stripe\Classes\Session as PhpSession;
+use RobinTheHood\Stripe\Classes\Session;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use Stripe\StripeClient;
 
@@ -13,14 +13,14 @@ class SessionService
 {
     private const RECONSTRUCT_SESSION_TIMEOUT = 60 * 60;
 
-    private DIContainer $container;
+    private Session $session;
     private StripeConfiguration $config;
 
     public function __construct(
-        DIContainer $container,
+        Session $session,
         StripeConfiguration $config
     ) {
-        $this->container = $container;
+        $this->session = $session;
         $this->config = $config;
     }
 
@@ -31,13 +31,12 @@ class SessionService
     {
         $stripe = new StripeClient($this->getSecretKey());
         $stripeCheckoutSession = $stripe->checkout->sessions->retrieve($stripeSessionId);
-        $phpSessionId = $stripeCheckoutSession->client_reference_id;
+        $sessionId = $stripeCheckoutSession->client_reference_id;
 
-        $phpSession = $this->container->get(PhpSession::class);
-        $phpSession->load($phpSessionId, self::RECONSTRUCT_SESSION_TIMEOUT);
+        $this->session->load($sessionId, self::RECONSTRUCT_SESSION_TIMEOUT);
         $_SESSION['rth_stripe_status'] = 'success';
 
-        return $phpSessionId;
+        return $sessionId;
     }
 
     /**

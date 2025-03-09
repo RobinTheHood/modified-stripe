@@ -8,23 +8,20 @@ use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use RobinTheHood\Stripe\Classes\StripeEventHandler;
 use RobinTheHood\Stripe\Classes\StripeService;
+use Stripe\Stripe;
 
 class WebhookService
 {
-    /** @var DIContainer */
-    private $container;
-
-    /** @var StripeConfiguration */
-    private $config;
+    private StripeEventHandler $stripeEventHandler;
+    private StripeConfiguration $config;
 
     public function __construct(
-        DIContainer $container,
+        StripeEventHandler $stripeEventHandler,
         StripeConfiguration $config
     ) {
-        $this->container = $container;
+        $this->stripeEventHandler = $stripeEventHandler;
         $this->config = $config;
     }
-
 
     /**
      * Process webhook from Stripe
@@ -34,15 +31,13 @@ class WebhookService
         $stripeService = StripeService::createFromConfig($this->config);
         $event = $stripeService->receiveEvent($payload, $sigHeader);
 
-        $stripeEventHandler = new StripeEventHandler($this->container);
-
         switch ($event->type) {
             case 'checkout.session.completed':
-                return $stripeEventHandler->checkoutSessionCompleted($event);
+                return $this->stripeEventHandler->checkoutSessionCompleted($event);
             case 'checkout.session.expired':
-                return $stripeEventHandler->checkoutSessionExpired($event);
+                return $this->stripeEventHandler->checkoutSessionExpired($event);
             case 'payment_intent.amount_capturable_updated':
-                return $stripeEventHandler->paymentIntentAmountCapturableUpdated($event);
+                return $this->stripeEventHandler->paymentIntentAmountCapturableUpdated($event);
             default:
                 return true;
         }

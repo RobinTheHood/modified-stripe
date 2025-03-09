@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes\Service;
 
-use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\StripeConfiguration;
 use Stripe\PaymentIntent;
@@ -12,14 +11,14 @@ use Stripe\Stripe;
 
 class PaymentCaptureService
 {
-    private DIContainer $container;
+    private PaymentRepository $paymentRepo;
     private StripeConfiguration $config;
 
     public function __construct(
-        DIContainer $container,
+        PaymentRepository $paymentRepo,
         StripeConfiguration $config
     ) {
-        $this->container = $container;
+        $this->paymentRepo = $paymentRepo;
         $this->config = $config;
     }
 
@@ -28,8 +27,7 @@ class PaymentCaptureService
      */
     public function capturePayment(int $orderId): void
     {
-        $repository = $this->container->get(PaymentRepository::class);
-        $paymentData = $repository->findByOrderId($orderId);
+        $paymentData = $this->paymentRepo->findByOrderId($orderId);
 
         if (!$paymentData || empty($paymentData['stripe_payment_intent_id'])) {
             throw new \Exception('Keine Stripe Zahlungsdaten für diese Bestellung gefunden.');
