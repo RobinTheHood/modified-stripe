@@ -91,6 +91,33 @@ class StripeConfig extends Configuration
         }
     }
 
+    public function getOrderStatusCaptured(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusCaptured;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
+    public function getOrderStatusCanceled(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusCanceled;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
+    public function getOrderStatusRefunded(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusRefunded;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
     public function setWebhookSerect(string $secret): void
     {
         $container = new DIContainer();

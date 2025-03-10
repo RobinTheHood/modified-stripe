@@ -21,6 +21,8 @@ use RobinTheHood\Stripe\Classes\Framework\AbstractController;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
+use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
+use RobinTheHood\Stripe\Classes\Repository\OrderStatusHistoryRepository;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\View\OrderDetailView;
 
@@ -31,12 +33,20 @@ class AdminController extends AbstractController
     private StripeConfig $stripeConfig;
 
     private PaymentRepository $paymentRepo;
+    private OrderRepository $orderRepo;
+    private OrderStatusHistoryRepository $orderStatusHistoryRepo;
 
-    public function __construct(StripeConfig $stripeConfig, PaymentRepository $paymentRepo)
-    {
+    public function __construct(
+        StripeConfig $stripeConfig,
+        PaymentRepository $paymentRepo,
+        OrderRepository $orderRepo,
+        OrderStatusHistoryRepository $orderStatusHistoryRepo
+    ) {
         parent::__construct();
         $this->stripeConfig = $stripeConfig;
         $this->paymentRepo = $paymentRepo;
+        $this->orderRepo = $orderRepo;
+        $this->orderStatusHistoryRepo = $orderStatusHistoryRepo;
     }
 
     public function invokeGetStripePaymentDetails(Request $request): Response
@@ -138,6 +148,18 @@ class AdminController extends AbstractController
                     ]
                 );
 
+                $this->orderRepo->updateStatus($orderId, $this->stripeConfig->getOrderStatusCaptured());
+                $this->orderStatusHistoryRepo->add(
+                    $orderId,
+                    $this->stripeConfig->getOrderStatusCaptured(),
+                    json_encode(
+                        [
+                            'amount_to_capture' => $amountInSmallestUnit,
+                        ],
+                        JSON_PRETTY_PRINT
+                    )
+                );
+
                 // Redirect back to the order detail page
                 return new RedirectResponse("orders.php?oID=$orderId&action=edit");
             }
@@ -216,6 +238,18 @@ class AdminController extends AbstractController
 
                 \Stripe\Refund::create($refundParams);
 
+                $this->orderRepo->updateStatus($orderId, $this->stripeConfig->getOrderStatusRefunded());
+                $this->orderStatusHistoryRepo->add(
+                    $orderId,
+                    $this->stripeConfig->getOrderStatusRefunded(),
+                    json_encode(
+                        [
+                            'amount_to_refund' => $amountInSmallestUnit,
+                            'refund_reason' => $refundReason,
+                        ],
+                        JSON_PRETTY_PRINT
+                    )
+                );
                 // Redirect back to the order detail page
                 return new RedirectResponse("orders.php?oID=$orderId&action=edit");
             }
@@ -261,6 +295,17 @@ class AdminController extends AbstractController
                 $paymentIntent = \Stripe\PaymentIntent::retrieve($paymentIntentId);
                 $paymentIntent->cancel();
 
+                $this->orderRepo->updateStatus($orderId, $this->stripeConfig->getOrderStatusCanceled());
+                $this->orderStatusHistoryRepo->add(
+                    $orderId,
+                    $this->stripeConfig->getOrderStatusCanceled(),
+                    json_encode(
+                        [
+                            'action' => 'cancel',
+                        ],
+                        JSON_PRETTY_PRINT
+                    )
+                );
                 // Redirect back to the order detail page
                 return new RedirectResponse("orders.php?oID=$orderId&action=edit");
             }

@@ -60,5 +60,14 @@ define($prefix . 'ORDER_STATUS_PAID_DESC', 'What order status should the order r
 define($prefix . 'ORDER_STATUS_AUTHORIZED_TITLE', 'Order Status for Authorized Payment');
 define($prefix . 'ORDER_STATUS_AUTHORIZED_DESC', 'What order status should the order receive when a payment has been authorized but not yet captured?');
 
+define($prefix . 'ORDER_STATUS_CAPTURED_TITLE', 'Order Status after Capture');
+define($prefix . 'ORDER_STATUS_CAPTURED_DESC', 'What order status should the order receive after an authorized payment has been successfully captured?');
+
+define($prefix . 'ORDER_STATUS_CANCELED_TITLE', 'Order Status after Cancellation');
+define($prefix . 'ORDER_STATUS_CANCELED_DESC', 'What order status should the order receive when a payment has been canceled?');
+
+define($prefix . 'ORDER_STATUS_REFUNDED_TITLE', 'Order Status after Refund');
+define($prefix . 'ORDER_STATUS_REFUNDED_DESC', 'What order status should the order receive when a payment has been refunded?');
+
 define($prefix . 'MANUAL_CAPTURE_TITLE', 'Manual Capture');
 define($prefix . 'MANUAL_CAPTURE_DESC', 'Enable manual capturing of payments? If yes, payment amounts will be authorized but not automatically captured. You must manually capture payments from the order or from your Stripe dashboard.');
