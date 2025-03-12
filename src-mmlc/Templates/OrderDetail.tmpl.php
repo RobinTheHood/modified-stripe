@@ -113,6 +113,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.text();
         })
         .then(data => {
+            if (!data || data.trim() === '') {
+                throw new Error('Keine Daten verfügbar');
+            }
             stripeContainer.innerHTML = data;
         })
         .catch(error => {
