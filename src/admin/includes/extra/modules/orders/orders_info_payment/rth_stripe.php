@@ -21,6 +21,6 @@ $diContainer = new DIContainer();
 
 $paymentRepo = $diContainer->get(PaymentRepository::class);
 $paymentInent = $paymentRepo->findByOrderId($orderId);
-$stripePaymentIntentId = $stripePaymentIntent['stripe_payment_intent_id'] ?? null;
+$stripePaymentIntentId = $paymentInent['stripe_payment_intent_id'] ?? null;
 
 include AdminController::TEMPLATE_PATH . 'OrderDetail.tmpl.php';
