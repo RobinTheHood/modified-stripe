@@ -19,6 +19,9 @@ Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unr
 - Refactored order_detail architecture for better maintainability
 - Controller actions moved to dedicated services
 
+### Thanks to our Sponsors
+These features were made possible through the financial support of [antiquari.at](https://www.antiquari.at). Thank you!
+
 ## [0.7.0] - 2025-03-03
 ### Added
 - Added multilingual support for payment title and description in the frontend, configurable through module settings [(#67)](https://github.com/RobinTheHood/modified-stripe/pull/67)
