@@ -26,7 +26,8 @@ $_GET = $rthGet;
 $_POST = $rthPost;
 $_SERVER = $rthServer;
 
-$rthDevMode = true;
+$rthDevMode = strpos($_SERVER['HTTP_HOST'], '.ddev.site') !== false;
+
 if (true === $rthDevMode) {
     /** Show all error messages in the browser.  */
     restore_error_handler();

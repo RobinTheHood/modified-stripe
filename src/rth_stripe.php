@@ -34,7 +34,7 @@ require_once DIR_WS_CLASSES . 'order.php';
 require_once DIR_WS_CLASSES . 'message_stack.php';
 require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
 
-$rthDevMode = true;
+$rthDevMode = strpos($_SERVER['HTTP_HOST'], '.ddev.site') !== false;
 
 if (true === $rthDevMode) {
     /** Show all error messages in the browser.  */
