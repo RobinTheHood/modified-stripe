@@ -29,3 +29,14 @@ Unser Stripe-Zahlungsmodul wurde mit Blick auf die Benutzerfreundlichkeit entwic
 
 ### ⭐️ OpenSource und Kostenlos
 Unser Stripe-Zahlungsmodul ist nicht nur kostenlos, sondern auch OpenSource auf GitHub. Das bedeutet, du hast volle Kontrolle über den Quellcode und kannst auf Unterstützung und Updates der OpenSource-Gemeinschaft zählen. Unser Modul überzeugt durch sauberen, verständlichen Code, bewährte Praktiken und ausführlichen dokumentierten Code. Dies alles sichert langfristige Wartbarkeit und fördert die Zusammenarbeit zur stetigen Weiterentwicklung des Moduls.
+
+## 🛠️ Funktionsumfang
+
+- **Manuelles Capture:** Erfasse autorisierte Zahlungen manuell mit individuellen Backend-Einstellungen.
+- **Anpassbare Zahlungsstatus:** Definiere individuell den Status für autorisierte Zahlungen.
+- **Erweiterte Zahlungsinformationen:** Erhalte mehr detaillierte Stripe-Zahlungsinformationen direkt in der Admin-Bestellübersicht.
+- **Metadaten-Attachments:** Automatische Übermittlung relevanter Informationen (OrderID, CustomerID, Kunden-E-Mail) an CheckoutSession und PaymentIntent für bessere Übersichtlichkeit.
+- **Flexible Erfassung offener Zahlungen:** Entscheide selbst, ob Zahlungen vollständig oder teilweise erfasst werden.
+- **Automatische Statusupdates:** Dein Shop aktualisiert automatisch den Bestellstatus nach Capture-, Stornierungs- oder Rückerstattungsaktionen.
+- **Zahlungsstornierung:** Einfache Stornierung von autorisierten Zahlungen direkt über dein Backend.
+- **Rückerstattungen mit wenigen Klicks:** Komfortable Rückerstattung bereits erfasster Zahlungen aus deinem Adminbereich heraus.
