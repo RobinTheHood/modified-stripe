@@ -15,20 +15,23 @@ declare(strict_types=1);
 
 namespace RobinTheHood\Stripe\Classes\Framework;
 
-use Exception;
-use RobinTheHood\Stripe\Classes\Repository;
-use RobinTheHood\Stripe\Classes\Session;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 
-class DIContainer
+class DIContainer extends Container
 {
-    public function get(string $class)
+    public function __construct()
     {
-        if (Session::class === $class) {
-            return new Session(new Repository(new Database()));
-        } elseif (Repository::class === $class) {
-            return new Repository(new Database());
-        }
+        $this->registerDefinitions();
+    }
 
-        throw new Exception('Can not create object of type ' . $class);
+    private function registerDefinitions(): void
+    {
+        // Special configuration for StripeConfig
+        $this->set(
+            StripeConfig::class,
+            function () {
+                return new StripeConfig('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+            }
+        );
     }
 }

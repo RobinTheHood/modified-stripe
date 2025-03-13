@@ -20,12 +20,12 @@ class RequestFactory
     public static function createFromGlobals(): Request
     {
         return new Request(
-            $_GET,
-            $_POST,
+            $_GET ?? [],
+            $_POST ?? [],
             [],
             [],
             [],
-            $_SERVER,
+            $_SERVER ?? [],
             @file_get_contents('php://input')
         );
     }

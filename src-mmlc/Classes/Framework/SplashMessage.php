@@ -63,6 +63,11 @@ class SplashMessage
         $this->addMessage($class, $message, self::TYPE_ERROR);
     }
 
+    public function success(string $class, string $message): void
+    {
+        $this->addMessage($class, $message, self::TYPE_SUCCESS);
+    }
+
     private function addMessage(string $class, string $message, string $type): void
     {
         $messageStack = $this->getMessageStack();
@@ -76,5 +81,18 @@ class SplashMessage
             return $messageStack;
         }
         return new messageStack();
+    }
+
+    public function addAdminMessage($message, $type = self::TYPE_ERROR): void
+    {
+        if (!isset($_SESSION['messageToAdminStack'])) {
+            $_SESSION['messageToAdminStack'] = [];
+        }
+
+        if (!isset($_SESSION['messageToAdminStack'][$type])) {
+            $_SESSION['messageToAdminStack'][$type] = [];
+        }
+
+        $_SESSION['messageToAdminStack'][$type][md5($message)] = $message;
     }
 }

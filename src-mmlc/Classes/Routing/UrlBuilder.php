@@ -13,20 +13,15 @@
 
 declare(strict_types=1);
 
-namespace RobinTheHood\Stripe\Classes;
+namespace RobinTheHood\Stripe\Classes\Routing;
 
 use RobinTheHood\Stripe\Classes\Framework\Constant;
 
 /**
  * With this class we can globally adjust the required URLs throughout the module if necessary.
  */
-class Url
+class UrlBuilder
 {
-    public static function create(): Url
-    {
-        return new Url();
-    }
-
     public function getShopBase(): string
     {
         return Constant::getHttpsServer() . Constant::getDirWsCatalog();
@@ -65,5 +60,10 @@ class Url
     public function getCheckoutConfirmation(): string
     {
         return $this->getShopBase() . 'checkout_confirmation.php';
+    }
+
+    public function getAdminOrders(): string
+    {
+        return $this->getShopBase() . Constant::getDirAdmin() . 'orders.php';
     }
 }

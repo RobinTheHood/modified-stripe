@@ -86,4 +86,9 @@ class Request
     {
         return $this->content;
     }
+
+    public function isMethod(string $method): bool
+    {
+        return strtoupper($this->getServer('REQUEST_METHOD')) === strtoupper($method);
+    }
 }

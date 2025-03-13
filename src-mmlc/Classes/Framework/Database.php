@@ -52,4 +52,14 @@ class Database
         }
         return $rows;
     }
+
+    public function getLastInsertId(): int
+    {
+        try {
+            return (int) xtc_db_insert_id();
+        } catch (\Exception $e) {
+            return 0;
+        }
+        return xtc_db_insert_id();
+    }
 }

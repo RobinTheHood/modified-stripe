@@ -13,11 +13,12 @@
 
 declare(strict_types=1);
 
-namespace RobinTheHood\Stripe\Classes;
+namespace RobinTheHood\Stripe\Classes\Config;
 
 use Exception;
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+use RobinTheHood\Stripe\Classes\Repository\ConfigurationRepository;
 
 /**
  * This class makes it easy to access the modified user configuration of the Stripe module. Unlike the pure
@@ -25,7 +26,7 @@ use RobinTheHood\Stripe\Classes\Framework\DIContainer;
  *
  * @link https://github.com/RobinTheHood/modified-std-module#easy-access-with-class-configuration
  */
-class StripeConfiguration extends Configuration
+class StripeConfig extends Configuration
 {
     public function getLiveMode(): bool
     {
@@ -81,12 +82,60 @@ class StripeConfiguration extends Configuration
         }
     }
 
+    public function getOrderStatusAuthorized(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusAuthorized;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
+    public function getOrderStatusCaptured(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusCaptured;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
+    public function getOrderStatusCanceled(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusCanceled;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
+    public function getOrderStatusRefunded(int $default = 0): int
+    {
+        try {
+            return (int) $this->orderStatusRefunded;
+        } catch (Exception $e) {
+            return $default;
+        }
+    }
+
     public function setWebhookSerect(string $secret): void
     {
         $container = new DIContainer();
 
-        $repo = $container->get(Repository::class);
-        $repo->updateConfigurationValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
+        // $repo = $container->get(Repository::class);
+        // $repo->updateConfigurationValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
+
+        $configurationRepo = $container->get(ConfigurationRepository::class);
+        $configurationRepo->updateValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
+    }
+
+    public function getManualCapture(): bool
+    {
+        try {
+            return 'true' === $this->manualCapture ? true : false;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function getPaymentTitle(): string

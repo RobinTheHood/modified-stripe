@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use Stripe\Event;
 use Stripe\WebhookEndpoint;
 
@@ -33,33 +34,17 @@ class StripeService
     /** @var string A Webhook Entpoint secret */
     private $endpointSecret;
 
-    /**
-     * A helper method that we can use to more easily create a new StripeSerive Object.
-     */
-    public static function createFromConfig(StripeConfiguration $config): StripeService
+    public function __construct(StripeConfig $stripeConfig)
     {
-        $liveMode = $config->getLiveMode();
+        $this->liveMode = $stripeConfig->getLiveMode();
 
-        if ($liveMode) {
-            $secret = $config->getApiLiveSecret();
+        if ($this->liveMode) {
+            $this->secret = $stripeConfig->getApiLiveSecret();
         } else {
-            $secret = $config->getApiSandboxSecret();
+            $this->secret = $stripeConfig->getApiSandboxSecret();
         }
 
-        $endpointSecret = $config->getApiLiveEndpointSecret();
-
-        return new StripeService(
-            $liveMode,
-            $secret,
-            $endpointSecret
-        );
-    }
-
-    public function __construct(bool $liveMode, string $secret, string $endpointSecret)
-    {
-        $this->liveMode       = $liveMode;
-        $this->secret         = $secret;
-        $this->endpointSecret = $endpointSecret;
+        $this->endpointSecret = $stripeConfig->getApiLiveEndpointSecret();
     }
 
     public function hasValidSecret(): bool

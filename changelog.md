@@ -4,6 +4,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+### Added
+- Manual Capture functionality with configurable setting in the backend
+- Customizable payment status for authorized payments
+- Display of more Stripe payment information in the admin order view
+- Metadata attachment to CheckoutSession/PaymentIntent (OrderId, CustomerId, Customer Email)
+- Ability to capture open payments with or without specifying amount
+- Automatic order status updates after payment actions (capture, cancellation, refund)
+- Payment cancellation functionality for authorized payments
+- Refund functionality for captured payments
+
+### Changed
+- Improved admin order display with two-column layout and AJAX loading
+- Refactored order_detail architecture for better maintainability
+- Controller actions moved to dedicated services
+
+### Thanks to our Sponsors
+These features were made possible through the financial support of [antiquari.at](https://www.antiquari.at). Thank you!
+
 ## [0.7.0] - 2025-03-03
 ### Added
 - Added multilingual support for payment title and description in the frontend, configurable through module settings [(#67)](https://github.com/RobinTheHood/modified-stripe/pull/67)

@@ -53,6 +53,11 @@ class Constant
         return self::getValue('DIR_WS_LANGUAGES');
     }
 
+    public static function getDirAdmin(): string
+    {
+        return self::getValue('DIR_ADMIN');
+    }
+
     private static function getValue(string $name): string
     {
         return defined($name) ? constant($name) : '';

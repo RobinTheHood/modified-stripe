@@ -17,15 +17,20 @@
 
 declare(strict_types=1);
 
-use RobinTheHood\Stripe\Classes\{Session, Repository, StripeConfiguration, StripeService, Url};
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
+use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
+use RobinTheHood\Stripe\Classes\Repository\PhpSessionRepository;
+use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
+use RobinTheHood\Stripe\Classes\Storage\PhpSession;
+use RobinTheHood\Stripe\Classes\StripeService;
 
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.7.0';
+    public const VERSION = '0.8.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -35,6 +40,18 @@ class payment_rth_stripe extends PaymentModule
 
     // StatusId 2 is a default modified status 'Processing'
     public const DEFAULT_ORDER_STATUS_PAID = 2;
+
+    // StatusId for authorized payments (default to 'Pending')
+    public const DEFAULT_ORDER_STATUS_AUTHORIZED = 1;
+
+    // StatusId for captured payments (default to 'Processing')
+    public const DEFAULT_ORDER_STATUS_CAPTURED = 2;
+
+    // StatusId for canceled payments (default to 'Canceled')
+    public const DEFAULT_ORDER_STATUS_CANCELED = 4;
+
+    // StatusId for refunded payments (default to some reasonable value)
+    public const DEFAULT_ORDER_STATUS_REFUNDED = 4;
 
     public static $actionInvoked = false;
 
@@ -61,6 +78,12 @@ class payment_rth_stripe extends PaymentModule
      */
     public $tmpStatus = self::DEFAULT_ORDER_STATUS_PENDING;
 
+    private UrlBuilder $urlBuilder;
+    private StripeConfig $stripeConfig;
+    private PaymentRepository $paymentRepo;
+    private PhpSessionRepository $phpSessionRepo;
+    private PhpSession $phpSession;
+    private StripeService $stripeService;
     /**
      * Configuration keys which are automatically added/removed on
      * install/remove
@@ -83,6 +106,11 @@ class payment_rth_stripe extends PaymentModule
         'PAYMENT_DESC',
         'ORDER_STATUS_PENDING',
         'ORDER_STATUS_PAID',
+        'ORDER_STATUS_AUTHORIZED',
+        'ORDER_STATUS_CAPTURED',
+        'ORDER_STATUS_CANCELED',
+        'ORDER_STATUS_REFUNDED',
+        'MANUAL_CAPTURE',
     ];
 
     private DIContainer $container;
@@ -93,14 +121,18 @@ class payment_rth_stripe extends PaymentModule
         $this->checkForUpdate(true);
         $this->addKeys(self::$configurationKeys);
 
-        $this->form_action_url = Url::create()->getFormActionUrl();
+        $this->container = new DIContainer();
+        $this->urlBuilder = $this->container->get(UrlBuilder::class);
+        $this->stripeConfig = $this->container->get(StripeConfig::class);
+        $this->paymentRepo = $this->container->get(PaymentRepository::class);
+        $this->phpSessionRepo = $this->container->get(PhpSessionRepository::class);
+        $this->phpSession = $this->container->get(PhpSession::class);
+        $this->stripeService = $this->container->get(StripeService::class);
 
-        $config          = new StripeConfiguration(self::NAME);
-        $this->tmpStatus = $config->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
+        $this->form_action_url = $this->urlBuilder->getFormActionUrl();
+        $this->tmpStatus = $this->stripeConfig->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
 
         $this->addActions();
-
-        $this->container = new DIContainer();
     }
 
     private function addActions(): void
@@ -136,28 +168,25 @@ class payment_rth_stripe extends PaymentModule
         }
         self::$actionInvoked = true;
 
-        $config        = new StripeConfiguration(self::NAME);
-        $stripeService = StripeService::createFromConfig($config);
-
-        if (!$stripeService->hasValidSecret()) {
+        if (!$this->stripeService->hasValidSecret()) {
             $this->addMessage('Fehler: Stripe Webhook Endpoint konnte nicht hinzugefügt werden. Kein valider Live- oder Test-Modus API Secret vorhanden.', self::MESSAGE_ERROR);
             return;
         }
 
-        if ($stripeService->hasWebhookEndpoint()) {
+        if ($this->stripeService->hasWebhookEndpoint()) {
             $this->addMessage('Fehler: Stripe Webhook Endpoint konnte nicht hinzugefügt werden. Webhook Entpoint ist bereits vorhanden.', self::MESSAGE_ERROR);
             return;
         }
 
         try {
-            $endpoint = $stripeService->addWebhookEndpoint(
-                Url::create()->getStripeWebhook(),
+            $endpoint = $this->stripeService->addWebhookEndpoint(
+                $this->urlBuilder->getStripeWebhook(),
                 ['checkout.session.completed', 'checkout.session.expired', 'charge.succeeded'],
                 'Webhook Endpoint for modified module robinthehood/stripe'
             );
 
             $secret = $endpoint['secret'] ?? '';
-            $config->setWebhookSerect($secret);
+            $this->stripeConfig->setWebhookSerect($secret);
 
             $this->addMessage('Stripe Webhook Endpoint erfolgreich hinzugefügt.', self::MESSAGE_SUCCESS);
         } catch (Exception $e) {
@@ -199,14 +228,19 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfiguration('CHECKOUT_DESC', 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order', 6, 1, $setFunctionFieldcheckoutTitleDesc);
         $this->addConfiguration('PAYMENT_TITLE', 'DE::Stripe||EN::Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
         $this->addConfiguration('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+        $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', 6, 1);
 
         $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, 6, 1);
         $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, 6, 1);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_AUTHORIZED', (string) self::DEFAULT_ORDER_STATUS_AUTHORIZED, 6, 1);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_CAPTURED', (string) self::DEFAULT_ORDER_STATUS_CAPTURED, 6, 1);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_CANCELED', (string) self::DEFAULT_ORDER_STATUS_CANCELED, 6, 1);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_REFUNDED', (string) self::DEFAULT_ORDER_STATUS_REFUNDED, 6, 1);
 
-        /** @var Repository **/
-        $repo = $this->container->get(Repository::class);
-        $repo->createRthStripePhpSession();
-        $repo->createRthStripePayment();
+        $this->setAdminAccess('rth_stripe');
+
+        $this->paymentRepo->createTable();
+        $this->phpSessionRepo->createTable();
     }
 
     /**
@@ -280,6 +314,17 @@ class payment_rth_stripe extends PaymentModule
             return self::UPDATE_SUCCESS;
         }
 
+        if ('0.7.0' === $currentVersion) {
+            $this->setAdminAccess('rth_stripe');
+            $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', 6, 1);
+            $this->addConfigurationOrderStatus('ORDER_STATUS_AUTHORIZED', (string) self::DEFAULT_ORDER_STATUS_AUTHORIZED, 6, 1);
+            $this->addConfigurationOrderStatus('ORDER_STATUS_CAPTURED', (string) self::DEFAULT_ORDER_STATUS_CAPTURED, 6, 1);
+            $this->addConfigurationOrderStatus('ORDER_STATUS_CANCELED', (string) self::DEFAULT_ORDER_STATUS_CANCELED, 6, 1);
+            $this->addConfigurationOrderStatus('ORDER_STATUS_REFUNDED', (string) self::DEFAULT_ORDER_STATUS_REFUNDED, 6, 1);
+            $this->setVersion('0.8.0');
+            return self::UPDATE_SUCCESS;
+        }
+
         return self::UPDATE_NOTHING;
     }
 
@@ -300,7 +345,7 @@ class payment_rth_stripe extends PaymentModule
             'field' => xtc_draw_hidden_field(xtc_session_name(), xtc_session_id()),
         ];
 
-        $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+        $config = new StripeConfig('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
 
         $titel = parse_multi_language_value($config->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
         $description = parse_multi_language_value($config->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
@@ -334,7 +379,7 @@ class payment_rth_stripe extends PaymentModule
 
         $this->removeOrder($tempOrderId);
         $this->setTemporaryOrderId(false);
-        xtc_redirect(Url::create()->getCheckoutConfirmation());
+        xtc_redirect($this->urlBuilder->getCheckoutConfirmation());
     }
 
     /**
@@ -369,8 +414,7 @@ class payment_rth_stripe extends PaymentModule
 
         $rthOrder = new Order($tempOrderId, $modifiedOrder);
 
-        $session = $this->container->get(Session::class);
-        $session->setOrder($rthOrder);
+        $this->phpSession->setOrder($rthOrder);
 
         // TODO: Correct the entry in Order Status History, see also method description.
 

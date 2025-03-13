@@ -16,9 +16,12 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes;
 
 use Exception;
-use RobinTheHood\Stripe\Classes\Framework\DIContainer;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Framework\Order;
-use RobinTheHood\Stripe\Classes\Session as PhpSession;
+use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
+use RobinTheHood\Stripe\Classes\Repository\OrderStatusHistoryRepository;
+use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
+use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use Stripe\Event;
 
 class StripeEventHandler
@@ -27,19 +30,32 @@ class StripeEventHandler
 
     // StatusId 2 is a default modified status 'Processing'
     private const DEFAULT_ORDER_STATUS_PAID = 2;
+    private const DEFAULT_ORDER_STATUS_AUTHORIZED = 1;
 
     /** @var int */
     private $orderStatusPaid = 2;
 
-    private DIContainer $container;
+    /** @var int */
+    private $orderStatusAuthorized = 1;
 
-    public function __construct(DIContainer $container)
-    {
-        $this->container = $container;
+    private OrderRepository $orderRepo;
+    private OrderStatusHistoryRepository $orderStatusHistoryRepo;
+    private PaymentRepository $paymentRepo;
+    private PhpSession $phpSession;
 
-        $config = new StripeConfiguration('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
-
-        $this->orderStatusPaid = $config->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
+    public function __construct(
+        OrderRepository $orderRepo,
+        OrderStatusHistoryRepository $orderStatusHistoryRepo,
+        PaymentRepository $paymentRepo,
+        PhpSession $phpSession,
+        StripeConfig $stripeConfig
+    ) {
+        $this->orderRepo = $orderRepo;
+        $this->orderStatusHistoryRepo = $orderStatusHistoryRepo;
+        $this->paymentRepo = $paymentRepo;
+        $this->phpSession = $phpSession;
+        $this->orderStatusPaid = $stripeConfig->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
+        $this->orderStatusAuthorized = $stripeConfig->getOrderStatusAuthorized(self::DEFAULT_ORDER_STATUS_AUTHORIZED);
     }
 
     /**
@@ -59,44 +75,39 @@ class StripeEventHandler
         $paymentIntentId   = $session->payment_intent;
         $phpSessionId      = $clientReferenceId;
 
-
-        if ('paid' !== $session->payment_status) {
-            return false;
-        }
-
-        try {
-            /** @var PhpSession $phpSession */
-            $phpSession = $this->container->get(PhpSession::class);
-            $phpSession->load($phpSessionId);
-        } catch (Exception $e) {
-            error_log("Can not handle stripe event {$event->type} - " . $e->getMessage());
-            return false;
-        }
-
-        $order = $phpSession->getOrder();
+        $order = $this->getOrderBySessionId($phpSessionId);
 
         if (!$order) {
             error_log("Can not handle stripe event {$event->type} - order is null");
             return false;
         }
 
-        $messageData = [
-            "id"       => $event->id,
-            "object"   => $event->object,
-            "created"  => $event->created,
-            "livemode" => $event->livemode,
-            "type"     => $event->type,
-        ];
+        // Check if the order is already paid
+        // Create a link between the order and the payment regardless of payment status
+        //$repo->insertRthStripePayment($order->getId(), $paymentIntentId);
+        $this->paymentRepo->add($order->getId(), $paymentIntentId);
 
-        /** @var Repository $repo */
-        $repo = $this->container->get(Repository::class);
-        $repo->updateOrderStatus($order->getId(), $this->orderStatusPaid);
-        $repo->insertOrderStatusHistory($order->getId(), $this->orderStatusPaid, json_encode($messageData, JSON_PRETTY_PRINT));
 
-        // Create a link between the order and the payment
-        $repo->insertRthStripePayment($order->getId(), $paymentIntentId);
+        // Only update order status and history if payment status is 'paid'
+        if ('paid' === $session->payment_status) {
+            $messageData = [
+                "id"       => $event->id,
+                "object"   => $event->object,
+                "created"  => $event->created,
+                "livemode" => $event->livemode,
+                "type"     => $event->type,
+                'payment_intent_id' => $paymentIntentId,
+            ];
 
-        $phpSession->removeAllExpiredSessions(self::RECONSTRUCT_SESSION_TIMEOUT);
+            $this->orderRepo->updateStatus($order->getId(), $this->orderStatusPaid);
+            $this->orderStatusHistoryRepo->add(
+                $order->getId(),
+                $this->orderStatusPaid,
+                json_encode($messageData, JSON_PRETTY_PRINT)
+            );
+        }
+
+        $this->phpSession->removeAllExpiredSessions(self::RECONSTRUCT_SESSION_TIMEOUT);
         return true;
     }
 
@@ -110,15 +121,7 @@ class StripeEventHandler
             return false;
         }
 
-        try {
-            $phpSession = $this->container->get(Session::class);
-            $phpSession->load($phpSessionId);
-        } catch (Exception $e) {
-            error_log("Can not handle stripe event {$event->type} - " . $e->getMessage());
-            return false;
-        }
-
-        $order = $phpSession->getOrder();
+        $order = $this->getOrderBySessionId($phpSessionId);
 
         if (!$order) {
             error_log("Can not handle stripe event {$event->type} - order is null");
@@ -128,5 +131,77 @@ class StripeEventHandler
         Order::removeOrder($order->getId(), true, true);
 
         return true;
+    }
+
+    /**
+     * Handles the Stripe WebHook Event payment_intent.amount_capturable_updated
+     *
+     * This event is triggered when a PaymentIntent with manual capture is ready for capture.
+     * The main task is to update the order status to indicate the payment is authorized.
+     *
+     * @link https://stripe.com/docs/api/events/types#event_types-payment_intent.amount_capturable_updated
+     *
+     * @param Event $event A Stripe Event
+     */
+    public function paymentIntentAmountCapturableUpdated(Event $event): bool
+    {
+        $paymentIntent = $event->data->object;
+        $paymentIntentId = $paymentIntent->id;
+
+        if ('requires_capture' !== $paymentIntent->status) {
+            return false;
+        }
+
+        $orderId = null;
+
+        // Try to get order ID from metadata
+        if (isset($paymentIntent->metadata->order_id)) {
+            $orderId = (int) $paymentIntent->metadata->order_id;
+        } else {
+            $payment = $this->paymentRepo->findByStripePaymentIntentId($paymentIntentId);
+            $orderId = $payment['order_id'] ?? null;
+        }
+
+        if (!$orderId) {
+            error_log("Can not handle stripe event {$event->type} - no order found for paymentIntentId {$paymentIntentId}");
+            return false;
+        }
+
+        // Rest of your code...
+        $messageData = [
+            "id"       => $event->id,
+            "object"   => $event->object,
+            "created"  => $event->created,
+            "livemode" => $event->livemode,
+            "type"     => $event->type,
+            'payment_intent_id' => $paymentIntentId,
+        ];
+
+        // Update the order status to authorized
+        $this->orderRepo->updateStatus($orderId, $this->orderStatusAuthorized);
+        $this->orderStatusHistoryRepo->add(
+            $orderId,
+            $this->orderStatusAuthorized,
+            json_encode($messageData, JSON_PRETTY_PRINT)
+        );
+
+        return true;
+    }
+
+    /**
+     * Retrieves an order by PHP session ID
+     *
+     * @param string $phpSessionId The PHP session ID
+     * @return Order|null The order if found, null otherwise
+     */
+    private function getOrderBySessionId(string $phpSessionId): ?Order
+    {
+        try {
+            $this->phpSession->load($phpSessionId);
+            return $this->phpSession->getOrder();
+        } catch (Exception $e) {
+            error_log("Failed to retrieve order from session - " . $e->getMessage());
+            return null;
+        }
     }
 }

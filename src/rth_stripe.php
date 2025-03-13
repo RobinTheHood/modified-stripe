@@ -34,7 +34,7 @@ require_once DIR_WS_CLASSES . 'order.php';
 require_once DIR_WS_CLASSES . 'message_stack.php';
 require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
 
-$rthDevMode = true;
+$rthDevMode = strpos($_SERVER['HTTP_HOST'], '.ddev.site') !== false;
 
 if (true === $rthDevMode) {
     /** Show all error messages in the browser.  */
@@ -73,7 +73,7 @@ if (rth_is_module_disabled('MODULE_PAYMENT_PAYMENT_RTH_STRIPE')) {
 }
 
 $diContainer = new DIContainer();
-$request     = RequestFactory::createFromGlobals();
-$controller  = new Controller($diContainer);
-$response    = $controller->invoke($request);
+$request = RequestFactory::createFromGlobals();
+$controller = $diContainer->get(Controller::class);
+$response = $controller->invoke($request);
 $response->send();
