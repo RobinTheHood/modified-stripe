@@ -4,20 +4,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.8.0] - 2025-03-13
 ### Added
-- Manual Capture functionality with configurable setting in the backend
-- Customizable payment status for authorized payments
-- Display of more Stripe payment information in the admin order view
-- Metadata attachment to CheckoutSession/PaymentIntent (OrderId, CustomerId, Customer Email)
-- Ability to capture open payments with or without specifying amount
-- Automatic order status updates after payment actions (capture, cancellation, refund)
-- Payment cancellation functionality for authorized payments
-- Refund functionality for captured payments
+- Manual Capture functionality with configurable setting in the backend [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Customizable payment status for authorized payments [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Display of more Stripe payment information in the admin order view [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Metadata attachment to CheckoutSession/PaymentIntent (OrderId, CustomerId, Customer Email) [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Ability to capture open payments with or without specifying amount [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Automatic order status updates after payment actions (capture, cancellation, refund) [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Payment cancellation functionality for authorized payments [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Refund functionality for captured payments [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
 
 ### Changed
-- Improved admin order display with two-column layout and AJAX loading
-- Refactored order_detail architecture for better maintainability
-- Controller actions moved to dedicated services
+- Improved admin order display with two-column layout and AJAX loading [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Refactored order_detail architecture for better maintainability [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
+- Controller actions moved to dedicated services [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
 
 ### Thanks to our Sponsors
 These features were made possible through the financial support of [antiquari.at](https://www.antiquari.at). Thank you!
@@ -80,7 +81,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.7.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.8.0...HEAD
+[0.8.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.5.0...0.6.0
 [0.5.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.4.1...0.5.0
