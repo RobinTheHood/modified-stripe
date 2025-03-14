@@ -30,7 +30,7 @@ use RobinTheHood\Stripe\Classes\Service\WebhookEndpointService;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.8.0';
+    public const VERSION = '0.9.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -303,22 +303,7 @@ class payment_rth_stripe extends PaymentModule
             return self::UPDATE_SUCCESS;
         }
 
-        if ('0.3.0' === $currentVersion) {
-            $this->setVersion('0.4.0');
-            return self::UPDATE_SUCCESS;
-        }
-
-        if ('0.4.0' === $currentVersion) {
-            $this->setVersion('0.4.1');
-            return self::UPDATE_SUCCESS;
-        }
-
-        if ('0.4.1' === $currentVersion) {
-            $this->setVersion('0.5.0');
-            return self::UPDATE_SUCCESS;
-        }
-
-        if ('0.5.0' === $currentVersion) {
+        if (in_array($currentVersion, ['0.3.0', '0.4.0', '0.4.1', '0.5.0'])) {
             $this->setVersion('0.6.0');
             return self::UPDATE_SUCCESS;
         }
@@ -341,6 +326,11 @@ class payment_rth_stripe extends PaymentModule
             $this->addConfigurationOrderStatus('ORDER_STATUS_CANCELED', (string) self::DEFAULT_ORDER_STATUS_CANCELED, 6, 1);
             $this->addConfigurationOrderStatus('ORDER_STATUS_REFUNDED', (string) self::DEFAULT_ORDER_STATUS_REFUNDED, 6, 1);
             $this->setVersion('0.8.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.8.0' === $currentVersion) {
+            $this->setVersion('0.9.0');
             return self::UPDATE_SUCCESS;
         }
 
