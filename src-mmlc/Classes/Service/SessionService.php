@@ -32,7 +32,8 @@ class SessionService
      */
     public function processSuccessfulCheckout(string $stripeSessionId): string
     {
-        $stripe = new StripeClient($this->getSecretKey());
+        $stripe = new StripeClient($this->stripeConfig->getActiveSecretKey());
+
         $stripeCheckoutSession = $stripe->checkout->sessions->retrieve($stripeSessionId);
         $sessionId = $stripeCheckoutSession->client_reference_id;
 
@@ -47,17 +48,5 @@ class SessionService
         }
 
         return $sessionId;
-    }
-
-    /**
-     * Get the correct secret key based on mode
-     */
-    private function getSecretKey(): string
-    {
-        if ($this->stripeConfig->getLiveMode()) {
-            return $this->stripeConfig->getApiLiveSecret();
-        } else {
-            return $this->stripeConfig->getApiSandboxSecret();
-        }
     }
 }

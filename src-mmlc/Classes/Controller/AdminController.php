@@ -59,7 +59,7 @@ class AdminController extends AbstractController
             return new Response('Invalid order_id', 400);
         }
 
-        $stripeSecretKey = $this->getSecretKey();
+        $stripeSecretKey = $this->stripeConfig->getActiveSecretKey();
         if (empty($stripeSecretKey)) {
             return new Response('Stripe secret key is not set', 500);
         }
@@ -121,7 +121,7 @@ class AdminController extends AbstractController
             return new Response('Invalid parameters', 400);
         }
 
-        $stripeSecretKey = $this->getSecretKey();
+        $stripeSecretKey = $this->stripeConfig->getActiveSecretKey();
         if (empty($stripeSecretKey)) {
             return new Response('Stripe secret key is not set', 500);
         }
@@ -190,7 +190,7 @@ class AdminController extends AbstractController
             return new Response('Invalid parameters', 400);
         }
 
-        $stripeSecretKey = $this->getSecretKey();
+        $stripeSecretKey = $this->stripeConfig->getActiveSecretKey();
         if (empty($stripeSecretKey)) {
             return new Response('Stripe secret key is not set', 500);
         }
@@ -281,7 +281,7 @@ class AdminController extends AbstractController
             return new Response('Invalid parameters', 400);
         }
 
-        $stripeSecretKey = $this->getSecretKey();
+        $stripeSecretKey = $this->stripeConfig->getActiveSecretKey();
         if (empty($stripeSecretKey)) {
             return new Response('Stripe secret key is not set', 500);
         }
@@ -361,14 +361,5 @@ class AdminController extends AbstractController
         $html .= '</div>';
 
         return $html;
-    }
-
-    private function getSecretKey(): string
-    {
-        if ($this->stripeConfig->getLiveMode()) {
-            return $this->stripeConfig->getApiLiveSecret();
-        } else {
-            return $this->stripeConfig->getApiSandboxSecret();
-        }
     }
 }

@@ -55,6 +55,18 @@ class StripeConfig extends Configuration
         }
     }
 
+    /**
+     * Get the correct secret key based on mode (sandbox or live)
+     *
+     * @return string
+     */
+    public function getActiveSecretKey(): string
+    {
+        return $this->getLiveMode()
+            ? $this->getApiLiveSecret()
+            : $this->getApiSandboxSecret();
+    }
+
     public function getApiLiveEndpointSecret(): string
     {
         try {

@@ -41,7 +41,7 @@ class CheckoutService
             throw new Exception('Can not create a Stripe session because we have no order object');
         }
 
-        Stripe::setApiKey($this->getSecretKey());
+        Stripe::setApiKey($this->stripeConfig->getActiveSecretKey());
 
         $lineItems = $this->createLineItems($order);
 
@@ -103,17 +103,5 @@ class CheckoutService
                 'quantity' => 1,
             ],
         ];
-    }
-
-    /**
-     * Get the correct secret key based on mode
-     */
-    private function getSecretKey(): string
-    {
-        if ($this->stripeConfig->getLiveMode()) {
-            return $this->stripeConfig->getApiLiveSecret();
-        } else {
-            return $this->stripeConfig->getApiSandboxSecret();
-        }
     }
 }

@@ -35,24 +35,12 @@ class PaymentCaptureService
 
         $paymentIntentId = $paymentData['stripe_payment_intent_id'];
 
-        Stripe::setApiKey($this->getSecretKey());
+        Stripe::setApiKey($this->stripeConfig->getActiveSecretKey());
 
         // Retrieve the payment intent from Stripe
         $paymentIntent = PaymentIntent::retrieve($paymentIntentId);
 
         // Capture the payment
         $paymentIntent->capture();
-    }
-
-    /**
-     * Get the correct secret key based on mode
-     */
-    private function getSecretKey(): string
-    {
-        if ($this->stripeConfig->getLiveMode()) {
-            return $this->stripeConfig->getApiLiveSecret();
-        } else {
-            return $this->stripeConfig->getApiSandboxSecret();
-        }
     }
 }

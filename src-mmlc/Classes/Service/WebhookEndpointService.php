@@ -39,11 +39,6 @@ class WebhookEndpointService
     private StripeConfig $stripeConfig;
     private UrlBuilder $urlBuilder;
 
-    /**
-     * API secret key
-     */
-    private string $apiSecret;
-
     public function __construct(
         StripeConfig $stripeConfig,
         UrlBuilder $urlBuilder
@@ -51,14 +46,8 @@ class WebhookEndpointService
         $this->stripeConfig = $stripeConfig;
         $this->urlBuilder = $urlBuilder;
 
-        // Einmalige Initialisierung des API Keys
-        $liveMode = $this->stripeConfig->getLiveMode();
-        $this->apiSecret = $liveMode
-            ? $this->stripeConfig->getApiLiveSecret()
-            : $this->stripeConfig->getApiSandboxSecret();
-
         // Globaler API Key wird für alle Stripe-Aufrufe gesetzt
-        \Stripe\Stripe::setApiKey($this->apiSecret);
+        \Stripe\Stripe::setApiKey($this->stripeConfig->getActiveSecretKey());
     }
 
     /**

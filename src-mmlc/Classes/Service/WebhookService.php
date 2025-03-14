@@ -14,11 +14,6 @@ class WebhookService
     private StripeConfig $stripeConfig;
 
     /**
-     * API secret key
-     */
-    private string $apiSecret;
-
-    /**
      *  A Webhook Entpoint secret
      */
     private string $endpointSecret;
@@ -30,14 +25,8 @@ class WebhookService
         $this->stripeEventHandler = $stripeEventHandler;
         $this->stripeConfig = $stripeConfig;
 
-        // Einmalige Initialisierung des API Keys
-        $liveMode = $this->stripeConfig->getLiveMode();
-        $this->apiSecret = $liveMode
-            ? $this->stripeConfig->getApiLiveSecret()
-            : $this->stripeConfig->getApiSandboxSecret();
-
         // Globaler API Key wird für alle Stripe-Aufrufe gesetzt
-        \Stripe\Stripe::setApiKey($this->apiSecret);
+        \Stripe\Stripe::setApiKey($this->stripeConfig->getActiveSecretKey());
 
         $this->endpointSecret = $stripeConfig->getApiLiveEndpointSecret();
     }
