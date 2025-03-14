@@ -4,6 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.9.0] - 2025-04-01
+### Added
+- Directly assign orders to their corresponding Stripe payments (PaymentIntents) upon successful checkout session completion, rather than waiting for Stripe webhook events [(#70)](https://github.com/RobinTheHood/modified-stripe/pull/70)
+- Adds a button under Admin > Modules > Payment Options to automatically add, update, or remove the Stripe webhook endpoint [(#69)](https://github.com/RobinTheHood/modified-stripe/pull/69)
+
 ## [0.8.0] - 2025-03-13
 ### Added
 - Manual Capture functionality with configurable setting in the backend [(#68)](https://github.com/RobinTheHood/modified-stripe/pull/68)
@@ -81,7 +86,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.8.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.9.0...HEAD
+[0.9.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.6.0...0.7.0
 [0.6.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.5.0...0.6.0
