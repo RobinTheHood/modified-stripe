@@ -17,7 +17,6 @@ namespace RobinTheHood\Stripe\Classes\Config;
 
 use Exception;
 use RobinTheHood\ModifiedStdModule\Classes\Configuration;
-use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Repository\ConfigurationRepository;
 
 /**
@@ -28,6 +27,15 @@ use RobinTheHood\Stripe\Classes\Repository\ConfigurationRepository;
  */
 class StripeConfig extends Configuration
 {
+    private ConfigurationRepository $configurationRepo;
+
+    public function __construct(ConfigurationRepository $configurationRepo)
+    {
+        parent::__construct('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
+
+        $this->configurationRepo = $configurationRepo;
+    }
+
     public function getLiveMode(): bool
     {
         try {
@@ -132,13 +140,7 @@ class StripeConfig extends Configuration
 
     public function setWebhookSerect(string $secret): void
     {
-        $container = new DIContainer();
-
-        // $repo = $container->get(Repository::class);
-        // $repo->updateConfigurationValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
-
-        $configurationRepo = $container->get(ConfigurationRepository::class);
-        $configurationRepo->updateValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
+        $this->configurationRepo->updateValue('MODULE_PAYMENT_PAYMENT_RTH_STRIPE_API_LIVE_ENDPOINT_SECRET', $secret);
     }
 
     public function getManualCapture(): bool

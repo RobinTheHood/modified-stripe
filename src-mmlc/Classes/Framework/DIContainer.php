@@ -26,12 +26,5 @@ class DIContainer extends Container
 
     private function registerDefinitions(): void
     {
-        // Special configuration for StripeConfig
-        $this->set(
-            StripeConfig::class,
-            function () {
-                return new StripeConfig('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
-            }
-        );
     }
 }

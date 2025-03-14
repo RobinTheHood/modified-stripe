@@ -364,10 +364,8 @@ class payment_rth_stripe extends PaymentModule
             'field' => xtc_draw_hidden_field(xtc_session_name(), xtc_session_id()),
         ];
 
-        $config = new StripeConfig('MODULE_PAYMENT_PAYMENT_RTH_STRIPE');
-
-        $titel = parse_multi_language_value($config->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
-        $description = parse_multi_language_value($config->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
+        $titel = parse_multi_language_value($this->stripeConfig->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
+        $description = parse_multi_language_value($this->stripeConfig->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
 
         $selectionArray = [
             'id'          => $this->code,
