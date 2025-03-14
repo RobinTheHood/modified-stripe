@@ -57,7 +57,16 @@ Um in den Live Modus wechseln zu könnne, müssen Sie in Ihrem Stripe Account de
 #### Stripe Webhooks Konfigurieren
 Einige Zahlungen, wie beispielsweise SEPA-Lastschrift oder SOFORT Überweisung, erfordern einige Tage, um den endgültigen Zahlungsstatus zu bestätigen. Stripe kann Ihrem Shop nicht unmittelbar mitteilen, ob die Zahlung erfolgreich war. Der Zahlungsstatus bleibt daher offen, bis das Geld auf Ihrem Konto bzw. bei Stripe eingegangen ist. Um sicherzustellen, dass Stripe den Zahlungsstatus automatisch in Ihrem modified Shop aktualisiert, bietet das Stripe Zahlungsmodul die Möglichkeit der Stripe Webhooks an.
 
-Webhooks sind Benachrichtigungen, die von Stripe an Ihren modified Shop gesendet werden, um bestimmte Ereignisse (Events) wie erfolgreiche Zahlungen oder Rückerstattungen zu melden. Um Webhooks zu verwenden, müssen Sie einen Endpunkt auf Stripe einrichten. Beachten Sie, dass die genauen Schritte im Stripe-Dashboard leicht variieren können, aber in der Regel folgen sie einem ähnlichen Prozess wie folgt:
+Webhooks sind Benachrichtigungen, die von Stripe an Ihren modified Shop gesendet werden, um bestimmte Ereignisse (Events) wie erfolgreiche Zahlungen oder Rückerstattungen zu melden. Um Webhooks zu verwenden, müssen Sie einen Endpunkt auf Stripe einrichten.
+
+##### Automatische Einrichtung
+1. Melden Sie sich im Adminbereich an.
+2. Gehen Sie im Menü zu **Module > Zahlungsoptionen**.
+3. Wählen Sie dort das Modul **Stripe Zahlungsmodul** aus.
+4. Klicken Sie rechts auf den Button **Stripe Webhook hinzufügen**.
+
+##### Manuelle Einrichtung
+Beachten Sie, dass die genauen Schritte im Stripe-Dashboard leicht variieren können, aber in der Regel folgen sie einem ähnlichen Prozess wie folgt:
 
 1. Gehen Sie zu Ihrem Stripe-Dashboard und klicken Sie auf "Entwickler" > "Webhooks".
 2. Klicken Sie auf die Schaltfläche "Endpoint hinzufügen".
