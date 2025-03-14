@@ -25,7 +25,7 @@ use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\Repository\PhpSessionRepository;
 use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Storage\PhpSession;
-use RobinTheHood\Stripe\Classes\StripeService;
+use RobinTheHood\Stripe\Classes\Service\WebhookEndpointService;
 
 class payment_rth_stripe extends PaymentModule
 {
@@ -83,7 +83,8 @@ class payment_rth_stripe extends PaymentModule
     private PaymentRepository $paymentRepo;
     private PhpSessionRepository $phpSessionRepo;
     private PhpSession $phpSession;
-    private StripeService $stripeService;
+    private WebhookEndpointService $webhookEndpointService;
+
     /**
      * Configuration keys which are automatically added/removed on
      * install/remove
@@ -118,8 +119,6 @@ class payment_rth_stripe extends PaymentModule
     public function __construct()
     {
         parent::__construct(self::NAME);
-        $this->checkForUpdate(true);
-        $this->addKeys(self::$configurationKeys);
 
         $this->container = new DIContainer();
         $this->urlBuilder = $this->container->get(UrlBuilder::class);
@@ -127,11 +126,13 @@ class payment_rth_stripe extends PaymentModule
         $this->paymentRepo = $this->container->get(PaymentRepository::class);
         $this->phpSessionRepo = $this->container->get(PhpSessionRepository::class);
         $this->phpSession = $this->container->get(PhpSession::class);
-        $this->stripeService = $this->container->get(StripeService::class);
+        $this->webhookEndpointService = $this->container->get(WebhookEndpointService::class);
 
         $this->form_action_url = $this->urlBuilder->getFormActionUrl();
         $this->tmpStatus = $this->stripeConfig->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
 
+        $this->checkForUpdate(true);
+        $this->addKeys(self::$configurationKeys);
         $this->addActions();
     }
 
@@ -144,8 +145,20 @@ class payment_rth_stripe extends PaymentModule
             return;
         }
 
-        $buttonText = 'Stripe Webhook hinzufügen';
-        $this->addAction('connect', $buttonText);
+        $webhookEndpointStatus = $this->webhookEndpointService->getWebhookStatus();
+
+        if (0 === $webhookEndpointStatus) {
+            $buttonText = 'Stripe Webhook hinzufügen';
+            $this->addAction('connectWebhook', $buttonText);
+        } elseif (1 === $webhookEndpointStatus) {
+            $buttonText = 'Stripe Webhook aktualisieren';
+            $this->addAction('updateWebhook', $buttonText);
+        }
+
+        if (1 === $webhookEndpointStatus || 2 === $webhookEndpointStatus) {
+            $buttonText = 'Stripe Webhook entfernen';
+            $this->addAction('disconnectWebhook', $buttonText);
+        }
     }
 
     /**
@@ -161,37 +174,43 @@ class payment_rth_stripe extends PaymentModule
         return parent::getTitle();
     }
 
-    public function invokeConnect()
+    public function invokeConnectWebhook()
     {
         if (self::$actionInvoked) {
             return;
         }
         self::$actionInvoked = true;
 
-        if (!$this->stripeService->hasValidSecret()) {
-            $this->addMessage('Fehler: Stripe Webhook Endpoint konnte nicht hinzugefügt werden. Kein valider Live- oder Test-Modus API Secret vorhanden.', self::MESSAGE_ERROR);
+        $result = $this->webhookEndpointService->connectWebhook();
+        $messageType = $result['success'] ? self::MESSAGE_SUCCESS : self::MESSAGE_ERROR;
+        $prefix = $result['success'] ? '' : 'Fehler: Stripe Webhook Endpoint konnte nicht hinzugefügt werden. ';
+        $this->addMessage($prefix . $result['message'], $messageType);
+    }
+
+    public function invokeUpdateWebhook()
+    {
+        if (self::$actionInvoked) {
             return;
         }
+        self::$actionInvoked = true;
 
-        if ($this->stripeService->hasWebhookEndpoint()) {
-            $this->addMessage('Fehler: Stripe Webhook Endpoint konnte nicht hinzugefügt werden. Webhook Entpoint ist bereits vorhanden.', self::MESSAGE_ERROR);
+        $result = $this->webhookEndpointService->updateWebhook();
+        $messageType = $result['success'] ? self::MESSAGE_SUCCESS : self::MESSAGE_ERROR;
+        $prefix = $result['success'] ? '' : 'Fehler: Stripe Webhook Endpoint konnte nicht aktualisiert werden. ';
+        $this->addMessage($prefix . $result['message'], $messageType);
+    }
+
+    public function invokeDisconnectWebhook()
+    {
+        if (self::$actionInvoked) {
             return;
         }
+        self::$actionInvoked = true;
 
-        try {
-            $endpoint = $this->stripeService->addWebhookEndpoint(
-                $this->urlBuilder->getStripeWebhook(),
-                ['checkout.session.completed', 'checkout.session.expired', 'charge.succeeded'],
-                'Webhook Endpoint for modified module robinthehood/stripe'
-            );
-
-            $secret = $endpoint['secret'] ?? '';
-            $this->stripeConfig->setWebhookSerect($secret);
-
-            $this->addMessage('Stripe Webhook Endpoint erfolgreich hinzugefügt.', self::MESSAGE_SUCCESS);
-        } catch (Exception $e) {
-            $this->addMessage($e->getMessage(), self::MESSAGE_ERROR);
-        }
+        $result = $this->webhookEndpointService->disconnectWebhook();
+        $messageType = $result['success'] ? self::MESSAGE_SUCCESS : self::MESSAGE_ERROR;
+        $prefix = $result['success'] ? '' : 'Fehler: Stripe Webhook Endpoint konnte nicht entfernt werden. ';
+        $this->addMessage($prefix . $result['message'], $messageType);
     }
 
     /**
