@@ -82,10 +82,10 @@ class StripeEventHandler
             return false;
         }
 
-        // Check if the order is already paid
-        // Create a link between the order and the payment regardless of payment status
-        //$repo->insertRthStripePayment($order->getId(), $paymentIntentId);
-        $this->paymentRepo->add($order->getId(), $paymentIntentId);
+        $payment = $this->paymentRepo->findByStripePaymentIntentId($paymentIntentId);
+        if (!$payment) {
+            $this->paymentRepo->add($order->getId(), $paymentIntentId);
+        }
 
 
         // Only update order status and history if payment status is 'paid'
