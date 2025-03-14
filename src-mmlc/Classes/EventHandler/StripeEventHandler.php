@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace RobinTheHood\Stripe\Classes;
+namespace RobinTheHood\Stripe\Classes\EventHandler;
 
 use Exception;
 use RobinTheHood\Stripe\Classes\Config\StripeConfig;

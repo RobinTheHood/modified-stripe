@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RobinTheHood\Stripe\Classes\Service;
 
 use RobinTheHood\Stripe\Classes\Config\StripeConfig;
-use RobinTheHood\Stripe\Classes\StripeEventHandler;
+use RobinTheHood\Stripe\Classes\EventHandler\StripeEventHandler;
 use Stripe\Event;
 
 class WebhookService
@@ -61,7 +61,7 @@ class WebhookService
         }
     }
 
-    public function receiveEvent(string $payload, string $sigHeader): Event
+    private function receiveEvent(string $payload, string $sigHeader): Event
     {
         // You can find your endpoint's secret in your webhook settings
         $endpointSecret = $this->endpointSecret;
