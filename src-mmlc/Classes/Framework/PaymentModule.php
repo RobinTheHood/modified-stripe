@@ -34,21 +34,6 @@ use RuntimeException;
  */
 class PaymentModule extends StdModule implements PaymentModuleInterface
 {
-    /**
-     * Internal helper function used in install(). This simplifies using modifieds setFunction to configure settings.
-     * //NOTE: Can eventually be replaced with a method from a newer StdModule.
-     *
-     * @param string $function A base64 encodes string of a calllable function
-     *
-     * @return string
-     *
-     * @see payment_rth_stripe::install
-     */
-    public static function setFunction($function, $value, $option): string
-    {
-        return call_user_func(base64_decode($function), $value, $option);
-    }
-
     public function addKeys(array $keys): void
     {
         foreach ($keys as $key) {
@@ -226,5 +211,36 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
         bool $reactiveProduct = true
     ): void {
         Order::removeOrder($orderId, $restockOrder, $reactiveProduct);
+    }
+
+    /**
+     * Add a configuration field with a static field function
+     */
+    protected function addConfigurationStaticField(string $key, string $value, int $groupId, int $sortOrder, $setFunction): void
+    {
+        $setFunction = $setFunction . '(';
+        $setFunction = str_replace('\\', '\\\\', $setFunction);
+        $setFunction = xtc_db_input($setFunction);
+        $this->addConfiguration($key, $value, $groupId, $sortOrder, $setFunction);
+    }
+
+    protected function updateConfigrationStaticFieldFunction(string $key, string $setFunction): void
+    {
+        $setFunction = $setFunction . '(';
+        $setFunction = str_replace('\\', '\\\\', $setFunction);
+        $setFunction = xtc_db_input($setFunction);
+        $this->updateConfigurationSetFunction($key, $setFunction);
+    }
+
+    protected function updateConfigurationSetFunction(string $key, string $setFunction): void
+    {
+        $key = $this->getModulePrefix() . '_' . $key;
+
+        $sql =
+            "UPDATE `" . TABLE_CONFIGURATION . "`
+            SET `set_function` = '$setFunction'
+            WHERE `configuration_key` = '$key'";
+
+        xtc_db_query($sql);
     }
 }
