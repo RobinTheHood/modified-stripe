@@ -95,7 +95,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.9.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.10.0...HEAD
+[0.10.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.9.0...0.10.0
 [0.9.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.7.0...0.8.0
 [0.7.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.6.0...0.7.0
