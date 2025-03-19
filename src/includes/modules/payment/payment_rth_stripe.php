@@ -26,6 +26,7 @@ use RobinTheHood\Stripe\Classes\Repository\PhpSessionRepository;
 use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use RobinTheHood\Stripe\Classes\Service\WebhookEndpointService;
+use RobinTheHood\Stripe\Classes\UI\ConfigurationFieldRenderer;
 
 class payment_rth_stripe extends PaymentModule
 {
@@ -138,27 +139,33 @@ class payment_rth_stripe extends PaymentModule
 
     private function addActions(): void
     {
-        $currentPage = $_SERVER['PHP_SELF'];
-        $targetPage  = 'modules.php';
-
-        if (substr($currentPage, -strlen($targetPage)) !== $targetPage) {
+        if (!$this->isModulesPage()) {
             return;
         }
 
+        $this->addWebhookActions();
+    }
+
+    private function addWebhookActions(): void
+    {
         $webhookEndpointStatus = $this->webhookEndpointService->getWebhookStatus();
 
         if (0 === $webhookEndpointStatus) {
-            $buttonText = 'Stripe Webhook hinzufügen';
-            $this->addAction('connectWebhook', $buttonText);
+            $this->addAction('connectWebhook', 'Stripe Webhook hinzufügen');
         } elseif (1 === $webhookEndpointStatus) {
-            $buttonText = 'Stripe Webhook aktualisieren';
-            $this->addAction('updateWebhook', $buttonText);
+            $this->addAction('updateWebhook', 'Stripe Webhook aktualisieren');
         }
 
         if (1 === $webhookEndpointStatus || 2 === $webhookEndpointStatus) {
-            $buttonText = 'Stripe Webhook entfernen';
-            $this->addAction('disconnectWebhook', $buttonText);
+            $this->addAction('disconnectWebhook', 'Stripe Webhook entfernen');
         }
+    }
+
+    private function isModulesPage(): bool
+    {
+        $currentPage = $_SERVER['PHP_SELF'];
+        $targetPage = 'modules.php';
+        return substr($currentPage, -strlen($targetPage)) === $targetPage;
     }
 
     /**
@@ -222,42 +229,59 @@ class payment_rth_stripe extends PaymentModule
     {
         parent::install();
 
-        /**
-         * Namespaces are encoded in base64 since the backward slashes will
-         * otherwise be removed before saving. The `setFunction` method
-         * will decode the namespaces and forward all data.
-         *
-         * @see PaymentModule::setFunction()
-         */
-        $setFunctionField                      = self::class . '::setFunction(\'%s\',';
-        $setFunctionFieldapiSandboxKey         = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxKey'));
-        $setFunctionFieldapiSandboxSecret      = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiSandboxSecret'));
-        $setFunctionFieldapiLiveKey            = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveKey'));
-        $setFunctionFieldapiLiveSecret         = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveSecret'));
-        $setFunctionFieldapiLiveEndpointSecret = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::apiLiveEndPointSecret'));
-        $setFunctionFieldcheckoutTitleDesc     = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::checkoutTitleDesc'));
+        $groupId = 6;
+        $sortOrder = 1;
 
-        $this->addConfigurationSelect('LIVE_MODE', 'false', 6, 1);
-        $this->addConfiguration('API_SANDBOX_KEY', '', 6, 1, $setFunctionFieldapiSandboxKey);
-        $this->addConfiguration('API_SANDBOX_SECRET', '', 6, 1, $setFunctionFieldapiSandboxSecret);
-        $this->addConfiguration('API_LIVE_KEY', '', 6, 1, $setFunctionFieldapiLiveKey);
-        $this->addConfiguration('API_LIVE_SECRET', '', 6, 1, $setFunctionFieldapiLiveSecret);
-        $this->addConfiguration('API_LIVE_ENDPOINT_SECRET', '', 6, 1, $setFunctionFieldapiLiveEndpointSecret);
-        $this->addConfiguration('CHECKOUT_TITLE', 'DE::Einkauf bei SHOPNAME||EN::Purchase at SHOPNAME', 6, 1, $setFunctionFieldcheckoutTitleDesc);
-        $this->addConfiguration('CHECKOUT_DESC', 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order', 6, 1, $setFunctionFieldcheckoutTitleDesc);
-        $this->addConfiguration('PAYMENT_TITLE', 'DE::Stripe||EN::Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
-        $this->addConfiguration('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
-        $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', 6, 1);
-
-        $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, 6, 1);
-        $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, 6, 1);
-        $this->addConfigurationOrderStatus('ORDER_STATUS_AUTHORIZED', (string) self::DEFAULT_ORDER_STATUS_AUTHORIZED, 6, 1);
-        $this->addConfigurationOrderStatus('ORDER_STATUS_CAPTURED', (string) self::DEFAULT_ORDER_STATUS_CAPTURED, 6, 1);
-        $this->addConfigurationOrderStatus('ORDER_STATUS_CANCELED', (string) self::DEFAULT_ORDER_STATUS_CANCELED, 6, 1);
-        $this->addConfigurationOrderStatus('ORDER_STATUS_REFUNDED', (string) self::DEFAULT_ORDER_STATUS_REFUNDED, 6, 1);
+        $this->installAPIConfiguration($groupId, $sortOrder);
+        $this->installUIConfiguration($groupId, $sortOrder);
+        $this->installOrderStatusConfiguration($groupId, $sortOrder);
 
         $this->setAdminAccess('rth_stripe');
+        $this->createDatabaseTables();
+    }
 
+    private function installAPIConfiguration(int $groupId, int $sortOrder): void
+    {
+        $fieldClass = ConfigurationFieldRenderer::class . '::';
+        $this->addConfigurationSelect('LIVE_MODE', 'false', $groupId, $sortOrder);
+        $this->addConfigurationStaticField('API_SANDBOX_KEY', '', $groupId, $sortOrder, $fieldClass . 'apiSandboxKey');
+        $this->addConfigurationStaticField('API_SANDBOX_SECRET', '', $groupId, $sortOrder, $fieldClass . 'apiSandboxSecret');
+        $this->addConfigurationStaticField('API_LIVE_KEY', '', $groupId, $sortOrder, $fieldClass . 'apiLiveKey');
+        $this->addConfigurationStaticField('API_LIVE_SECRET', '', $groupId, $sortOrder, $fieldClass . 'apiLiveSecret');
+        $this->addConfigurationStaticField('API_LIVE_ENDPOINT_SECRET', '', $groupId, $sortOrder, $fieldClass . 'apiLiveEndPointSecret');
+    }
+
+    private function installUIConfiguration(int $groupId, int $sortOrder): void
+    {
+        $fieldClass = ConfigurationFieldRenderer::class . '::';
+        $multiLangRenderer = $fieldClass . 'renderMultiLanguageTextField';
+
+        // Definiere mehrsprachige Inhalte vorab
+        $checkoutTitle = 'DE::Einkauf bei SHOPNAME||EN::Purchase at SHOPNAME';
+        $checkoutDesc = 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order';
+        $paymentTitle = 'DE::Stripe||EN::Stripe';
+        $paymentDesc = 'DE::Zahle mit Stripe||EN::Payment with Stripe';
+
+        // Verwende die vordefinierten Inhalte
+        $this->addConfigurationStaticField('CHECKOUT_TITLE', $checkoutTitle, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationStaticField('CHECKOUT_DESC', $checkoutDesc, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationStaticField('PAYMENT_TITLE', $paymentTitle, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationStaticField('PAYMENT_DESC', $paymentDesc, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
+    }
+
+    private function installOrderStatusConfiguration(int $groupId, int $sortOrder): void
+    {
+        $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, $groupId, $sortOrder);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, $groupId, $sortOrder);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_AUTHORIZED', (string) self::DEFAULT_ORDER_STATUS_AUTHORIZED, $groupId, $sortOrder);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_CAPTURED', (string) self::DEFAULT_ORDER_STATUS_CAPTURED, $groupId, $sortOrder);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_CANCELED', (string) self::DEFAULT_ORDER_STATUS_CANCELED, $groupId, $sortOrder);
+        $this->addConfigurationOrderStatus('ORDER_STATUS_REFUNDED', (string) self::DEFAULT_ORDER_STATUS_REFUNDED, $groupId, $sortOrder);
+    }
+
+    private function createDatabaseTables(): void
+    {
         $this->paymentRepo->createTable();
         $this->phpSessionRepo->createTable();
     }
@@ -271,9 +295,9 @@ class payment_rth_stripe extends PaymentModule
     {
         parent::remove();
 
-        // foreach (self::$configurationKeys as $key) {
-        //     $this->deleteConfiguration($key);
-        // }
+        foreach (self::$configurationKeys as $key) {
+            $this->deleteConfiguration($key);
+        }
     }
 
     /**
@@ -309,10 +333,9 @@ class payment_rth_stripe extends PaymentModule
         }
 
         if ('0.6.0' === $currentVersion) {
-            $setFunctionField = self::class . '::setFunction(\'%s\',';
-            $setFunctionFieldcheckoutTitleDesc = sprintf($setFunctionField, base64_encode('\\RobinTheHood\\Stripe\\Classes\\Field::checkoutTitleDesc'));
-            $this->addConfiguration('PAYMENT_TITLE', 'DE::Stripe||EN::Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
-            $this->addConfiguration('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', 6, 1, $setFunctionFieldcheckoutTitleDesc);
+            $fieldClass = ConfigurationFieldRenderer::class . '::';
+            $this->addConfigurationStaticField('PAYMENT_TITLE', 'DE::Stripe||EN::Stripe', 6, 1, $fieldClass . 'renderMultiLanguageTextField');
+            $this->addConfigurationStaticField('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', 6, 1, $fieldClass . 'renderMultiLanguageTextField');
 
             $this->setVersion('0.7.0');
             return self::UPDATE_SUCCESS;
@@ -331,6 +354,21 @@ class payment_rth_stripe extends PaymentModule
 
         if ('0.8.0' === $currentVersion) {
             $this->setVersion('0.9.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.9.0' === $currentVersion) {
+            $fieldClass = ConfigurationFieldRenderer::class . '::';
+            $this->updateConfigrationStaticFieldFunction('API_SANDBOX_KEY', $fieldClass . 'apiSandboxKey');
+            $this->updateConfigrationStaticFieldFunction('API_SANDBOX_SECRET', $fieldClass . 'apiSandboxSecret');
+            $this->updateConfigrationStaticFieldFunction('API_LIVE_KEY', $fieldClass . 'apiLiveKey');
+            $this->updateConfigrationStaticFieldFunction('API_LIVE_SECRET', $fieldClass . 'apiLiveSecret');
+            $this->updateConfigrationStaticFieldFunction('API_LIVE_ENDPOINT_SECRET', $fieldClass . 'apiLiveEndPointSecret');
+            $this->updateConfigrationStaticFieldFunction('CHECKOUT_TITLE', $fieldClass . 'renderMultiLanguageTextField');
+            $this->updateConfigrationStaticFieldFunction('CHECKOUT_DESC', $fieldClass . 'renderMultiLanguageTextField');
+            $this->updateConfigrationStaticFieldFunction('PAYMENT_TITLE', $fieldClass . 'renderMultiLanguageTextField');
+            $this->updateConfigrationStaticFieldFunction('PAYMENT_DESC', $fieldClass . 'renderMultiLanguageTextField');
+            $this->setVersion('0.10.0');
             return self::UPDATE_SUCCESS;
         }
 

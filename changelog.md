@@ -7,7 +7,7 @@ Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unr
 ### Fixed
 - Fixed a "CSRFToken is not defined" error when updating order status or entering a tracking number in the backend while the Admin Token System is enabled. [(#72)](https://github.com/RobinTheHood/modified-stripe/pull/72)
 
-## [0.9.0] - 2025-04-01
+## [0.9.0] - 2025-03-14
 ### Added
 - Directly assign orders to their corresponding Stripe payments (PaymentIntents) upon successful checkout session completion, rather than waiting for Stripe webhook events [(#70)](https://github.com/RobinTheHood/modified-stripe/pull/70)
 - Adds a button under Admin > Modules > Payment Options to automatically add, update, or remove the Stripe webhook endpoint [(#69)](https://github.com/RobinTheHood/modified-stripe/pull/69)
