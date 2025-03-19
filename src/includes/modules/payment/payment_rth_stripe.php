@@ -295,9 +295,9 @@ class payment_rth_stripe extends PaymentModule
     {
         parent::remove();
 
-        // foreach (self::$configurationKeys as $key) {
-        //     $this->deleteConfiguration($key);
-        // }
+        foreach (self::$configurationKeys as $key) {
+            $this->deleteConfiguration($key);
+        }
     }
 
     /**
