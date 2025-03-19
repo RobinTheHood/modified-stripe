@@ -4,8 +4,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.10.0] - 2025-03-19
 ### Fixed
 - Fixed a "CSRFToken is not defined" error when updating order status or entering a tracking number in the backend while the Admin Token System is enabled. [(#72)](https://github.com/RobinTheHood/modified-stripe/pull/72)
+- Enabled deletion of `payment_rth_stripe` configuration key during the removal process to ensure proper cleanup.
+
+### Changed
+- Streamlined webhook action handling for improved maintainability and efficiency.  
+- Enhanced configuration setup methods to ensure better flexibility and consistency.
 
 ## [0.9.0] - 2025-03-14
 ### Added

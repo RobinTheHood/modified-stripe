@@ -31,7 +31,7 @@ use RobinTheHood\Stripe\Classes\UI\ConfigurationFieldRenderer;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.9.0';
+    public const VERSION = '0.10.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
