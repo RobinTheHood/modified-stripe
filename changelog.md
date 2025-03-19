@@ -4,6 +4,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+### Fixed
+- Fixed a "CSRFToken is not defined" error when updating order status or entering a tracking number in the backend while the Admin Token System is enabled. [(#72)](https://github.com/RobinTheHood/modified-stripe/pull/72)
+
 ## [0.9.0] - 2025-03-14
 ### Added
 - Directly assign orders to their corresponding Stripe payments (PaymentIntents) upon successful checkout session completion, rather than waiting for Stripe webhook events [(#70)](https://github.com/RobinTheHood/modified-stripe/pull/70)
