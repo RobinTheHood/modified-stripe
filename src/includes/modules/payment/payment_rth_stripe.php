@@ -139,27 +139,33 @@ class payment_rth_stripe extends PaymentModule
 
     private function addActions(): void
     {
-        $currentPage = $_SERVER['PHP_SELF'];
-        $targetPage  = 'modules.php';
-
-        if (substr($currentPage, -strlen($targetPage)) !== $targetPage) {
+        if (!$this->isModulesPage()) {
             return;
         }
 
+        $this->addWebhookActions();
+    }
+
+    private function addWebhookActions(): void
+    {
         $webhookEndpointStatus = $this->webhookEndpointService->getWebhookStatus();
 
         if (0 === $webhookEndpointStatus) {
-            $buttonText = 'Stripe Webhook hinzufügen';
-            $this->addAction('connectWebhook', $buttonText);
+            $this->addAction('connectWebhook', 'Stripe Webhook hinzufügen');
         } elseif (1 === $webhookEndpointStatus) {
-            $buttonText = 'Stripe Webhook aktualisieren';
-            $this->addAction('updateWebhook', $buttonText);
+            $this->addAction('updateWebhook', 'Stripe Webhook aktualisieren');
         }
 
         if (1 === $webhookEndpointStatus || 2 === $webhookEndpointStatus) {
-            $buttonText = 'Stripe Webhook entfernen';
-            $this->addAction('disconnectWebhook', $buttonText);
+            $this->addAction('disconnectWebhook', 'Stripe Webhook entfernen');
         }
+    }
+
+    private function isModulesPage(): bool
+    {
+        $currentPage = $_SERVER['PHP_SELF'];
+        $targetPage = 'modules.php';
+        return substr($currentPage, -strlen($targetPage)) === $targetPage;
     }
 
     /**
@@ -226,6 +232,16 @@ class payment_rth_stripe extends PaymentModule
         $groupId = 6;
         $sortOrder = 1;
 
+        $this->installAPIConfiguration($groupId, $sortOrder);
+        $this->installUIConfiguration($groupId, $sortOrder);
+        $this->installOrderStatusConfiguration($groupId, $sortOrder);
+
+        $this->setAdminAccess('rth_stripe');
+        $this->createDatabaseTables();
+    }
+
+    private function installAPIConfiguration(int $groupId, int $sortOrder): void
+    {
         $fieldClass = ConfigurationFieldRenderer::class . '::';
         $this->addConfigurationSelect('LIVE_MODE', 'false', $groupId, $sortOrder);
         $this->addConfigurationStaticField('API_SANDBOX_KEY', '', $groupId, $sortOrder, $fieldClass . 'apiSandboxKey');
@@ -233,21 +249,39 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfigurationStaticField('API_LIVE_KEY', '', $groupId, $sortOrder, $fieldClass . 'apiLiveKey');
         $this->addConfigurationStaticField('API_LIVE_SECRET', '', $groupId, $sortOrder, $fieldClass . 'apiLiveSecret');
         $this->addConfigurationStaticField('API_LIVE_ENDPOINT_SECRET', '', $groupId, $sortOrder, $fieldClass . 'apiLiveEndPointSecret');
-        $this->addConfigurationStaticField('CHECKOUT_TITLE', 'DE::Einkauf bei SHOPNAME||EN::Purchase at SHOPNAME', $groupId, $sortOrder, $fieldClass . 'renderMultiLanguageTextField');
-        $this->addConfigurationStaticField('CHECKOUT_DESC', 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order', $groupId, $sortOrder, $fieldClass . 'renderMultiLanguageTextField');
-        $this->addConfigurationStaticField('PAYMENT_TITLE', 'DE::Stripe||EN::Stripe', $groupId, $sortOrder, $fieldClass . 'renderMultiLanguageTextField');
-        $this->addConfigurationStaticField('PAYMENT_DESC', 'DE::Zahle mit Stripe||EN::Payment with Stripe', $groupId, $sortOrder, $fieldClass . 'renderMultiLanguageTextField');
-        $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
+    }
 
+    private function installUIConfiguration(int $groupId, int $sortOrder): void
+    {
+        $fieldClass = ConfigurationFieldRenderer::class . '::';
+        $multiLangRenderer = $fieldClass . 'renderMultiLanguageTextField';
+
+        // Definiere mehrsprachige Inhalte vorab
+        $checkoutTitle = 'DE::Einkauf bei SHOPNAME||EN::Purchase at SHOPNAME';
+        $checkoutDesc = 'DE::Kaufbetrag der gesamten Bestellung||EN::Purchase amount of the entire order';
+        $paymentTitle = 'DE::Stripe||EN::Stripe';
+        $paymentDesc = 'DE::Zahle mit Stripe||EN::Payment with Stripe';
+
+        // Verwende die vordefinierten Inhalte
+        $this->addConfigurationStaticField('CHECKOUT_TITLE', $checkoutTitle, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationStaticField('CHECKOUT_DESC', $checkoutDesc, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationStaticField('PAYMENT_TITLE', $paymentTitle, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationStaticField('PAYMENT_DESC', $paymentDesc, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
+    }
+
+    private function installOrderStatusConfiguration(int $groupId, int $sortOrder): void
+    {
         $this->addConfigurationOrderStatus('ORDER_STATUS_PENDING', (string) self::DEFAULT_ORDER_STATUS_PENDING, $groupId, $sortOrder);
         $this->addConfigurationOrderStatus('ORDER_STATUS_PAID', (string) self::DEFAULT_ORDER_STATUS_PAID, $groupId, $sortOrder);
         $this->addConfigurationOrderStatus('ORDER_STATUS_AUTHORIZED', (string) self::DEFAULT_ORDER_STATUS_AUTHORIZED, $groupId, $sortOrder);
         $this->addConfigurationOrderStatus('ORDER_STATUS_CAPTURED', (string) self::DEFAULT_ORDER_STATUS_CAPTURED, $groupId, $sortOrder);
         $this->addConfigurationOrderStatus('ORDER_STATUS_CANCELED', (string) self::DEFAULT_ORDER_STATUS_CANCELED, $groupId, $sortOrder);
         $this->addConfigurationOrderStatus('ORDER_STATUS_REFUNDED', (string) self::DEFAULT_ORDER_STATUS_REFUNDED, $groupId, $sortOrder);
+    }
 
-        $this->setAdminAccess('rth_stripe');
-
+    private function createDatabaseTables(): void
+    {
         $this->paymentRepo->createTable();
         $this->phpSessionRepo->createTable();
     }
