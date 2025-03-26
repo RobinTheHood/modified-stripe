@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.11.0] - 2025-03-26
+### Added
+- Support for modified version `3.1.3`
+
 ## [0.10.0] - 2025-03-19
 ### Fixed
 - Fixed a "CSRFToken is not defined" error when updating order status or entering a tracking number in the backend while the Admin Token System is enabled. [(#72)](https://github.com/RobinTheHood/modified-stripe/pull/72)
@@ -43,7 +47,7 @@ These features were made possible through the financial support of [antiquari.at
 
 ## [0.6.0] - 2025-03-01
 ### Added
-- modified compatibility `3.1.0`, `3.1.1` and `3.1.2`
+- Support for modified version `3.1.0`, `3.1.1` and `3.1.2`
 
 ### Fixed
 - Fixed an issue where PHP session expiration caused errors during checkout with the Stripe module due to time discrepancies between the database and PHP sessions. [(#64)](https://github.com/RobinTheHood/modified-stripe/pull/64)
@@ -51,7 +55,7 @@ These features were made possible through the financial support of [antiquari.at
 
 ## [0.5.0] - 2024-02-05
 ### Added
-- modified compatibility `3.0.1` and `3.0.2`
+- Support for modified version `3.0.1` and `3.0.2`
 
 ## [0.4.1] - 2024-01-06
 You have to update the module via MMLC and under Admin > Modules > Payment Methods
@@ -81,7 +85,7 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 
 ## [0.2.0] - 2023-11-30
 ### Added
-- modified compatibility `3.0.0`
+- Support for modified version `3.0.0`
 - `checkout.session.expired` to install.md
 
 ## [0.1.1] - 2023-11-23
@@ -95,7 +99,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.10.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.11.0...HEAD
+[0.11.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.9.0...0.10.0
 [0.9.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.8.0...0.9.0
 [0.8.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.7.0...0.8.0

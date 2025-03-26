@@ -31,7 +31,7 @@ use RobinTheHood\Stripe\Classes\UI\ConfigurationFieldRenderer;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.10.0';
+    public const VERSION = '0.11.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -369,6 +369,11 @@ class payment_rth_stripe extends PaymentModule
             $this->updateConfigrationStaticFieldFunction('PAYMENT_TITLE', $fieldClass . 'renderMultiLanguageTextField');
             $this->updateConfigrationStaticFieldFunction('PAYMENT_DESC', $fieldClass . 'renderMultiLanguageTextField');
             $this->setVersion('0.10.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.10.0' === $currentVersion) {
+            $this->setVersion('0.11.0');
             return self::UPDATE_SUCCESS;
         }
 
