@@ -15,7 +15,7 @@ Search for: `robinthehood/stripe`
 
 ## Requirements
 - PHP 8.0 or above
-- modified 2.0.6.0 to 3.1.3
+- modified 2.0.6.0 to 3.1.4
 - MMLC 1.21.0 or above
 
 ## Contributors
