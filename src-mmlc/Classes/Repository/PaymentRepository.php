@@ -31,9 +31,28 @@ class PaymentRepository
                 `created` datetime DEFAULT NULL,
                 `order_id` int(11) DEFAULT NULL,
                 `stripe_payment_intent_id` varchar(255) DEFAULT NULL,
+                `reminder_sent_at` datetime DEFAULT NULL,
                 PRIMARY KEY (`id`)
             );"
         );
+    }
+
+    /**
+     * Update table schema to add reminder_sent_at column for existing installations
+     */
+    public function updateTableSchema(): void
+    {
+        // Check if the column already exists
+        $result = $this->db->query("SHOW COLUMNS FROM `rth_stripe_payment` LIKE 'reminder_sent_at'");
+        $row = $this->db->fetch($result);
+        
+        if (!$row) {
+            // Column doesn't exist, add it
+            $this->db->query(
+                "ALTER TABLE `rth_stripe_payment` 
+                ADD COLUMN `reminder_sent_at` datetime DEFAULT NULL"
+            );
+        }
     }
 
     public function add(int $orderId, string $stripePaymentIntentId): int
@@ -81,5 +100,44 @@ class PaymentRepository
         }
 
         return $row;
+    }
+
+    /**
+     * Find all payments that have not had reminder emails sent yet
+     * 
+     * @return array
+     */
+    public function findPaymentsWithoutReminders(): array
+    {
+        $query = $this->db->query(
+            "SELECT * FROM rth_stripe_payment 
+            WHERE reminder_sent_at IS NULL 
+            ORDER BY created ASC"
+        );
+
+        $results = [];
+        while ($row = $this->db->fetch($query)) {
+            $results[] = $row;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Mark a payment as having had its reminder email sent
+     * 
+     * @param int $paymentId
+     * @return void
+     */
+    public function markReminderSent(int $paymentId): void
+    {
+        $dateTime = new \DateTime();
+        $formattedDateTime = $dateTime->format('Y-m-d H:i:s');
+
+        $this->db->query(
+            "UPDATE rth_stripe_payment 
+            SET reminder_sent_at = '$formattedDateTime' 
+            WHERE id = $paymentId"
+        );
     }
 }
