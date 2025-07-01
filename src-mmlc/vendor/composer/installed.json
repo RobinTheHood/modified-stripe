@@ -65,6 +65,6 @@
             "install-path": "../stripe/stripe-php"
         }
     ],
-    "dev": false,
+    "dev": true,
     "dev-package-names": []
 }
