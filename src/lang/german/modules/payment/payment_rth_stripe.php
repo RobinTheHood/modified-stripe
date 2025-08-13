@@ -51,6 +51,12 @@ define($prefix . 'PAYMENT_TITLE_DESC', 'Name, der im Checkout Payment Schritt an
 define($prefix . 'PAYMENT_DESC_TITLE', 'Zahlungsbeschreibung');
 define($prefix . 'PAYMENT_DESC_DESC', 'Beschreibung, die den Kunden beim Checkout Payment Schritt angezeigt wird.');
 
+define($prefix . 'DISPLAY_ICON_TITLE', 'Icon anzeigen');
+define($prefix . 'DISPLAY_ICON_DESC', 'Soll anstelle der Beschreibung ein Icon angezeigt werden?');
+
+define($prefix . 'ICON_URL_TITLE', 'Icon URL');
+define($prefix . 'ICON_URL_DESC', 'URL zum Icon, das angezeigt werden soll (z.B. https://example.com/stripe-icon.png). Funktioniert nur wenn "Icon anzeigen" aktiviert ist.');
+
 define($prefix . 'ORDER_STATUS_PENDING_TITLE', 'Bestellstatus für ausstehende Bezahlung');
 define($prefix . 'ORDER_STATUS_PENDING_DESC', 'Einige Zahlungsarten werden von Stripe zeitversetzt als bezahlt erfasst. Welchen Bestellstatus soll die Bestellung in der Zwischenzeit erhalten?');
 

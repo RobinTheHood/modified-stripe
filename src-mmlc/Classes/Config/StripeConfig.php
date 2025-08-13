@@ -169,4 +169,22 @@ class StripeConfig extends Configuration
             return '';
         }
     }
+
+    public function getDisplayIcon(): bool
+    {
+        try {
+            return 'true' === $this->displayIcon ? true : false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function getIconUrl(): string
+    {
+        try {
+            return $this->iconUrl;
+        } catch (Exception $e) {
+            return '';
+        }
+    }
 }
