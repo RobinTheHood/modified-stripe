@@ -1,2 +1,3 @@
 *.code-workspace
 modulehash.json
+src-mmlc/vendor/

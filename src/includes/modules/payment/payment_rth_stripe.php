@@ -23,6 +23,7 @@ use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\Repository\PhpSessionRepository;
+use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
 use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use RobinTheHood\Stripe\Classes\Service\WebhookEndpointService;
@@ -31,7 +32,7 @@ use RobinTheHood\Stripe\Classes\UI\ConfigurationFieldRenderer;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.13.0';
+    public const VERSION = '0.14.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -85,6 +86,7 @@ class payment_rth_stripe extends PaymentModule
     private PhpSessionRepository $phpSessionRepo;
     private PhpSession $phpSession;
     private WebhookEndpointService $webhookEndpointService;
+    private OrderRepository $orderRepo;
 
     /**
      * Configuration keys which are automatically added/removed on
@@ -114,6 +116,7 @@ class payment_rth_stripe extends PaymentModule
         'ORDER_STATUS_CANCELED',
         'ORDER_STATUS_REFUNDED',
         'MANUAL_CAPTURE',
+        'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE',
     ];
 
     private DIContainer $container;
@@ -129,6 +132,7 @@ class payment_rth_stripe extends PaymentModule
         $this->phpSessionRepo = $this->container->get(PhpSessionRepository::class);
         $this->phpSession = $this->container->get(PhpSession::class);
         $this->webhookEndpointService = $this->container->get(WebhookEndpointService::class);
+        $this->orderRepo = $this->container->get(OrderRepository::class);
 
         $this->form_action_url = $this->urlBuilder->getFormActionUrl();
         $this->tmpStatus = $this->stripeConfig->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
@@ -270,6 +274,7 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfigurationStaticField('PAYMENT_DESC', $paymentDesc, $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationStaticField('ICON_URL', '', $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
+        $this->addConfigurationSelect('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE', 'false', $groupId, $sortOrder);
     }
 
     private function installOrderStatusConfiguration(int $groupId, int $sortOrder): void
@@ -391,6 +396,12 @@ class payment_rth_stripe extends PaymentModule
             return self::UPDATE_SUCCESS;
         }
 
+        if ('0.13.0' === $currentVersion) {
+            $this->addConfigurationSelect('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE', 'false', 6, 1);
+            $this->setVersion('0.14.0');
+            return self::UPDATE_SUCCESS;
+        }
+
         return self::UPDATE_NOTHING;
     }
 
@@ -450,6 +461,12 @@ class payment_rth_stripe extends PaymentModule
 
         $this->removeOrder($tempOrderId);
         $this->setTemporaryOrderId(false);
+
+        // Reset auto-increment if the option is enabled
+        if ($this->isResetAutoIncrementEnabled()) {
+            $this->orderRepo->resetAutoIncrement();
+        }
+
         xtc_redirect($this->urlBuilder->getCheckoutConfirmation());
     }
 
@@ -505,6 +522,15 @@ class payment_rth_stripe extends PaymentModule
         if ($_SESSION['tmp_oID'] && 'success' !== $_SESSION['rth_stripe_status']) {
             xtc_redirect($this->form_action_url);
         }
+    }
+
+    /**
+     * Check if the auto-increment reset option is enabled.
+     */
+    private function isResetAutoIncrementEnabled(): bool
+    {
+        $configValue = $this->getConfigurationValue('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE');
+        return 'true' === $configValue;
     }
 
     /**
