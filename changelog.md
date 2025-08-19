@@ -4,6 +4,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.13.0] - 2025-01-07
+### Added
+- Multi-language icon URL setting for payment selection description [(#80)](https://github.com/RobinTheHood/modified-stripe/pull/80)
+- Smart rendering logic: displays icon when URL is provided, falls back to payment description text when empty
+- Full multi-language support using the standard `DE::url||EN::url` format for different icons per locale
+- XSS protection and accessibility features (alt text, responsive styling)
+- Graceful fallback behavior maintaining backward compatibility
+
 ## [0.12.0] - 2025-05-19
 ### Added
 - Support for modified version `3.1.4`
@@ -103,7 +111,9 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.11.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.13.0...HEAD
+[0.13.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.12.0...0.13.0
+[0.12.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.11.0...0.12.0
 [0.11.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.10.0...0.11.0
 [0.10.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.9.0...0.10.0
 [0.9.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.8.0...0.9.0
