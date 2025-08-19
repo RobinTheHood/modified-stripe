@@ -169,4 +169,13 @@ class StripeConfig extends Configuration
             return '';
         }
     }
+
+    public function getIconUrl(): string
+    {
+        try {
+            return $this->iconUrl;
+        } catch (Exception $e) {
+            return '';
+        }
+    }
 }

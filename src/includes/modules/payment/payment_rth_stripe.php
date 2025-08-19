@@ -31,7 +31,7 @@ use RobinTheHood\Stripe\Classes\UI\ConfigurationFieldRenderer;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.11.0';
+    public const VERSION = '0.13.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -106,6 +106,7 @@ class payment_rth_stripe extends PaymentModule
         'CHECKOUT_DESC',
         'PAYMENT_TITLE',
         'PAYMENT_DESC',
+        'ICON_URL',
         'ORDER_STATUS_PENDING',
         'ORDER_STATUS_PAID',
         'ORDER_STATUS_AUTHORIZED',
@@ -267,6 +268,7 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfigurationStaticField('CHECKOUT_DESC', $checkoutDesc, $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationStaticField('PAYMENT_TITLE', $paymentTitle, $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationStaticField('PAYMENT_DESC', $paymentDesc, $groupId, $sortOrder, $multiLangRenderer);
+        $this->addConfigurationStaticField('ICON_URL', '', $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
     }
 
@@ -377,6 +379,18 @@ class payment_rth_stripe extends PaymentModule
             return self::UPDATE_SUCCESS;
         }
 
+        if ('0.11.0' === $currentVersion) {
+            $this->setVersion('0.12.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.12.0' === $currentVersion) {
+            $fieldClass = ConfigurationFieldRenderer::class . '::';
+            $this->addConfigurationStaticField('ICON_URL', '', 6, 1, $fieldClass . 'renderMultiLanguageTextField');
+            $this->setVersion('0.13.0');
+            return self::UPDATE_SUCCESS;
+        }
+
         return self::UPDATE_NOTHING;
     }
 
@@ -398,12 +412,24 @@ class payment_rth_stripe extends PaymentModule
         ];
 
         $titel = parse_multi_language_value($this->stripeConfig->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
-        $description = parse_multi_language_value($this->stripeConfig->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
+        
+        // Get multi-language icon URL
+        $iconUrl = parse_multi_language_value($this->stripeConfig->getIconUrl(), $_SESSION['language_code']) ?: '';
+        
+        // Determine description based on new logic
+        $description = '';
+        if (!empty($iconUrl)) {
+            // If icon URL has a value, show icon
+            $description = '<img src="' . htmlspecialchars($iconUrl, ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($titel, ENT_QUOTES, 'UTF-8') . '" style="max-height: 30px;">';
+        } else {
+            // If icon URL is empty, use payment description or default
+            $description = parse_multi_language_value($this->stripeConfig->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
+        }
 
         $selectionArray = [
             'id'          => $this->code,
             'module'      => $titel, // Stripe
-            'description' => $description, // Zahle mit Stripe
+            'description' => $description, // Icon or Text description
             'fields'      => [$selectionFieldArray],
         ];
 
