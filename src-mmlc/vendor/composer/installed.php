@@ -1,19 +1,19 @@
 <?php return array(
     'root' => array(
         'name' => 'robinthehood/stripe',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => '27a9b120fb569f7fdd5d5dc5f6a11d65ebbea24e',
+        'pretty_version' => 'dev-copilot/fix-82',
+        'version' => 'dev-copilot/fix-82',
+        'reference' => '056a13b7a925daa3116d541a8693e76fea55ddc0',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../../',
         'aliases' => array(),
-        'dev' => true,
+        'dev' => false,
     ),
     'versions' => array(
         'robinthehood/stripe' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => '27a9b120fb569f7fdd5d5dc5f6a11d65ebbea24e',
+            'pretty_version' => 'dev-copilot/fix-82',
+            'version' => 'dev-copilot/fix-82',
+            'reference' => '056a13b7a925daa3116d541a8693e76fea55ddc0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../../',
             'aliases' => array(),
