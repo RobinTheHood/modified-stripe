@@ -106,7 +106,6 @@ class payment_rth_stripe extends PaymentModule
         'CHECKOUT_DESC',
         'PAYMENT_TITLE',
         'PAYMENT_DESC',
-        'DISPLAY_ICON',
         'ICON_URL',
         'ORDER_STATUS_PENDING',
         'ORDER_STATUS_PAID',
@@ -269,8 +268,7 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfigurationStaticField('CHECKOUT_DESC', $checkoutDesc, $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationStaticField('PAYMENT_TITLE', $paymentTitle, $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationStaticField('PAYMENT_DESC', $paymentDesc, $groupId, $sortOrder, $multiLangRenderer);
-        $this->addConfigurationSelect('DISPLAY_ICON', 'false', $groupId, $sortOrder);
-        $this->addConfigurationStaticField('ICON_URL', '', $groupId, $sortOrder);
+        $this->addConfigurationStaticField('ICON_URL', '', $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
     }
 
@@ -382,8 +380,8 @@ class payment_rth_stripe extends PaymentModule
         }
 
         if ('0.11.0' === $currentVersion) {
-            $this->addConfigurationSelect('DISPLAY_ICON', 'false', 6, 1);
-            $this->addConfigurationStaticField('ICON_URL', '', 6, 1);
+            $fieldClass = ConfigurationFieldRenderer::class . '::';
+            $this->addConfigurationStaticField('ICON_URL', '', 6, 1, $fieldClass . 'renderMultiLanguageTextField');
             $this->setVersion('0.12.0');
             return self::UPDATE_SUCCESS;
         }
@@ -410,12 +408,16 @@ class payment_rth_stripe extends PaymentModule
 
         $titel = parse_multi_language_value($this->stripeConfig->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
         
-        // Check if icon display is enabled
+        // Get multi-language icon URL
+        $iconUrl = parse_multi_language_value($this->stripeConfig->getIconUrl(), $_SESSION['language_code']) ?: '';
+        
+        // Determine description based on new logic
         $description = '';
-        if ($this->stripeConfig->getDisplayIcon() && !empty($this->stripeConfig->getIconUrl())) {
-            $iconUrl = htmlspecialchars($this->stripeConfig->getIconUrl(), ENT_QUOTES, 'UTF-8');
-            $description = '<img src="' . $iconUrl . '" alt="' . htmlspecialchars($titel, ENT_QUOTES, 'UTF-8') . '" style="max-height: 30px;">';
+        if (!empty($iconUrl)) {
+            // If icon URL has a value, show icon
+            $description = '<img src="' . htmlspecialchars($iconUrl, ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($titel, ENT_QUOTES, 'UTF-8') . '" style="max-height: 30px;">';
         } else {
+            // If icon URL is empty, use payment description or default
             $description = parse_multi_language_value($this->stripeConfig->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
         }
 

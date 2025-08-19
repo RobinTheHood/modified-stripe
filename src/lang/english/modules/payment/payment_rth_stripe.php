@@ -51,11 +51,8 @@ define($prefix . 'PAYMENT_TITLE_DESC', 'Name displayed in the checkout payment s
 define($prefix . 'PAYMENT_DESC_TITLE', 'Payment Description');
 define($prefix . 'PAYMENT_DESC_DESC', 'Description shown to customers in the checkout payment step.');
 
-define($prefix . 'DISPLAY_ICON_TITLE', 'Display Icon');
-define($prefix . 'DISPLAY_ICON_DESC', 'Should an icon be displayed instead of the description text?');
-
 define($prefix . 'ICON_URL_TITLE', 'Icon URL');
-define($prefix . 'ICON_URL_DESC', 'URL to the icon to be displayed (e.g. https://example.com/stripe-icon.png). Only works when "Display Icon" is enabled.');
+define($prefix . 'ICON_URL_DESC', 'URL to the icon to be displayed instead of the description (e.g. DE::https://example.com/stripe-icon-de.png||EN::https://example.com/stripe-icon-en.png). If empty, the normal payment description will be shown.');
 
 define($prefix . 'ORDER_STATUS_PENDING_TITLE', 'Order Status for Pending Payment');
 define($prefix . 'ORDER_STATUS_PENDING_DESC', 'Some payment methods are recorded as paid by Stripe after a delay. What order status should the order receive in the meantime?');
