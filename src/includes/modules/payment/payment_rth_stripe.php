@@ -456,13 +456,8 @@ class payment_rth_stripe extends PaymentModule
             return;
         }
 
-        $this->removeOrder($tempOrderId);
+        $this->removeOrder($tempOrderId, true, true, $this->isResetAutoIncrementEnabled());
         $this->setTemporaryOrderId(false);
-
-        // Reset auto-increment if the option is enabled
-        if ($this->isResetAutoIncrementEnabled()) {
-            Order::resetAutoIncrement();
-        }
 
         xtc_redirect($this->urlBuilder->getCheckoutConfirmation());
     }

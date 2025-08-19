@@ -61,11 +61,13 @@ class Order
      *
      * @param bool $restockOrder Add the inventory from the order back to the products
      * @param bool $reactiveProduct Activate the product if it has been deactivated
+     * @param bool $resetAutoIncrement Reset the auto-increment counter after deleting the order
      */
     public static function removeOrder(
         int $orderId,
         bool $restockOrder = true,
-        bool $reactiveProduct = true
+        bool $reactiveProduct = true,
+        bool $resetAutoIncrement = false
     ): void {
         if (!self::isValidOrderId($orderId)) {
             throw new RuntimeException("Can not remove order. $orderId is not a valid order id");
@@ -73,6 +75,11 @@ class Order
 
         $restockOrderParamValue = $restockOrder ? 'on' : false;
         xtc_remove_order($orderId, $restockOrderParamValue, $reactiveProduct);
+
+        // Reset auto-increment if requested
+        if ($resetAutoIncrement) {
+            self::resetAutoIncrement();
+        }
     }
 
 
