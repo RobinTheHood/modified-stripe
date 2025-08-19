@@ -23,7 +23,6 @@ use RobinTheHood\Stripe\Classes\Framework\Order;
 use RobinTheHood\Stripe\Classes\Framework\PaymentModule;
 use RobinTheHood\Stripe\Classes\Repository\PaymentRepository;
 use RobinTheHood\Stripe\Classes\Repository\PhpSessionRepository;
-use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
 use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use RobinTheHood\Stripe\Classes\Service\WebhookEndpointService;
@@ -86,7 +85,6 @@ class payment_rth_stripe extends PaymentModule
     private PhpSessionRepository $phpSessionRepo;
     private PhpSession $phpSession;
     private WebhookEndpointService $webhookEndpointService;
-    private OrderRepository $orderRepo;
 
     /**
      * Configuration keys which are automatically added/removed on
@@ -132,7 +130,6 @@ class payment_rth_stripe extends PaymentModule
         $this->phpSessionRepo = $this->container->get(PhpSessionRepository::class);
         $this->phpSession = $this->container->get(PhpSession::class);
         $this->webhookEndpointService = $this->container->get(WebhookEndpointService::class);
-        $this->orderRepo = $this->container->get(OrderRepository::class);
 
         $this->form_action_url = $this->urlBuilder->getFormActionUrl();
         $this->tmpStatus = $this->stripeConfig->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
@@ -464,7 +461,7 @@ class payment_rth_stripe extends PaymentModule
 
         // Reset auto-increment if the option is enabled
         if ($this->isResetAutoIncrementEnabled()) {
-            $this->orderRepo->resetAutoIncrement();
+            Order::resetAutoIncrement();
         }
 
         xtc_redirect($this->urlBuilder->getCheckoutConfirmation());

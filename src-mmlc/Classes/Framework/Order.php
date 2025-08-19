@@ -113,4 +113,30 @@ class Order
     {
         return $this->modifiedOrder->customer['email_address'];
     }
+
+    /**
+     * Get the maximum order ID from the orders table.
+     * This is used to reset the auto-increment counter.
+     */
+    public static function getMaxOrderId(): int
+    {
+        $db = new Database();
+        $query = $db->query("SELECT MAX(orders_id) as max_id FROM `orders`");
+        $row = $db->fetch($query);
+        
+        return $row && isset($row['max_id']) ? (int)$row['max_id'] : 0;
+    }
+
+    /**
+     * Reset the auto-increment value for the orders table to the next value after the maximum order ID.
+     * This prevents gaps in order numbers after temporary orders are deleted.
+     */
+    public static function resetAutoIncrement(): void
+    {
+        $db = new Database();
+        $maxId = self::getMaxOrderId();
+        $nextId = $maxId + 1;
+        
+        $db->query("ALTER TABLE `orders` AUTO_INCREMENT = $nextId");
+    }
 }
