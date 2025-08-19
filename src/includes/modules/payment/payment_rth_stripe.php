@@ -412,18 +412,13 @@ class payment_rth_stripe extends PaymentModule
         ];
 
         $titel = parse_multi_language_value($this->stripeConfig->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
-        
-        // Get multi-language icon URL
+        $description = parse_multi_language_value($this->stripeConfig->getPaymentDescription(), $_SESSION['language_code']) ?: '';
         $iconUrl = parse_multi_language_value($this->stripeConfig->getIconUrl(), $_SESSION['language_code']) ?: '';
         
-        // Determine description based on new logic
-        $description = '';
-        if (!empty($iconUrl)) {
-            // If icon URL has a value, show icon
-            $description = '<img src="' . htmlspecialchars($iconUrl, ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($titel, ENT_QUOTES, 'UTF-8') . '" style="max-height: 30px;">';
+        if (empty($iconUrl)) {
+            $description = $description ?: 'Zahle mit Stripe';
         } else {
-            // If icon URL is empty, use payment description or default
-            $description = parse_multi_language_value($this->stripeConfig->getPaymentDescription(), $_SESSION['language_code']) ?: 'Zahle mit Stripe';
+            $description = '<img src="' . htmlspecialchars($iconUrl, ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($titel, ENT_QUOTES, 'UTF-8') . '">' . $description;
         }
 
         $selectionArray = [

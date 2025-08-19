@@ -4,13 +4,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
-## [0.13.0] - 2025-01-07
 ### Added
 - Multi-language icon URL setting for payment selection description [(#80)](https://github.com/RobinTheHood/modified-stripe/pull/80)
-- Smart rendering logic: displays icon when URL is provided, falls back to payment description text when empty
-- Full multi-language support using the standard `DE::url||EN::url` format for different icons per locale
-- XSS protection and accessibility features (alt text, responsive styling)
-- Graceful fallback behavior maintaining backward compatibility
 
 ## [0.12.0] - 2025-05-19
 ### Added
