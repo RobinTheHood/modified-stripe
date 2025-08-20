@@ -74,3 +74,7 @@ define($prefix . 'ORDER_STATUS_REFUNDED_DESC', 'Welchen Bestellstatus soll die B
 
 define($prefix . 'MANUAL_CAPTURE_TITLE', 'Manuelles Capture');
 define($prefix . 'MANUAL_CAPTURE_DESC', 'Manuelles Erfassen der Zahlungen aktivieren? Wenn ja, werden Zahlungsbeträge autorisiert, aber nicht automatisch eingezogen. Sie müssen Zahlungen manuell in der Bestellung oder von Ihrem Stripe-Dashboard aus erfassen.');
+
+define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_TITLE', 'Lücken in Bestellnummern vermeiden?');
+define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_DESC', 'Wenn ja, wird nach dem Löschen von temporären Bestellungen der Auto-Inkrement-Wert zurückgesetzt, um Lücken in den Bestellnummern zu vermeiden.');
+

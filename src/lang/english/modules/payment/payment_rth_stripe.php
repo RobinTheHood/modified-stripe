@@ -74,3 +74,6 @@ define($prefix . 'ORDER_STATUS_REFUNDED_DESC', 'What order status should the ord
 
 define($prefix . 'MANUAL_CAPTURE_TITLE', 'Manual Capture');
 define($prefix . 'MANUAL_CAPTURE_DESC', 'Enable manual capturing of payments? If yes, payment amounts will be authorized but not automatically captured. You must manually capture payments from the order or from your Stripe dashboard.');
+
+define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_TITLE', 'Avoid Gaps in Order Numbers?');
+define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_DESC', 'If yes, the auto-increment value for orders will be reset after deleting temporary orders to avoid gaps in order numbers.');
