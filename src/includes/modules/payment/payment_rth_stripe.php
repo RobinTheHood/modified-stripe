@@ -31,7 +31,7 @@ use RobinTheHood\Stripe\Classes\UI\ConfigurationFieldRenderer;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.14.0';
+    public const VERSION = '0.13.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -389,13 +389,8 @@ class payment_rth_stripe extends PaymentModule
         if ('0.12.0' === $currentVersion) {
             $fieldClass = ConfigurationFieldRenderer::class . '::';
             $this->addConfigurationStaticField('ICON_URL', '', 6, 1, $fieldClass . 'renderMultiLanguageTextField');
-            $this->setVersion('0.13.0');
-            return self::UPDATE_SUCCESS;
-        }
-
-        if ('0.13.0' === $currentVersion) {
             $this->addConfigurationSelect('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE', 'false', 6, 1);
-            $this->setVersion('0.14.0');
+            $this->setVersion('0.13.0');
             return self::UPDATE_SUCCESS;
         }
 
@@ -456,7 +451,7 @@ class payment_rth_stripe extends PaymentModule
             return;
         }
 
-        $this->removeOrder($tempOrderId, true, true, $this->isResetAutoIncrementEnabled());
+        $this->removeOrder($tempOrderId, true, true, $this->stripeConfig->getResetAutoIncrementAfterTempDelete());
         $this->setTemporaryOrderId(false);
 
         xtc_redirect($this->urlBuilder->getCheckoutConfirmation());
@@ -514,15 +509,6 @@ class payment_rth_stripe extends PaymentModule
         if ($_SESSION['tmp_oID'] && 'success' !== $_SESSION['rth_stripe_status']) {
             xtc_redirect($this->form_action_url);
         }
-    }
-
-    /**
-     * Check if the auto-increment reset option is enabled.
-     */
-    private function isResetAutoIncrementEnabled(): bool
-    {
-        $configValue = $this->getConfigurationValue('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE');
-        return 'true' === $configValue;
     }
 
     /**

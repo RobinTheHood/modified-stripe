@@ -131,7 +131,7 @@ class Order
         $query = $db->query("SELECT MAX(orders_id) as max_id FROM `orders`");
         $row = $db->fetch($query);
         
-        return $row && isset($row['max_id']) ? (int)$row['max_id'] : 0;
+        return (int)($row['max_id'] ?? 0);
     }
 
     /**

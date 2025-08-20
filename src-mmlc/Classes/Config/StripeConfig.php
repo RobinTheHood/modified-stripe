@@ -178,4 +178,13 @@ class StripeConfig extends Configuration
             return '';
         }
     }
+
+    public function getResetAutoIncrementAfterTempDelete(): bool
+    {
+        try {
+            return 'true' === $this->resetAutoIncrementAfterTempDelete ? true : false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }
