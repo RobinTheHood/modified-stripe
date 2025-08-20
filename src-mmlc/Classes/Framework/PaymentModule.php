@@ -204,13 +204,15 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
      *
      * @param bool $restockOrder Add the inventory from the order back to the products
      * @param bool $reactiveProduct Activate the product if it has been deactivated
+     * @param bool $resetAutoIncrement Reset the auto-increment counter after deleting the order
      */
     protected function removeOrder(
         int $orderId,
         bool $restockOrder = true,
-        bool $reactiveProduct = true
+        bool $reactiveProduct = true,
+        bool $resetAutoIncrement = false
     ): void {
-        Order::removeOrder($orderId, $restockOrder, $reactiveProduct);
+        Order::removeOrder($orderId, $restockOrder, $reactiveProduct, $resetAutoIncrement);
     }
 
     /**

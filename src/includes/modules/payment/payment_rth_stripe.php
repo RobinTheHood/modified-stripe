@@ -114,6 +114,7 @@ class payment_rth_stripe extends PaymentModule
         'ORDER_STATUS_CANCELED',
         'ORDER_STATUS_REFUNDED',
         'MANUAL_CAPTURE',
+        'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE',
     ];
 
     private DIContainer $container;
@@ -270,6 +271,7 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfigurationStaticField('PAYMENT_DESC', $paymentDesc, $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationStaticField('ICON_URL', '', $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
+        $this->addConfigurationSelect('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE', 'false', $groupId, $sortOrder);
     }
 
     private function installOrderStatusConfiguration(int $groupId, int $sortOrder): void
@@ -387,6 +389,7 @@ class payment_rth_stripe extends PaymentModule
         if ('0.12.0' === $currentVersion) {
             $fieldClass = ConfigurationFieldRenderer::class . '::';
             $this->addConfigurationStaticField('ICON_URL', '', 6, 1, $fieldClass . 'renderMultiLanguageTextField');
+            $this->addConfigurationSelect('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE', 'false', 6, 1);
             $this->setVersion('0.13.0');
             return self::UPDATE_SUCCESS;
         }
@@ -448,8 +451,9 @@ class payment_rth_stripe extends PaymentModule
             return;
         }
 
-        $this->removeOrder($tempOrderId);
+        $this->removeOrder($tempOrderId, true, true, $this->stripeConfig->getResetAutoIncrementAfterTempDelete());
         $this->setTemporaryOrderId(false);
+
         xtc_redirect($this->urlBuilder->getCheckoutConfirmation());
     }
 
