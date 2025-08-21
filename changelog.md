@@ -8,6 +8,7 @@ Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unr
 - Multi-language icon URL setting for payment selection description [(#80)](https://github.com/RobinTheHood/modified-stripe/pull/80)
 - Add option to reset auto-increment order number after deleting temporary orders ([#84](https://github.com/RobinTheHood/modified-stripe/issues/84))
 - Improved clarity for temporary Stripe orders in admin area ([#83](https://github.com/RobinTheHood/modified-stripe/issues/83))
+- Visual indicators in order list to identify temporary orders with badges
 
 ## [0.12.0] - 2025-05-19
 ### Added

@@ -127,6 +127,44 @@ class AdminController extends AbstractController
         }
     }
 
+    /**
+     * Check if an order is temporary (AJAX endpoint)
+     */
+    public function invokeCheckTemporaryOrder(Request $request): Response
+    {
+        // Get parameters
+        $orderId = (int) $request->get('order_id');
+
+        // Basic validation
+        if (empty($orderId)) {
+            return new Response(json_encode(['isTemporary' => false]), 400, ['Content-Type' => 'application/json']);
+        }
+
+        // Check if the order exists
+        $order = $this->orderRepo->findById($orderId);
+        if (!$order) {
+            return new Response(json_encode(['isTemporary' => false]), 404, ['Content-Type' => 'application/json']);
+        }
+
+        // Check if there's a payment intent linked to this order
+        $paymentIntent = $this->paymentRepo->findByOrderId($orderId);
+        $hasPaymentIntent = !empty($paymentIntent['stripe_payment_intent_id'] ?? null);
+
+        // Check if this is a pending order
+        $orderStatus = (int)$order['orders_status'];
+        $pendingStatus = $this->stripeConfig->getOrderStatusPending(1);
+        $isPendingStatus = ($orderStatus === $pendingStatus);
+
+        // An order is considered temporary if it has no payment intent AND is in pending status
+        $isTemporary = !$hasPaymentIntent && $isPendingStatus;
+
+        return new Response(
+            json_encode(['isTemporary' => $isTemporary]),
+            200,
+            ['Content-Type' => 'application/json']
+        );
+    }
+
     public function invokeCapture(Request $request): Response
     {
         // Get parameters
