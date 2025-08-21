@@ -4,6 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.13.0] - 2025-07-21
 ### Added
 - Multi-language icon URL setting for payment selection description [(#80)](https://github.com/RobinTheHood/modified-stripe/pull/80)
 - Add option to reset auto-increment order number after deleting temporary orders ([#84](https://github.com/RobinTheHood/modified-stripe/issues/84))
