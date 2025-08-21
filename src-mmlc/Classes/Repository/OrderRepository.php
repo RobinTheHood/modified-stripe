@@ -32,4 +32,21 @@ class OrderRepository
             "UPDATE `orders` SET `orders_status` = '$statusId', `last_modified` = '$formattedDateTime' WHERE orders_id = '$orderId'"
         );
     }
+
+    /**
+     * Find order by order ID
+     */
+    public function findById(int $orderId): array|false
+    {
+        $query = $this->db->query(
+            "SELECT * FROM orders WHERE orders_id = $orderId LIMIT 1"
+        );
+
+        $row = $this->db->fetch($query);
+        if (!$row || !isset($row['orders_id'])) {
+            return false;
+        }
+
+        return $row;
+    }
 }
