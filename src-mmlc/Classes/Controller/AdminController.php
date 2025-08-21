@@ -18,6 +18,7 @@ namespace RobinTheHood\Stripe\Classes\Controller;
 use Exception;
 use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Framework\AbstractController;
+use RobinTheHood\Stripe\Classes\Framework\LanguageLoader;
 use RobinTheHood\Stripe\Classes\Framework\RedirectResponse;
 use RobinTheHood\Stripe\Classes\Framework\Request;
 use RobinTheHood\Stripe\Classes\Framework\Response;
@@ -59,6 +60,12 @@ class AdminController extends AbstractController
             return new Response('Invalid order_id', 400);
         }
 
+        // Check if the order exists
+        $order = $this->orderRepo->findById($orderId);
+        if (!$order) {
+            return new Response('Order not found', 404);
+        }
+
         $stripeSecretKey = $this->stripeConfig->getActiveSecretKey();
         if (empty($stripeSecretKey)) {
             return new Response('Stripe secret key is not set', 500);
@@ -69,7 +76,17 @@ class AdminController extends AbstractController
         $paymentIntentId = $paymentIntent['stripe_payment_intent_id'] ?? null;
 
         if (empty($paymentIntentId)) {
-            return new Response('No payment intent found for this order', 404);
+            // Check if this is a temporary order by comparing the order status with pending status
+            $orderStatus = (int)$order['orders_status'];
+            $pendingStatus = $this->stripeConfig->getOrderStatusPending(1); // Default to 1 if not configured
+
+            if ($orderStatus === $pendingStatus) {
+                // This is a temporary order - show a friendly informative message
+                return $this->renderTemporaryOrderMessage($orderId);
+            } else {
+                // This is not a temporary order but still no payment intent found
+                return new Response('No payment intent found for this order', 404);
+            }
         }
 
         try {
@@ -361,5 +378,21 @@ class AdminController extends AbstractController
         $html .= '</div>';
 
         return $html;
+    }
+
+    /**
+     * Render a user-friendly message for temporary orders
+     */
+    private function renderTemporaryOrderMessage(int $orderId): Response
+    {
+        // Load messages using the LanguageLoader
+        $messages = LanguageLoader::load('TemporaryOrderMessages');
+
+        // Use the template
+        ob_start();
+        include self::TEMPLATE_PATH . 'TemporaryOrderMessage.tmpl.php';
+        $html = ob_get_clean();
+
+        return new Response($html);
     }
 }
