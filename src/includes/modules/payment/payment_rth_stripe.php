@@ -417,7 +417,7 @@ class payment_rth_stripe extends PaymentModule
         $titel = parse_multi_language_value($this->stripeConfig->getPaymentTitle(), $_SESSION['language_code']) ?: 'Stripe';
         $description = parse_multi_language_value($this->stripeConfig->getPaymentDescription(), $_SESSION['language_code']) ?: '';
         $iconUrl = parse_multi_language_value($this->stripeConfig->getIconUrl(), $_SESSION['language_code']) ?: '';
-        
+
         if (empty($iconUrl)) {
             $description = $description ?: 'Zahle mit Stripe';
         } else {

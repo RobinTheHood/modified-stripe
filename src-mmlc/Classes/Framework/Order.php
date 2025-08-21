@@ -130,7 +130,7 @@ class Order
         $db = new Database();
         $query = $db->query("SELECT MAX(orders_id) as max_id FROM `orders`");
         $row = $db->fetch($query);
-        
+
         return (int)($row['max_id'] ?? 0);
     }
 
@@ -143,7 +143,7 @@ class Order
         $db = new Database();
         $maxId = self::getMaxOrderId();
         $nextId = $maxId + 1;
-        
+
         $db->query("ALTER TABLE `orders` AUTO_INCREMENT = $nextId");
     }
 }

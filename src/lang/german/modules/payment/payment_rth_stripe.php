@@ -77,4 +77,3 @@ define($prefix . 'MANUAL_CAPTURE_DESC', 'Manuelles Erfassen der Zahlungen aktivi
 
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_TITLE', 'Lücken in Bestellnummern vermeiden?');
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_DESC', 'Wenn ja, wird nach dem Löschen von temporären Bestellungen der Auto-Inkrement-Wert zurückgesetzt, um Lücken in den Bestellnummern zu vermeiden.');
-
