@@ -26,6 +26,7 @@ use RobinTheHood\Stripe\Classes\Service\CheckoutService;
 use RobinTheHood\Stripe\Classes\Service\PaymentCaptureService;
 use RobinTheHood\Stripe\Classes\Service\SessionService;
 use RobinTheHood\Stripe\Classes\Service\WebhookService;
+use RobinTheHood\Stripe\Classes\Service\CaptureReminderService;
 
 class Controller extends AbstractController
 {
@@ -33,6 +34,7 @@ class Controller extends AbstractController
     private SessionService $sessionService;
     private WebhookService $webhookService;
     private PaymentCaptureService $captureService;
+    private CaptureReminderService $reminderService;
     private UrlBuilder $urlBuilder;
 
     public function __construct(
@@ -40,6 +42,7 @@ class Controller extends AbstractController
         SessionService $sessionService,
         WebhookService $webhookService,
         PaymentCaptureService $captureService,
+        CaptureReminderService $reminderService,
         UrlBuilder $urlBuilder
     ) {
         parent::__construct();
@@ -48,6 +51,7 @@ class Controller extends AbstractController
         $this->sessionService = $sessionService;
         $this->webhookService = $webhookService;
         $this->captureService = $captureService;
+        $this->reminderService = $reminderService;
         $this->urlBuilder = $urlBuilder;
     }
 
@@ -123,6 +127,63 @@ class Controller extends AbstractController
             );
 
             return new RedirectResponse($this->urlBuilder->getAdminOrders() . '?oID=' . $orderId . '&action=edit');
+        }
+    }
+
+    /**
+     * Check for payments nearing capture deadline and send reminder emails
+     * This action can be called via cron job: /rth_stripe.php?action=checkCaptureReminders
+     */
+    protected function invokeCheckCaptureReminders(Request $request): Response
+    {
+        try {
+            $remindersSent = $this->reminderService->checkAndSendReminders();
+            
+            return new Response(
+                json_encode([
+                    'success' => true,
+                    'reminders_sent' => $remindersSent,
+                    'message' => "Checked capture reminders. Sent {$remindersSent} reminder(s)."
+                ]),
+                200
+            );
+        } catch (Exception $e) {
+            return new Response(
+                json_encode([
+                    'success' => false,
+                    'error' => $e->getMessage()
+                ]),
+                500
+            );
+        }
+    }
+
+    /**
+     * Update database schema for reminder functionality
+     * This action can be called once after module update: /rth_stripe.php?action=updateSchema
+     */
+    protected function invokeUpdateSchema(Request $request): Response
+    {
+        try {
+            // Update the payment table schema
+            $paymentRepo = $this->reminderService->getPaymentRepository();
+            $paymentRepo->updateTableSchema();
+            
+            return new Response(
+                json_encode([
+                    'success' => true,
+                    'message' => 'Database schema updated successfully.'
+                ]),
+                200
+            );
+        } catch (Exception $e) {
+            return new Response(
+                json_encode([
+                    'success' => false,
+                    'error' => $e->getMessage()
+                ]),
+                500
+            );
         }
     }
 }
