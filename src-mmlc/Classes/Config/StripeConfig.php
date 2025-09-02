@@ -187,4 +187,63 @@ class StripeConfig extends Configuration
             return false;
         }
     }
+
+    /**
+     * Returns whether payout notification emails are enabled.
+     */
+    public function getPayoutNotifyEnable(): bool
+    {
+        try {
+            return 'true' === $this->payoutNotifyEnable ? true : false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the raw comma separated recipients string for payout notifications.
+     */
+    public function getPayoutNotifyRecipients(): string
+    {
+        try {
+            return (string) $this->payoutNotifyRecipients;
+        } catch (Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * Parses the recipient list into an array of trimmed email strings.
+     * Invalid / empty entries are filtered out.
+     *
+     * @return string[]
+     */
+    public function parsePayoutNotifyRecipients(): array
+    {
+        $raw = $this->getPayoutNotifyRecipients();
+        if ('' === $raw) {
+            return [];
+        }
+        $parts = array_map('trim', explode(',', $raw));
+        $parts = array_filter($parts, function ($val) {
+            if ('' === $val) {
+                return false;
+            }
+            // Basic email pattern; do not over-validate here.
+            return (bool) preg_match('/^[^@\s]+@[^@\s]+\.[^@\s]+$/', $val);
+        });
+        return array_values($parts);
+    }
+
+    /**
+     * Returns optional security token for payout notification endpoint. Empty string if not set.
+     */
+    public function getSecureActionToken(): string
+    {
+        try {
+            return (string) $this->secureActionToken;
+        } catch (Exception $e) {
+            return '';
+        }
+    }
 }

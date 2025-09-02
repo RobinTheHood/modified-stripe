@@ -27,11 +27,12 @@ use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Storage\PhpSession;
 use RobinTheHood\Stripe\Classes\Service\WebhookEndpointService;
 use RobinTheHood\Stripe\Classes\UI\ConfigurationFieldRenderer;
+use RobinTheHood\Stripe\Classes\Repository\ActionLogRepository;
 
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.13.0';
+    public const VERSION = '0.14.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -85,6 +86,7 @@ class payment_rth_stripe extends PaymentModule
     private PhpSessionRepository $phpSessionRepo;
     private PhpSession $phpSession;
     private WebhookEndpointService $webhookEndpointService;
+    private ActionLogRepository $actionLogRepository; // for payout notification log table
 
     /**
      * Configuration keys which are automatically added/removed on
@@ -115,6 +117,9 @@ class payment_rth_stripe extends PaymentModule
         'ORDER_STATUS_REFUNDED',
         'MANUAL_CAPTURE',
         'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE',
+        'PAYOUT_NOTIFY_ENABLE',
+        'PAYOUT_NOTIFY_RECIPIENTS',
+        'SECURE_ACTION_TOKEN',
     ];
 
     private DIContainer $container;
@@ -130,6 +135,7 @@ class payment_rth_stripe extends PaymentModule
         $this->phpSessionRepo = $this->container->get(PhpSessionRepository::class);
         $this->phpSession = $this->container->get(PhpSession::class);
         $this->webhookEndpointService = $this->container->get(WebhookEndpointService::class);
+        $this->actionLogRepository = $this->container->get(ActionLogRepository::class);
 
         $this->form_action_url = $this->urlBuilder->getFormActionUrl();
         $this->tmpStatus = $this->stripeConfig->getOrderStatusPending(self::DEFAULT_ORDER_STATUS_PENDING);
@@ -272,6 +278,13 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfigurationStaticField('ICON_URL', '', $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
         $this->addConfigurationSelect('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE', 'false', $groupId, $sortOrder);
+
+        // Payout notification settings
+        $this->addConfigurationSelect('PAYOUT_NOTIFY_ENABLE', 'false', $groupId, $sortOrder);
+        $this->addConfiguration('PAYOUT_NOTIFY_RECIPIENTS', '', $groupId, $sortOrder);
+
+        // Optional security token to protect manual/cron endpoint for payout notifications
+        $this->addConfiguration('SECURE_ACTION_TOKEN', '', $groupId, $sortOrder);
     }
 
     private function installOrderStatusConfiguration(int $groupId, int $sortOrder): void
@@ -288,6 +301,7 @@ class payment_rth_stripe extends PaymentModule
     {
         $this->paymentRepo->createTable();
         $this->phpSessionRepo->createTable();
+        $this->actionLogRepository->createTable();
     }
 
     /**
@@ -391,6 +405,19 @@ class payment_rth_stripe extends PaymentModule
             $this->addConfigurationStaticField('ICON_URL', '', 6, 1, $fieldClass . 'renderMultiLanguageTextField');
             $this->addConfigurationSelect('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE', 'false', 6, 1);
             $this->setVersion('0.13.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.13.0' === $currentVersion) {
+            // Add payout notification configuration keys introduced in 0.14.0
+            $this->addConfigurationSelect('PAYOUT_NOTIFY_ENABLE', 'false', 6, 1);
+            $this->addConfiguration('PAYOUT_NOTIFY_RECIPIENTS', '', 6, 1);
+            $this->addConfiguration('SECURE_ACTION_TOKEN', '', 6, 1);
+
+            // Ensure action log table exists for payout email logging
+            $this->actionLogRepository->createTable();
+
+            $this->setVersion('0.14.0');
             return self::UPDATE_SUCCESS;
         }
 
