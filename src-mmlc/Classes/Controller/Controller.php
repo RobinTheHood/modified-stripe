@@ -23,9 +23,11 @@ use RobinTheHood\Stripe\Classes\Framework\Response;
 use RobinTheHood\Stripe\Classes\Framework\SplashMessage;
 use RobinTheHood\Stripe\Classes\Routing\UrlBuilder;
 use RobinTheHood\Stripe\Classes\Service\CheckoutService;
+use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Service\PaymentCaptureService;
 use RobinTheHood\Stripe\Classes\Service\SessionService;
 use RobinTheHood\Stripe\Classes\Service\WebhookService;
+use RobinTheHood\Stripe\Classes\Service\PayoutNotificationService;
 
 class Controller extends AbstractController
 {
@@ -34,13 +36,17 @@ class Controller extends AbstractController
     private WebhookService $webhookService;
     private PaymentCaptureService $captureService;
     private UrlBuilder $urlBuilder;
+    private PayoutNotificationService $payoutNotificationService;
+    private StripeConfig $stripeConfig;
 
     public function __construct(
         CheckoutService $checkoutService,
         SessionService $sessionService,
         WebhookService $webhookService,
         PaymentCaptureService $captureService,
-        UrlBuilder $urlBuilder
+        UrlBuilder $urlBuilder,
+        PayoutNotificationService $payoutNotificationService,
+        StripeConfig $stripeConfig
     ) {
         parent::__construct();
 
@@ -49,6 +55,8 @@ class Controller extends AbstractController
         $this->webhookService = $webhookService;
         $this->captureService = $captureService;
         $this->urlBuilder = $urlBuilder;
+        $this->payoutNotificationService = $payoutNotificationService;
+        $this->stripeConfig = $stripeConfig;
     }
 
     protected function invokeIndex(Request $request): Response
@@ -124,5 +132,37 @@ class Controller extends AbstractController
 
             return new RedirectResponse($this->urlBuilder->getAdminOrders() . '?oID=' . $orderId . '&action=edit');
         }
+    }
+
+    /**
+     * Cron/Manueller Aufruf: ?action=processPayoutNotifications&since=<timestamp>
+     * JSON Response summarizing sent/skipped/errors
+     */
+    protected function invokeProcessPayoutNotifications(Request $request): Response
+    {
+        // Optional token based protection. If a token is configured, it must match the provided one.
+        $configuredToken = trim($this->stripeConfig->getSecureActionToken());
+        if ('' !== $configuredToken) {
+            $providedToken = (string) $request->get('token');
+            // Use hash_equals to avoid timing attacks
+            if ('' === $providedToken || !hash_equals($configuredToken, $providedToken)) {
+                return new Response(json_encode(['ok' => false, 'error' => 'unauthorized']), 401);
+            }
+        }
+
+        $since = $request->get('since');
+        $sinceTs = null;
+
+        if ($since && ctype_digit((string) $since)) {
+            $sinceTs = (int) $since;
+        }
+
+        $result = $this->payoutNotificationService->process($sinceTs);
+        $payload = [
+            'ok' => true,
+            'result' => $result,
+        ];
+
+        return new Response(json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
 }

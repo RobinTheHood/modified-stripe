@@ -59,6 +59,17 @@ Einige Zahlungen, wie beispielsweise SEPA-Lastschrift oder SOFORT Überweisung, 
 
 Webhooks sind Benachrichtigungen, die von Stripe an Ihren modified Shop gesendet werden, um bestimmte Ereignisse (Events) wie erfolgreiche Zahlungen oder Rückerstattungen zu melden. Um Webhooks zu verwenden, müssen Sie einen Endpunkt auf Stripe einrichten.
 
+#### Payout-Auszahlungsbenachrichtigungen (optional)
+Ab Version 0.14.0 können Sie automatische E-Mail-Benachrichtigungen für neue Stripe Auszahlungen aktivieren.
+
+1. Öffnen Sie im Adminbereich das **Stripe Zahlungsmodul** (Bearbeiten).
+2. Setzen Sie **PAYOUT_NOTIFY_ENABLE** auf "true".
+3. Tragen Sie in **PAYOUT_NOTIFY_RECIPIENTS** eine oder mehrere E-Mail-Adressen (Komma-getrennt) ein.
+4. (Optional) Setzen Sie ein Sicherheits-Token in **SECURE_ACTION_TOKEN**. Wenn gesetzt, muss der Endpunkt mit `&token=IHRTOKEN` aufgerufen werden.
+5. Test: Rufen Sie im Browser oder via Cron den Endpunkt auf: `https://www.meinshop.de/rth_stripe.php?action=processPayoutNotifications` (optional mit `&since=UNIX_TIMESTAMP` und ggf. `&token=IHRTOKEN`).
+
+Es werden keine kompletten Payout-Daten gespeichert.
+
 ##### Automatische Einrichtung
 1. Melden Sie sich im Adminbereich an.
 2. Gehen Sie im Menü zu **Module > Zahlungsoptionen**.
@@ -83,6 +94,7 @@ Folgende Änderungen und Dateien wurden an Ihrem Shop bei der Installation verä
 Bei der Installation werden folgende Tabellen und Spalten hinzugefügt.
 - `rth_stripe_payment`
 - `rth_stripe_php_session`
+- `rth_stripe_action_log` (ab 0.14.0 – Protokoll der versendeten Payout-Benachrichtigungen)
 
 # 🌟 Update
 1. Gehen Sie in den MMLC und aktualisieren Sie das Modul.

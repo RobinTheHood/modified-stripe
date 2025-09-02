@@ -1,5 +1,7 @@
 <?php
 
+/** @phpcs:disable PSR1.Files.SideEffects */
+
 /**
  * Stripe integration for modified
  *
@@ -17,22 +19,34 @@ use RobinTheHood\Stripe\Classes\Framework\DIContainer;
 use RobinTheHood\Stripe\Classes\Framework\RequestFactory;
 
 /**
- * When Stripe tries to send a webhook to our script and the URL query parameter "action" is set, the
- * application_top.php (in cart_actions.php) redirects to a "cookie-must-be-enabled" page. The Stripe Webhook cannot do
- * anything with this. For this reason we use application_top_callback.php. This file doesn't do that. However, the
- * files from includes/extra/functions/ that we need for autoloading are then not loaded either. Now we have to do that
- * ourselves.
+ * Bootstrap handling
+ *
+ * Webhook calls (action=receiveHook) require application_top_callback.php so that cart_actions.php does not
+ * perform a redirect.
+ * For other actions (e.g. processPayoutNotifications) we need the full shop initialization including all Smarty
+ * plugins (xtc_date_short), therefore we use application_top.php in those cases.
  */
-
-require_once 'includes/application_top_callback.php';
-require_once DIR_WS_FUNCTIONS . 'sessions.php';
-require_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
-require_once DIR_FS_CATALOG . 'includes/extra/functions/composer_autoload.php';
-require_once DIR_FS_CATALOG . 'includes/extra/functions/rth_modified_std_module.php';
-require_once DIR_WS_CLASSES . 'order_total.php';
-require_once DIR_WS_CLASSES . 'order.php';
-require_once DIR_WS_CLASSES . 'message_stack.php';
-require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
+$action = $_GET['action'] ?? $_POST['action'] ?? null;
+if ('receiveHook' === $action) {
+    /**
+     * When Stripe tries to send a webhook to our script and the URL query parameter "action" is set, the
+     * application_top.php (in cart_actions.php) redirects to a "cookie-must-be-enabled" page. The Stripe Webhook cannot do
+     * anything with this. For this reason we use application_top_callback.php. This file doesn't do that. However, the
+     * files from includes/extra/functions/ that we need for autoloading are then not loaded either. Now we have to do that
+     * ourselves.
+     */
+    require_once 'includes/application_top_callback.php';
+    require_once DIR_WS_FUNCTIONS . 'sessions.php';
+    require_once DIR_WS_MODULES . 'set_session_and_cookie_parameters.php';
+    require_once DIR_FS_CATALOG . 'includes/extra/functions/composer_autoload.php';
+    require_once DIR_FS_CATALOG . 'includes/extra/functions/rth_modified_std_module.php';
+    require_once DIR_WS_CLASSES . 'order_total.php';
+    require_once DIR_WS_CLASSES . 'order.php';
+    require_once DIR_WS_CLASSES . 'message_stack.php';
+    require_once DIR_FS_INC . 'xtc_remove_order.inc.php';
+} else {
+    require_once 'includes/application_top.php';
+}
 
 $rthDevMode = strpos($_SERVER['HTTP_HOST'], '.ddev.site') !== false;
 
@@ -62,7 +76,7 @@ if (true === $rthDevMode) {
 }
 
 /**
- * The function rth_is_module_disabled() is part of the StdModule. It is a helper to write shorter code to check, if a
+ * The function rth_is_module_disabled() is part of the StdModule. It is a helper to write shorter code to check if a
  * module is installed or not.
  *
  * @link // TODO Documentation link to StdModule

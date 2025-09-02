@@ -40,3 +40,4 @@ Unser Stripe-Zahlungsmodul ist nicht nur kostenlos, sondern auch OpenSource auf 
 - **Automatische Statusupdates:** Dein Shop aktualisiert automatisch den Bestellstatus nach Capture-, Stornierungs- oder Rückerstattungsaktionen.
 - **Zahlungsstornierung:** Einfache Stornierung von autorisierten Zahlungen direkt über dein Backend.
 - **Rückerstattungen mit wenigen Klicks:** Komfortable Rückerstattung bereits erfasster Zahlungen aus deinem Adminbereich heraus.
+- **Payout-Auszahlungsbenachrichtigungen:** Optionaler E-Mail-Versand bei jedem neuen Stripe Payout mit Übersicht zu Auszahlungsbetrag.

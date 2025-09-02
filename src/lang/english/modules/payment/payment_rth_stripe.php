@@ -77,3 +77,10 @@ define($prefix . 'MANUAL_CAPTURE_DESC', 'Enable manual capturing of payments? If
 
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_TITLE', 'Avoid Gaps in Order Numbers?');
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_DESC', 'If yes, the auto-increment value for orders will be reset after deleting temporary orders to avoid gaps in order numbers.');
+
+define($prefix . 'PAYOUT_NOTIFY_ENABLE_TITLE', 'Enable Payout Notifications?');
+define($prefix . 'PAYOUT_NOTIFY_ENABLE_DESC', 'If enabled the shop owner will receive an automatic summary email for each new Stripe payout.');
+define($prefix . 'PAYOUT_NOTIFY_RECIPIENTS_TITLE', 'Payout Email Recipients');
+define($prefix . 'PAYOUT_NOTIFY_RECIPIENTS_DESC', 'Comma separated list of additional recipients. Leave empty to use only the shop owner email.');
+define($prefix . 'SECURE_ACTION_TOKEN_TITLE', 'Secure Action Token');
+define($prefix . 'SECURE_ACTION_TOKEN_DESC', 'Optional: If set, secured public endpoints (cron/tools) must be called with ?token=TOKEN. Leave empty to disable token validation.');

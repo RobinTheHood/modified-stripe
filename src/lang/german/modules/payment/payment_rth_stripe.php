@@ -77,3 +77,10 @@ define($prefix . 'MANUAL_CAPTURE_DESC', 'Manuelles Erfassen der Zahlungen aktivi
 
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_TITLE', 'Lücken in Bestellnummern vermeiden?');
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_DESC', 'Wenn ja, wird nach dem Löschen von temporären Bestellungen der Auto-Inkrement-Wert zurückgesetzt, um Lücken in den Bestellnummern zu vermeiden.');
+
+define($prefix . 'PAYOUT_NOTIFY_ENABLE_TITLE', 'Payout Benachrichtigungen aktivieren?');
+define($prefix . 'PAYOUT_NOTIFY_ENABLE_DESC', 'Wenn aktiviert, wird bei neuen Stripe Auszahlungen automatisch eine Übersicht per E-Mail versendet.');
+define($prefix . 'PAYOUT_NOTIFY_RECIPIENTS_TITLE', 'Payout E-Mail Empfänger');
+define($prefix . 'PAYOUT_NOTIFY_RECIPIENTS_DESC', 'Kommagetrennte Liste zusätzlicher Empfänger. Leer lassen, um nur die Shop-Betreiber E-Mail zu verwenden.');
+define($prefix . 'SECURE_ACTION_TOKEN_TITLE', 'Sicheres Aktions-Token');
+define($prefix . 'SECURE_ACTION_TOKEN_DESC', 'Optional: Wenn gesetzt, müssen geschützte öffentliche Aufrufe (Cron/Tools) mit ?token=TOKEN erfolgen. Leer lassen, um die Token-Prüfung zu deaktivieren.');
