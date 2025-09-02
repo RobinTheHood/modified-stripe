@@ -4,6 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.14.0] - 2025-09-02
+### Added
+- Support for modified version `3.1.5`
+- Payout notification feature with email summaries for new Stripe payouts [(#93)](https://github.com/RobinTheHood/modified-stripe/pull/93)
+
 ## [0.13.0] - 2025-07-21
 ### Added
 - Multi-language icon URL setting for payment selection description [(#80)](https://github.com/RobinTheHood/modified-stripe/pull/80)
@@ -110,7 +115,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.13.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.14.0...HEAD
+[0.14.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.13.0...0.14.0
 [0.13.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.12.0...0.13.0
 [0.12.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.11.0...0.12.0
 [0.11.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.10.0...0.11.0

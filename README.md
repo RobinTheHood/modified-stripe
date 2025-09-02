@@ -15,7 +15,7 @@ Search for: `robinthehood/stripe`
 
 ## Requirements
 - PHP 8.0 or above
-- modified 2.0.6.0 to 3.1.4
+- modified 2.0.6.0 to 3.1.5
 - MMLC 1.21.0 or above
 
 ## Contributors
@@ -130,4 +130,8 @@ Maybe you have to configure your .htacces:
 
 ```htaccess
 RewriteRule ^/.well-known/apple-developer-merchantid-domain-association .well-known/apple-developer-merchantid-domain-association [QSA,L]
-``````
+```
+
+## License
+
+This project is open-sourced software licensed under the MIT license. See the LICENSE file for the full license text.
