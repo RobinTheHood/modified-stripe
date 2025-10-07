@@ -32,7 +32,7 @@ use RobinTheHood\Stripe\Classes\Repository\ActionLogRepository;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.14.0';
+    public const VERSION = '0.15.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -98,6 +98,8 @@ class payment_rth_stripe extends PaymentModule
      * @var array
      */
     public static array $configurationKeys = [
+        'ALLOWED',
+        'ZONE',
         'LIVE_MODE',
         'API_SANDBOX_KEY',
         'API_SANDBOX_SECRET',
@@ -143,6 +145,10 @@ class payment_rth_stripe extends PaymentModule
         $this->checkForUpdate(true);
         $this->addKeys(self::$configurationKeys);
         $this->addActions();
+
+        if ($this->isRunningInFrontend()) {
+            $this->update_status();
+        }
     }
 
     private function addActions(): void
@@ -174,6 +180,23 @@ class payment_rth_stripe extends PaymentModule
         $currentPage = $_SERVER['PHP_SELF'];
         $targetPage = 'modules.php';
         return substr($currentPage, -strlen($targetPage)) === $targetPage;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Enforce Payment Zone restriction: if a zone is configured and the billing
+     * address is not within that geo zone, disable the module for this customer.
+     */
+    public function update_status(): void
+    {
+        if (true !== $this->enabled) {
+            return;
+        }
+
+        if (!$this->shouldBeEnabledForOrderZone()) {
+            $this->enabled = false;
+        }
     }
 
     /**
@@ -285,6 +308,21 @@ class payment_rth_stripe extends PaymentModule
 
         // Optional security token to protect manual/cron endpoint for payout notifications
         $this->addConfiguration('SECURE_ACTION_TOKEN', '', $groupId, $sortOrder);
+
+        // Availability restrictions
+        // Allowed countries (core handles *_ALLOWED key automatically)
+        $this->addConfiguration('ALLOWED', '', $groupId, $sortOrder);
+
+        // Payment zone (geo zone restriction via dropdown)
+        // set_function requires trailing "(" according to modified conventions
+        $this->addConfiguration(
+            'ZONE',
+            '0',
+            $groupId,
+            $sortOrder,
+            'xtc_cfg_pull_down_zone_classes(',
+            'xtc_get_zone_class_title'
+        );
     }
 
     private function installOrderStatusConfiguration(int $groupId, int $sortOrder): void
@@ -418,6 +456,15 @@ class payment_rth_stripe extends PaymentModule
             $this->actionLogRepository->createTable();
 
             $this->setVersion('0.14.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.14.0' === $currentVersion) {
+            // Add availability restriction configuration introduced in 0.15.0
+            $this->addConfiguration('ALLOWED', '', 6, 1);
+            $this->addConfiguration('ZONE', '0', 6, 1, 'xtc_cfg_pull_down_zone_classes(', 'xtc_get_zone_class_title');
+
+            $this->setVersion('0.15.0');
             return self::UPDATE_SUCCESS;
         }
 

@@ -27,6 +27,11 @@ define($prefix . 'TEXT_TITLE', 'Stripe');
 define($prefix . 'LIVE_MODE_TITLE', 'Enable Live Mode?');
 define($prefix . 'LIVE_MODE_DESC', 'Should Stripe operate in Live Mode? If not, the module operates in the Sandbox Test Mode.');
 
+define($prefix . 'ALLOWED_TITLE', 'Allowed Countries');
+define($prefix . 'ALLOWED_DESC', 'Comma-separated ISO country codes (e.g., AT,DE). Leave empty to allow all countries.');
+define($prefix . 'ZONE_TITLE', 'Payment Zone');
+define($prefix . 'ZONE_DESC', 'If a zone is selected, only customers whose billing address is within the selected tax zone can use Stripe.');
+
 /**
  * API
  */
