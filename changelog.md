@@ -4,6 +4,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.15.0] - 2025-10-07
+### Added
+- Restrict Stripe payment availability by geo zone (tax class) via new "Payment Zone" config field. Stripe is only available if the billing address matches the selected zone.
+- Restrict Stripe by allowed countries using the new "Allowed Countries" config field (comma-separated ISO codes, e.g. AT,DE). Core shop logic applies this automatically.
+
 ## [0.14.0] - 2025-09-02
 ### Added
 - Support for modified version `3.1.5`

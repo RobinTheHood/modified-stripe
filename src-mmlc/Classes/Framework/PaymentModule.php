@@ -19,7 +19,6 @@ namespace RobinTheHood\Stripe\Classes\Framework;
 
 use order as ModifiedOrder;
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
-use RuntimeException;
 
 /**
  * In this class we have outsourced everything that is not for a specific modified PaymentModule. The methods in
@@ -244,5 +243,93 @@ class PaymentModule extends StdModule implements PaymentModuleInterface
             WHERE `configuration_key` = '$key'";
 
         xtc_db_query($sql);
+    }
+
+    /**
+     * Checks whether a billing address is within a given geo zone.
+     * Mirrors the common pattern used in modified payment modules.
+     *
+     * @param int $geoZoneId The selected geo zone id (zone class). 0 means no restriction.
+     * @param int $countryId Billing country id from $order->billing['country']['id']
+     * @param int $zoneId Billing zone/state id from $order->billing['zone_id']
+     */
+    protected function isBillingAddressInGeoZone(int $geoZoneId, int $countryId, int $zoneId): bool
+    {
+        if ($geoZoneId <= 0) {
+            return true;
+        }
+
+        $checkQuery = xtc_db_query(
+            "SELECT zone_id FROM " . TABLE_ZONES_TO_GEO_ZONES .
+            " WHERE geo_zone_id = '" . (int) $geoZoneId . "' AND zone_country_id = '" . (int) $countryId . "' ORDER BY zone_id"
+        );
+
+        while ($check = xtc_db_fetch_array($checkQuery)) {
+            if ((int) $check['zone_id'] < 1) {
+                return true;
+            }
+            if ((int) $check['zone_id'] === (int) $zoneId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if the payment module should be enabled for the given order and configured geo zone.
+     * Handles config lookup, order extraction, and geo zone check.
+     *
+     * @param ModifiedOrder|null $order
+     * @param string|null $zoneConfigKey Optional config key (e.g. 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE_ZONE'). If null, wird automatisch aus Modul-Prefix generiert.
+     * @return bool
+     */
+    protected function shouldBeEnabledForOrderZone(?ModifiedOrder $order = null, ?string $zoneConfigKey = null): bool
+    {
+        if (null === $zoneConfigKey) {
+            $zoneConfigKey = $this->getModulePrefix() . '_ZONE';
+        }
+
+        if (!defined($zoneConfigKey)) {
+            return true;
+        }
+
+        $configuredZoneId = (int) constant($zoneConfigKey);
+        if ($configuredZoneId <= 0) {
+            return true;
+        }
+
+        if (null === $order) {
+            $order = $this->getModifiedOrder();
+        }
+
+        if (!$order) {
+            return true;
+        }
+
+        $countryId = (int) ($order->billing['country']['id'] ?? 0);
+        $zoneId = (int) ($order->billing['zone_id'] ?? 0);
+
+        return $this->isBillingAddressInGeoZone($configuredZoneId, $countryId, $zoneId);
+    }
+
+    /**
+     * Checks if the module is currently running in the admin/backend area.
+     *
+     * @return bool True if running in admin area, false if running in frontend
+     */
+    protected function isRunningInAdmin(): bool
+    {
+        return defined('RUN_MODE_ADMIN');
+    }
+
+    /**
+     * Checks if the module is currently running in the frontend area.
+     *
+     * @return bool True if running in frontend, false if running in admin area
+     */
+    protected function isRunningInFrontend(): bool
+    {
+        return !defined('RUN_MODE_ADMIN');
     }
 }
