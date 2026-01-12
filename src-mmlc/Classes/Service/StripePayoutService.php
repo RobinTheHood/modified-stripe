@@ -14,17 +14,25 @@ namespace RobinTheHood\Stripe\Classes\Service;
 use Exception;
 use RobinTheHood\Stripe\Classes\Config\StripeConfig;
 use RobinTheHood\Stripe\Classes\Repository\OrderRepository;
+use Stripe\BalanceTransaction;
+use Stripe\PaymentIntent;
+use Stripe\StripeClient;
 
 class StripePayoutService
 {
     private const DEFAULT_LIMIT = 100; // Safety limit
 
-    private StripeConfig $stripeConfig;
+    private StripeClient $stripeClient;
     private ?OrderRepository $orderRepository = null; // Optional: injected later
 
     public function __construct(StripeConfig $stripeConfig, ?OrderRepository $orderRepository = null)
     {
-        $this->stripeConfig = $stripeConfig;
+        $secretKey = $stripeConfig->getActiveSecretKey();
+        if ('' === $secretKey) {
+            throw new Exception('Stripe secret key not configured');
+        }
+
+        $this->stripeClient = new StripeClient(['api_key' => $secretKey]);
         $this->orderRepository = $orderRepository;
     }
 
@@ -40,13 +48,6 @@ class StripePayoutService
      */
     public function listNewPayouts(?int $sinceTimestamp = null, ?int $limit = null): array
     {
-        $secretKey = $this->stripeConfig->getActiveSecretKey();
-        if ('' === $secretKey) {
-            throw new Exception('Stripe secret key not configured');
-        }
-
-        \Stripe\Stripe::setApiKey($secretKey);
-
         $max = $limit ?? self::DEFAULT_LIMIT;
         if ($max <= 0) {
             $max = self::DEFAULT_LIMIT;
@@ -57,7 +58,7 @@ class StripePayoutService
             'limit' => $max,
         ];
 
-        $payoutCollection = \Stripe\Payout::all($params);
+        $payoutCollection = $this->stripeClient->payouts->all($params);
         $result = [];
 
         foreach ($payoutCollection->data as $payout) {
@@ -109,17 +110,15 @@ class StripePayoutService
             return [];
         }
 
-        $secretKey = $this->stripeConfig->getActiveSecretKey();
-        if ('' === $secretKey) {
-            return [];
-        }
-        \Stripe\Stripe::setApiKey($secretKey);
-
         // Retrieve balance transactions for the payout
         try {
-            $balanceTxCollection = \Stripe\BalanceTransaction::all([
+            $balanceTxCollection = $this->stripeClient->balanceTransactions->all([
                 'payout' => $payoutId,
-                'limit' => 100,
+                'limit'  => 100,
+                'expand' => [
+                    'data.source', // liefert z.B. Charge-Objekt statt nur ID
+                    'data.source.payment_intent', // optional: direkt PI mitladen
+                ],
             ]);
         } catch (\Exception $e) {
             return [];
@@ -129,34 +128,14 @@ class StripePayoutService
         $seenOrderIds = [];
 
         foreach ($balanceTxCollection->data as $balanceTx) {
-            // We only care about charge transactions (typical payment flow)
-            if ('charge' !== $balanceTx->type) {
+            $source = $balanceTx->source ?? null;
+
+            // Nur "charge" ist für Bestellungen relevant (Refunds etc. ggf. separat behandeln)
+            if (!$source || !is_object($source) || ($source->object ?? null) !== 'charge') {
                 continue;
             }
 
-            $source = $balanceTx->source; // kann Charge-ID sein
-            if (!$source) {
-                continue;
-            }
-
-            try {
-                $charge = \Stripe\Charge::retrieve([
-                    'id' => $source,
-                    'expand' => ['payment_intent'],
-                ]);
-            } catch (\Exception $e) {
-                continue; // Charge could not be retrieved → skip
-            }
-
-            if (!isset($charge->payment_intent) || !$charge->payment_intent) {
-                continue;
-            }
-
-            $paymentIntent = $charge->payment_intent; // Expanded object or ID
-            // If only ID (string), expand failed → skip
-            if (is_string($paymentIntent)) {
-                continue;
-            }
+            $paymentIntent = $source->payment_intent ?? null;
 
             $metadata = $paymentIntent->metadata ?? null;
             if (!$metadata || !isset($metadata->order_id)) {
@@ -195,5 +174,35 @@ class StripePayoutService
         });
 
         return $orders;
+    }
+
+    private function getPaymentIntentFromBalanceTransaction(BalanceTransaction $balanceTransaction): ?PaymentIntent
+    {
+        $sourceId = $balanceTransaction->source;
+        if (!$sourceId) {
+            return null;
+        }
+
+        // Wir können nur Charge-ähnliche Quellen behandeln (ch_... oder py_...)
+        if (!preg_match('/^(ch_|py_)/', $sourceId)) {
+            return null;
+        }
+
+        // PaymentIntent direkt mit expand holen, so sparen wir einen API-Call
+        try {
+            $charge = $this->stripeClient->charges->retrieve($sourceId, [
+                'expand' => ['payment_intent'],
+            ]);
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        $paymentIntent = $charge->payment_intent ?? null;
+
+        if ($paymentIntent instanceof PaymentIntent) {
+            return $paymentIntent;
+        }
+
+        return null;
     }
 }
