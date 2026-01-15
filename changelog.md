@@ -4,6 +4,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.18.0] - 2026-01-15
+### Fixed
+- Fixed incorrect payment amount for business customers (B2B) - Now correctly passes the gross amount (Brutto) instead of net amount (Netto) to Stripe by using the `getTotalData()` method to retrieve the correct `ot_total` value from the database
+
+## [0.17.0] - 2026-01-15
+### Fixed
+- Fixed payout reconciliation that misses some payments in Stripe API workflows [(#98)](https://github.com/RobinTheHood/modified-stripe/pull/98)
+
 ## [0.16.0] - 2025-10-31
 ### Added
 - Support for modified version `3.1.6`
