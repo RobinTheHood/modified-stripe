@@ -108,7 +108,22 @@ class Order
 
     public function getTotal(): float
     {
-        return $this->modifiedOrder->info['total'];
+        // For business customers (B2B), the $modifiedOrder->info['total'] field contains only the net amount.
+        // However, we need to pass the gross amount (including VAT) to Stripe.
+        // The correct total amount is retrieved from the database using getTotalData() method.
+
+        if ($this->modifiedOrderId > 0) {
+            // Use the modified order class's getTotalData method to get the correct total
+            $totalData = $this->modifiedOrder->getTotalData($this->modifiedOrderId);
+
+            if (isset($totalData['total']) && $totalData['total'] > 0) {
+                // The 'total' key contains the ot_total value which is the gross amount
+                return (float) $totalData['total'];
+            }
+        }
+
+        // Fallback to info['total'] if getTotalData fails or order_id is not set
+        return (float) $this->modifiedOrder->info['total'];
     }
 
     public function getCurrency(): string
