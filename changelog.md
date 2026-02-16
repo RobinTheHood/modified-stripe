@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.19.0] - 2026-02-16
+### Added
+- Support for modified version `3.2.0`, `3.2.1` and `3.3.0`
+
 ## [0.18.0] - 2026-01-15
 ### Fixed
 - Fixed incorrect payment amount for business customers (B2B) - Now correctly passes the gross amount (Brutto) instead of net amount (Netto) to Stripe by using the `getTotalData()` method to retrieve the correct `ot_total` value from the database
@@ -132,8 +136,11 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.16.0...HEAD
-[0.15.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.15.0...0.16.0
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.19.0...HEAD
+[0.19.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.18.0...0.19.0
+[0.18.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.17.0...0.18.0
+[0.17.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.16.0...0.17.0
+[0.16.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.15.0...0.16.0
 [0.15.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.14.0...0.15.0
 [0.14.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.13.0...0.14.0
 [0.13.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.12.0...0.13.0

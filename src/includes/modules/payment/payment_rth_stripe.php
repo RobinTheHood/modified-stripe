@@ -32,7 +32,7 @@ use RobinTheHood\Stripe\Classes\Repository\ActionLogRepository;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.15.0';
+    public const VERSION = '0.19.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -465,6 +465,12 @@ class payment_rth_stripe extends PaymentModule
             $this->addConfiguration('ZONE', '0', 6, 1, 'xtc_cfg_pull_down_zone_classes(', 'xtc_get_zone_class_title');
 
             $this->setVersion('0.15.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        // Catch-up: ensure installed modules can reach the current module VERSION
+        if (version_compare($currentVersion, self::VERSION, '<')) {
+            $this->setVersion(self::VERSION);
             return self::UPDATE_SUCCESS;
         }
 
