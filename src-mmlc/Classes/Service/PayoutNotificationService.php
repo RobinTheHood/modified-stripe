@@ -88,6 +88,7 @@ class PayoutNotificationService
                 continue;
             }
 
+            // Load orders for this payout
             $orders = $this->stripePayoutService->buildPayoutOrders($payoutId);
 
             // Generate email content
@@ -134,17 +135,42 @@ class PayoutNotificationService
         } else {
             $html[] = '<h2>Bestellungen</h2>';
             $html[] = '<table border="1" cellpadding="4" cellspacing="0">';
-            $html[] = '<tr><th>Order ID</th><th>Kunde</th><th>Datum</th><th>Betrag</th><th>Währung</th></tr>';
+            $html[] = '<tr><th>Bestellnr.</th><th>Kunde</th><th>Datum</th><th>Bruttobetrag</th><th>Stripe-Gebühr</th><th>Nettobetrag</th></tr>';
+
+            $totalNet = 0;
+            $currency = '';
+
             foreach ($orders as $order) {
+                $grossAmount = (int) ($order['grossAmount'] ?? 0);
+                $stripeFee = (int) ($order['stripeFee'] ?? 0);
+                $netAmount = (int) ($order['netAmount'] ?? 0);
+                $orderCurrency = (string) ($order['currency'] ?? '');
+
+                if ('' === $currency) {
+                    $currency = $orderCurrency;
+                }
+
+                $totalNet += $netAmount;
+
                 $html[] = '<tr>'
                     . '<td>' . (int) $order['orderId'] . '</td>'
                     . '<td>' . htmlspecialchars((string) $order['customerName']) . '</td>'
                     . '<td>' . htmlspecialchars((string) $order['orderDate']) . '</td>'
-                    . '<td style="text-align:right">' . number_format(((int) $order['amount']) / 100, 2, ',', '.') . '</td>'
-                    . '<td>' . htmlspecialchars(strtoupper((string) $order['currency'])) . '</td>'
+                    . '<td style="text-align:right">' . number_format($grossAmount / 100, 2, ',', '.') . ' ' . htmlspecialchars(strtoupper($orderCurrency)) . '</td>'
+                    . '<td style="text-align:right">' . number_format($stripeFee / 100, 2, ',', '.') . ' ' . htmlspecialchars(strtoupper($orderCurrency)) . '</td>'
+                    . '<td style="text-align:right">' . number_format($netAmount / 100, 2, ',', '.') . ' ' . htmlspecialchars(strtoupper($orderCurrency)) . '</td>'
                     . '</tr>';
             }
+
             $html[] = '</table>';
+
+            // Add total sum
+            if ($totalNet > 0 && '' !== $currency) {
+                $html[] = '<p style="margin-top:20px;"><strong>Gesamtsumme (Netto): '
+                    . number_format($totalNet / 100, 2, ',', '.')
+                    . ' ' . htmlspecialchars(strtoupper($currency))
+                    . '</strong></p>';
+            }
         }
 
         return implode("\n", $html);

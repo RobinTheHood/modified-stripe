@@ -96,7 +96,15 @@ class StripePayoutService
      * Returns a list of related shop orders (order summaries) for a given payout.
      * Return format:
      * [
-     *   ['orderId'=>int, 'customerName'=>string, 'orderDate'=>string (Y-m-d H:i:s), 'amount'=>int, 'currency'=>string]
+     *   [
+     *     'orderId'=>int,
+     *     'customerName'=>string,
+     *     'orderDate'=>string (Y-m-d H:i:s),
+     *     'grossAmount'=>int (in smallest unit, cents),
+     *     'stripeFee'=>int (in smallest unit, cents),
+     *     'netAmount'=>int (in smallest unit, cents),
+     *     'currency'=>string
+     *   ]
      * ]
      *
      * Note: If no OrderRepository was injected, an empty array is returned.
@@ -155,11 +163,18 @@ class StripePayoutService
             $customerName = trim(($orderRow['customers_firstname'] ?? '') . ' ' . ($orderRow['customers_lastname'] ?? ''));
             $orderDate = $orderRow['date_purchased'] ?? '';
 
+            // Extract gross amount, fee, and net amount from BalanceTransaction
+            $grossAmount = (int) $balanceTx->amount; // In smallest unit (cents)
+            $stripeFee = (int) ($balanceTx->fee ?? 0); // Fee in smallest unit (cents)
+            $netAmount = (int) ($balanceTx->net ?? ($grossAmount - $stripeFee)); // Net = gross - fee
+
             $orders[] = [
                 'orderId' => $orderId,
                 'customerName' => $customerName,
                 'orderDate' => $orderDate,
-                'amount' => (int) $balanceTx->amount, // In smallest unit (cents)
+                'grossAmount' => $grossAmount,
+                'stripeFee' => $stripeFee,
+                'netAmount' => $netAmount,
                 'currency' => (string) $balanceTx->currency,
             ];
             $seenOrderIds[$orderId] = true;
