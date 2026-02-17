@@ -32,7 +32,7 @@ use RobinTheHood\Stripe\Classes\Repository\ActionLogRepository;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.19.0';
+    public const VERSION = '0.20.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';

@@ -4,6 +4,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.20.0] - 2026-02-17
+### Added
+- Update payout email content to include gross amount, fees, and net amount
+
 ## [0.19.0] - 2026-02-16
 ### Added
 - Support for modified version `3.2.0`, `3.2.1` and `3.3.0`
@@ -136,7 +140,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.19.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.20.0...HEAD
+[0.20.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.19.0...0.20.0
 [0.19.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.18.0...0.19.0
 [0.18.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.17.0...0.18.0
 [0.17.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.16.0...0.17.0
