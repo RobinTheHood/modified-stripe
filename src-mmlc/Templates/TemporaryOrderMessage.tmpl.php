@@ -4,6 +4,7 @@
  * Temporary Order Information Template
  *
  * @var array $messages - Localized messages array
+ * @var bool $isAutoDeleteEnabled - True if temporary orders are automatically deleted
  */
 ?>
 <div class="rth-stripe-temporary-order">
@@ -17,13 +18,17 @@
             <ul>
                 <li><?php echo htmlspecialchars($messages['customer_checkout']); ?></li>
                 <li><?php echo htmlspecialchars($messages['payment_not_completed']); ?></li>
-                <li><?php echo htmlspecialchars($messages['auto_deleted']); ?>
-                    <ul>
-                        <li><?php echo htmlspecialchars($messages['customer_cancels']); ?></li>
-                        <li><?php echo htmlspecialchars($messages['session_expires']); ?></li>
-                        <li><?php echo htmlspecialchars($messages['payment_error']); ?></li>
-                    </ul>
-                </li>
+                <?php if ($isAutoDeleteEnabled) : ?>
+                    <li><?php echo htmlspecialchars($messages['auto_deleted']); ?>
+                        <ul>
+                            <li><?php echo htmlspecialchars($messages['customer_cancels']); ?></li>
+                            <li><?php echo htmlspecialchars($messages['session_expires']); ?></li>
+                            <li><?php echo htmlspecialchars($messages['payment_error']); ?></li>
+                        </ul>
+                    </li>
+                <?php else : ?>
+                    <li><?php echo htmlspecialchars($messages['auto_deleted_disabled']); ?></li>
+                <?php endif; ?>
             </ul>
         </div>
 

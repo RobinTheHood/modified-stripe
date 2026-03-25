@@ -14,6 +14,7 @@ return [
     'customer_checkout' => 'Der Kunde befindet sich noch im Stripe-Checkout-Prozess',
     'payment_not_completed' => 'Die Zahlung wurde noch nicht abgeschlossen oder bestätigt',
     'auto_deleted' => 'Diese Bestellung wird automatisch gelöscht, wenn:',
+    'auto_deleted_disabled' => 'Diese Bestellung wird nicht automatisch gelöscht (Einstellung "Temporäre Bestellungen behalten" ist aktiv).',
     'customer_cancels' => 'Der Kunde die Zahlung abbricht',
     'session_expires' => 'Die Stripe-Checkout-Session abläuft (normalerweise nach 24 Stunden)',
     'payment_error' => 'Ein Fehler im Zahlungsprozess auftritt',

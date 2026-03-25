@@ -188,6 +188,15 @@ class StripeConfig extends Configuration
         }
     }
 
+    public function getKeepTemporaryOrder(): bool
+    {
+        try {
+            return 'true' === $this->keepTempOrder ? true : false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     /**
      * Returns whether payout notification emails are enabled.
      */

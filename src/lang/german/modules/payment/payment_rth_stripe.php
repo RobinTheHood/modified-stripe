@@ -83,6 +83,9 @@ define($prefix . 'MANUAL_CAPTURE_DESC', 'Manuelles Erfassen der Zahlungen aktivi
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_TITLE', 'Lücken in Bestellnummern vermeiden?');
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_DESC', 'Wenn ja, wird nach dem Löschen von temporären Bestellungen der Auto-Inkrement-Wert zurückgesetzt, um Lücken in den Bestellnummern zu vermeiden.');
 
+define($prefix . 'KEEP_TEMP_ORDER_TITLE', 'Temporäre Bestellungen behalten?');
+define($prefix . 'KEEP_TEMP_ORDER_DESC', 'Wenn aktiviert, werden temporäre Bestellungen vor dem Stripe Checkout bei Abbruch oder Ablauf nicht automatisch gelöscht.');
+
 define($prefix . 'PAYOUT_NOTIFY_ENABLE_TITLE', 'Payout Benachrichtigungen aktivieren?');
 define($prefix . 'PAYOUT_NOTIFY_ENABLE_DESC', 'Wenn aktiviert, wird bei neuen Stripe Auszahlungen automatisch eine Übersicht per E-Mail versendet.');
 define($prefix . 'PAYOUT_NOTIFY_RECIPIENTS_TITLE', 'Payout E-Mail Empfänger');

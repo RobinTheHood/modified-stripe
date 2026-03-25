@@ -14,6 +14,7 @@ return [
     'customer_checkout' => 'The customer is still in the Stripe checkout process',
     'payment_not_completed' => 'Payment has not been completed or confirmed yet',
     'auto_deleted' => 'This order will be automatically deleted if:',
+    'auto_deleted_disabled' => 'This order will not be automatically deleted (the "Keep Temporary Orders" setting is enabled).',
     'customer_cancels' => 'The customer cancels the payment',
     'session_expires' => 'The Stripe checkout session expires (usually after 24 hours)',
     'payment_error' => 'An error occurs in the payment process',

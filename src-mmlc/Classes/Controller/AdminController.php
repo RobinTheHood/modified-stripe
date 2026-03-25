@@ -425,6 +425,7 @@ class AdminController extends AbstractController
     {
         // Load messages using the LanguageLoader
         $messages = LanguageLoader::load('TemporaryOrderMessages');
+        $isAutoDeleteEnabled = !$this->stripeConfig->getKeepTemporaryOrder();
 
         // Use the template
         ob_start();
