@@ -4,6 +4,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+## [0.21.0] - 2026-03-25
 ### Added
 - New option to keep temporary Stripe orders instead of deleting them automatically when checkout is canceled or expires ([#42](https://github.com/RobinTheHood/modified-stripe/issues/42))
 
@@ -143,7 +144,8 @@ You have to update the module via MMLC and under Admin > Modules > Payment Metho
 ### Added
 - initial version
 
-[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.20.0...HEAD
+[Unreleased]: https://github.com/RobinTheHood/modified-stripe/compare/0.21.0...HEAD
+[0.21.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.20.0...0.21.0
 [0.20.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.19.0...0.20.0
 [0.19.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.18.0...0.19.0
 [0.18.0]: https://github.com/RobinTheHood/modified-stripe/compare/0.17.0...0.18.0
