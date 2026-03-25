@@ -32,7 +32,7 @@ use RobinTheHood\Stripe\Classes\Repository\ActionLogRepository;
 class payment_rth_stripe extends PaymentModule
 {
     /** @var string */
-    public const VERSION = '0.20.0';
+    public const VERSION = '0.21.0';
 
     /** @var string */
     public const NAME = 'MODULE_PAYMENT_PAYMENT_RTH_STRIPE';
@@ -119,6 +119,7 @@ class payment_rth_stripe extends PaymentModule
         'ORDER_STATUS_REFUNDED',
         'MANUAL_CAPTURE',
         'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE',
+        'KEEP_TEMP_ORDER',
         'PAYOUT_NOTIFY_ENABLE',
         'PAYOUT_NOTIFY_RECIPIENTS',
         'SECURE_ACTION_TOKEN',
@@ -301,6 +302,7 @@ class payment_rth_stripe extends PaymentModule
         $this->addConfigurationStaticField('ICON_URL', '', $groupId, $sortOrder, $multiLangRenderer);
         $this->addConfigurationSelect('MANUAL_CAPTURE', 'false', $groupId, $sortOrder);
         $this->addConfigurationSelect('RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE', 'false', $groupId, $sortOrder);
+        $this->addConfigurationSelect('KEEP_TEMP_ORDER', 'false', $groupId, $sortOrder);
 
         // Payout notification settings
         $this->addConfigurationSelect('PAYOUT_NOTIFY_ENABLE', 'false', $groupId, $sortOrder);
@@ -468,6 +470,17 @@ class payment_rth_stripe extends PaymentModule
             return self::UPDATE_SUCCESS;
         }
 
+        if (in_array($currentVersion, ['0.15.0', '0.16.0', '0.17.0', '0.18.0', '0.19.0'])) {
+            $this->setVersion('0.20.0');
+            return self::UPDATE_SUCCESS;
+        }
+
+        if ('0.20.0' === $currentVersion) {
+            $this->addConfigurationSelect('KEEP_TEMP_ORDER', 'false', 6, 1);
+            $this->setVersion('0.21.0');
+            return self::UPDATE_SUCCESS;
+        }
+
         // Catch-up: ensure installed modules can reach the current module VERSION
         if (version_compare($currentVersion, self::VERSION, '<')) {
             $this->setVersion(self::VERSION);
@@ -518,8 +531,6 @@ class payment_rth_stripe extends PaymentModule
      * {@inheritdoc}
      *
      * Overwrites PaymentModule::pre_confirmation_check()
-     *
-     * //TODO: See Issue #42 - Add option to keep temporary order - for more options of cancelation
      */
     public function pre_confirmation_check(): void
     {
@@ -531,7 +542,10 @@ class payment_rth_stripe extends PaymentModule
             return;
         }
 
-        $this->removeOrder($tempOrderId, true, true, $this->stripeConfig->getResetAutoIncrementAfterTempDelete());
+        if (!$this->stripeConfig->getKeepTemporaryOrder()) {
+            $this->removeOrder($tempOrderId, true, true, $this->stripeConfig->getResetAutoIncrementAfterTempDelete());
+        }
+
         $this->setTemporaryOrderId(false);
 
         xtc_redirect($this->urlBuilder->getCheckoutConfirmation());

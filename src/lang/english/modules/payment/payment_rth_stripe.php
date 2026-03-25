@@ -83,6 +83,9 @@ define($prefix . 'MANUAL_CAPTURE_DESC', 'Enable manual capturing of payments? If
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_TITLE', 'Avoid Gaps in Order Numbers?');
 define($prefix . 'RESET_AUTO_INCREMENT_AFTER_TEMP_DELETE_DESC', 'If yes, the auto-increment value for orders will be reset after deleting temporary orders to avoid gaps in order numbers.');
 
+define($prefix . 'KEEP_TEMP_ORDER_TITLE', 'Keep Temporary Orders?');
+define($prefix . 'KEEP_TEMP_ORDER_DESC', 'If enabled, temporary orders created before Stripe checkout are not deleted automatically when checkout is canceled or expires.');
+
 define($prefix . 'PAYOUT_NOTIFY_ENABLE_TITLE', 'Enable Payout Notifications?');
 define($prefix . 'PAYOUT_NOTIFY_ENABLE_DESC', 'If enabled the shop owner will receive an automatic summary email for each new Stripe payout.');
 define($prefix . 'PAYOUT_NOTIFY_RECIPIENTS_TITLE', 'Payout Email Recipients');

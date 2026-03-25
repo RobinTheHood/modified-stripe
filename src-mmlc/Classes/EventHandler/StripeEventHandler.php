@@ -37,6 +37,7 @@ class StripeEventHandler
 
     /** @var int */
     private $orderStatusAuthorized = 1;
+    private bool $keepTemporaryOrder;
 
     private OrderRepository $orderRepo;
     private OrderStatusHistoryRepository $orderStatusHistoryRepo;
@@ -56,6 +57,7 @@ class StripeEventHandler
         $this->phpSession = $phpSession;
         $this->orderStatusPaid = $stripeConfig->getOrderStatusPaid(self::DEFAULT_ORDER_STATUS_PAID);
         $this->orderStatusAuthorized = $stripeConfig->getOrderStatusAuthorized(self::DEFAULT_ORDER_STATUS_AUTHORIZED);
+        $this->keepTemporaryOrder = $stripeConfig->getKeepTemporaryOrder();
     }
 
     /**
@@ -126,6 +128,10 @@ class StripeEventHandler
         if (!$order) {
             error_log("Can not handle stripe event {$event->type} - order is null");
             return false;
+        }
+
+        if ($this->keepTemporaryOrder) {
+            return true;
         }
 
         Order::removeOrder($order->getId(), true, true);

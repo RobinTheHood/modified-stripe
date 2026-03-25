@@ -4,6 +4,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ## [Unreleased]
 Unreleased features and fixes can be viewed on GitHub. To do this, click on [Unreleased].
 
+### Added
+- New option to keep temporary Stripe orders instead of deleting them automatically when checkout is canceled or expires ([#42](https://github.com/RobinTheHood/modified-stripe/issues/42))
+
 ## [0.20.0] - 2026-02-17
 ### Added
 - Update payout email content to include gross amount, fees, and net amount
